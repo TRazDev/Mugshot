@@ -99,7 +99,7 @@ class ComposeRenderingModeSizingTest {
       expectedDimensions[name] = width to height
     }
 
-    override fun newFrameHandler(snapshot: Snapshot, frameCount: Int, fps: Int): SnapshotHandler.FrameHandler {
+    override fun newFrameHandler(snapshot: Snapshot): SnapshotHandler.FrameHandler {
       val name = requireNotNull(snapshot.name)
       val expected = requireNotNull(expectedDimensions[name]) {
         "No expected dimensions registered for snapshot '$name'"

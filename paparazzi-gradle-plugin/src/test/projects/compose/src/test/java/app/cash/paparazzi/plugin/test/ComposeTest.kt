@@ -56,30 +56,6 @@ class ComposeTest {
   }
 
   @Test
-  fun gif() {
-    paparazzi.gif(end = 1000L) {
-      val color = remember { Animatable(Color.Cyan) }
-      LaunchedEffect(Unit) {
-        color.animateTo(Color.Magenta, animationSpec = tween(500, easing = LinearEasing))
-        color.animateTo(Color.Cyan, animationSpec = tween(500, easing = LinearEasing))
-      }
-
-      Box(
-        Modifier
-          .fillMaxSize()
-          .background(Color.White)
-      ) {
-        Box(
-          Modifier
-            .align(Alignment.Center)
-            .size(120.dp)
-            .background(color.value, CircleShape)
-        )
-      }
-    }
-  }
-
-  @Test
   fun composeDefaultLayoutParams() {
     paparazzi.snapshot {
       Box(

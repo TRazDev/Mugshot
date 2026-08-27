@@ -44,6 +44,7 @@ dependencies {
 
   testImplementation libs.junit
   testImplementation libs.truth
+  testImplementation libs.webp.imageio
 
   fixtureClasspath libs.plugin.kotlin
   fixtureClasspath libs.plugin.kotlin.compose

@@ -31,25 +31,13 @@ class Shot {
       }
     );
 
-    if (file.endsWith('.png')) {
-      this.img.src = file;
-      this.img.style.display = 'inline';
-      this.video.style.display = 'none';
-    } else {
-      this.video.src = file;
-      this.video.style.display = 'inline';
-      this.img.style.display = 'none';
-    }
+    this.img.src = file;
     this.timestampP.innerText = timestamp;
 
     const circle = document.createElement('div');
     circle.classList.add('test__details__selector', `run-${runId}`);
     circle.onmouseover = function (e) {
-      if (file.endsWith('.png')) {
-        this.img.src = file;
-      } else {
-        this.video.src = file;
-      }
+      this.img.src = file;
 
       for (let shot of Object.values(paparazziRenderer.shots)) {
         let found = false;
@@ -82,16 +70,11 @@ class Shot {
     document.rootContainer.appendChild(screenDiv);
 
     const img = document.createElement('img');
-    const video = document.createElement('video');
-    video.autoplay = 'autoplay';
-    video.muted = 'muted';
-    video.loop = 'loop';
 
     const overlayDiv = document.createElement('div');
     overlayDiv.classList.add('overlay');
 
     screenDiv.appendChild(img);
-    screenDiv.appendChild(video);
     screenDiv.appendChild(overlayDiv);
     screenDiv.onmouseover = function (e) {
       overlayDiv.classList.add('overlay__hovered');
@@ -126,7 +109,6 @@ class Shot {
 
     // hold references to the DOM for later updates
     this.img = img;
-    this.video = video;
     this.timestampP = timestampP;
     this.overlayDiv = overlayDiv;
   }

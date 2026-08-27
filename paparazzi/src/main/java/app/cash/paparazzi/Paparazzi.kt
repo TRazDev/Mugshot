@@ -19,10 +19,8 @@ import android.content.Context
 import android.content.res.Resources
 import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup.LayoutParams
 import androidx.annotation.LayoutRes
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.platform.ComposeView
 import com.android.ide.common.rendering.api.SessionParams.RenderingMode
 import org.junit.rules.TestRule
 import org.junit.runner.Description
@@ -156,51 +154,15 @@ public class Paparazzi @JvmOverloads constructor(
     }
   }
 
-  public fun gif(
-    name: String? = null,
-    start: Long = 0L,
-    end: Long = 500L,
-    fps: Int = 30,
-    composable: @Composable () -> Unit
-  ) {
-    gif(
-      view = ComposeView(context).apply {
-        layoutParams = LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT)
-        setContent(composable)
-      },
-      name = name,
-      start = start,
-      end = end,
-      fps = fps
-    )
-  }
-
-  @JvmOverloads
-  public fun gif(view: View, name: String? = null, start: Long = 0L, end: Long = 500L, fps: Int = 30) {
-    // Add one to the frame count so we get the last frame. Otherwise a 1 second, 60 FPS animation
-    // our 60th frame will be at time 983 ms, and we want our last frame to be 1,000 ms. This gets
-    // us 61 frames for a 1 second animation, 121 frames for a 2 second animation, etc.
-    val durationMillis = (end - start).toInt()
-    val frameCount = (durationMillis * fps) / 1000 + 1
-    createFrameHandler(name, frameCount, fps).use { handler ->
-      frameHandler = handler
-      sdk.gif(view, start, end, fps)
-    }
-  }
-
   public fun unsafeUpdateConfig(
     deviceConfig: DeviceConfig? = null,
     theme: String? = null,
     renderingMode: RenderingMode? = null
   ): Unit = sdk.unsafeUpdateConfig(deviceConfig, theme, renderingMode)
 
-  private fun createFrameHandler(
-    name: String? = null,
-    frameCount: Int = 1,
-    fps: Int = -1
-  ): SnapshotHandler.FrameHandler {
+  private fun createFrameHandler(name: String? = null): SnapshotHandler.FrameHandler {
     val snapshot = Snapshot(name, testName!!, Date())
-    return snapshotHandler.newFrameHandler(snapshot, frameCount, fps)
+    return snapshotHandler.newFrameHandler(snapshot)
   }
 
   private fun Description.toTestName(): TestName {

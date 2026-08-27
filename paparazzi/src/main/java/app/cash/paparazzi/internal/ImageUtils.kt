@@ -20,12 +20,9 @@ import app.cash.paparazzi.Differ
 import app.cash.paparazzi.Differ.DiffResult.Different
 import app.cash.paparazzi.Differ.DiffResult.Identical
 import app.cash.paparazzi.Differ.DiffResult.Similar
-import app.cash.paparazzi.internal.apng.ApngWriter
-import okio.Path.Companion.toPath
 import java.awt.AlphaComposite
 import java.awt.Color
 import java.awt.Graphics2D
-import java.awt.Rectangle
 import java.awt.RenderingHints.KEY_ANTIALIASING
 import java.awt.RenderingHints.KEY_INTERPOLATION
 import java.awt.RenderingHints.KEY_RENDERING
@@ -98,9 +95,9 @@ internal object ImageUtils {
         val g = deltaImage.graphics
         val yOffset = 20 - MAC_OSX_FONT_DIALOG_SIZE_12_ASCENT
         val myClassLoader = ImageUtils::class.java.classLoader!!
-        val expectedLabel = ImageIO.read(myClassLoader.getResourceAsStream("expected_label.png"))
+        val expectedLabel = ImageIO.read(myClassLoader.getResourceAsStream("expected_label.webp"))
         g.drawImage(expectedLabel, 10, yOffset, null)
-        val actualLabel = ImageIO.read(myClassLoader.getResourceAsStream("actual_label.png"))
+        val actualLabel = ImageIO.read(myClassLoader.getResourceAsStream("actual_label.webp"))
         g.drawImage(actualLabel, goldenImageWidth + deltaWidth + 10, yOffset, null)
       }
 
@@ -111,7 +108,7 @@ internal object ImageUtils {
           throw IllegalStateException("Unable to delete $deltaOutput")
         }
       }
-      ImageIO.write(deltaImage, "PNG", deltaOutput)
+      deltaOutput.writeBytes(WebpCodec.encode(deltaImage))
       error += " - see details in file://" + deltaOutput.path + "\n"
       val actualOutput = File(failureDir, getName(relativePath))
       if (actualOutput.exists()) {
@@ -120,7 +117,7 @@ internal object ImageUtils {
           throw IllegalStateException("Unable to delete $actualOutput")
         }
       }
-      ApngWriter(actualOutput.path.toPath(), fps = -1).use { it.writeImage(image) }
+      WebpCodec.encodeTo(actualOutput, image)
       error += "Thumbnail for current rendering stored at file://" + actualOutput.path
       error += "\nRun the following command to accept the changes:\n"
       error += "mv ${actualOutput.absolutePath} ${File(relativePath).absolutePath}"
@@ -244,38 +241,6 @@ internal object ImageUtils {
         iterations--
       }
       return scaled
-    }
-  }
-
-  fun smallestDiffRect(firstImage: BufferedImage, secondImage: BufferedImage): Rectangle? {
-    val firstImageWidth = firstImage.width
-    val firstImageHeight = firstImage.height
-    val secondImageWidth = secondImage.width
-    val secondImageHeight = secondImage.height
-
-    val maxWidth = max(firstImageWidth, secondImageWidth)
-    val maxHeight = max(firstImageHeight, secondImageHeight)
-
-    var (left, right, top, bottom) = listOf(-1, -1, -1, -1)
-    for (y in 0 until maxHeight) {
-      for (x in 0 until maxWidth) {
-        val firstRgb = if (x < firstImageWidth && y < firstImageHeight) firstImage.getRGB(x, y) else null
-        val secondRgb = if (x < secondImageWidth && y < secondImageHeight) secondImage.getRGB(x, y) else null
-        if (firstRgb != secondRgb) {
-          if (x < left || left == -1) left = x
-          if (x > right) right = x
-          if (y < top || top == -1) top = y
-          if (y > bottom) bottom = y
-        }
-      }
-    }
-
-    val diffWidth = right - left
-    val diffHeight = bottom - top
-    return if (diffWidth > 0 && diffHeight > 0) {
-      Rectangle(left, top, diffWidth + 1, diffHeight + 1)
-    } else {
-      null
     }
   }
 

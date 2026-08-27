@@ -57,6 +57,8 @@ moshi-kotlinReflect = { module = "com.squareup.moshi:moshi-kotlin", version.ref 
 
 okio = { module = "com.squareup.okio:okio", version = "3.17.0" }
 
+webp-imageio = { module = "com.github.usefulness:webp-imageio", version = "0.11.0" }
+
 tools-common = { module = "com.android.tools:common", version.ref = "androidTools" }
 tools-layoutlib = { module = "com.android.tools.layoutlib:layoutlib", version.ref = "layoutlib" }
 tools-layoutlib-api = { module = "com.android.tools.layoutlib:layoutlib-api", version = "32.0.1" }

@@ -18,12 +18,11 @@ package app.cash.paparazzi
 import app.cash.paparazzi.SnapshotHandler.FrameHandler
 import app.cash.paparazzi.internal.ImageUtils
 import app.cash.paparazzi.internal.PaparazziJson
-import app.cash.paparazzi.internal.apng.ApngWriter
+import app.cash.paparazzi.internal.WebpCodec
 import com.google.common.base.CharMatcher
 import com.google.common.io.Files
 import okio.BufferedSink
 import okio.HashingSink
-import okio.Path.Companion.toPath
 import okio.blackholeSink
 import okio.buffer
 import okio.sink
@@ -39,19 +38,17 @@ import javax.imageio.ImageIO
 /**
  * Creates an HTML report that avoids writing files that have already been written.
  *
- * Images and videos are named by hashes of their contents. Paparazzi won't write two images or videos with the same
- * contents. Note that the images/ directory includes the individual frames of each video.
+ * Images are named by hashes of their contents. Paparazzi won't write two images with the same
+ * contents.
  *
  * Runs are named by their date.
  *
  * ```
  * images
- *   088c60580f06efa95c37fd8e754074729ee74a06.png
- *   93f9a81cb594280f4b3898d90dfad8c8ea969b01.png
- *   22d37abd0841ba2a8d0bd635954baf7cbfaa269b.png
- *   a4769e43cc5901ef28c0d46c46a44ea6429cbccc.png
- * videos
- *   d1cddc5da2224053f2af51f4e69a76de4e61fc41.mov
+ *   088c60580f06efa95c37fd8e754074729ee74a06.webp
+ *   93f9a81cb594280f4b3898d90dfad8c8ea969b01.webp
+ *   22d37abd0841ba2a8d0bd635954baf7cbfaa269b.webp
+ *   a4769e43cc5901ef28c0d46c46a44ea6429cbccc.webp
  * runs
  *   20190626002322_b9854e.js
  *   20190626002345_b1e882.js
@@ -69,10 +66,8 @@ public class HtmlReportWriter @JvmOverloads constructor(
 ) : SnapshotHandler {
   private val runsDirectory: File = File(rootDirectory, "runs")
   private val imagesDirectory: File = File(rootDirectory, "images")
-  private val videosDirectory: File = File(rootDirectory, "videos")
 
   private val goldenImagesDirectory = File(snapshotRootDirectory, "images")
-  private val goldenVideosDirectory = File(snapshotRootDirectory, "videos")
 
   private val shots = mutableListOf<Snapshot>()
 
@@ -84,34 +79,31 @@ public class HtmlReportWriter @JvmOverloads constructor(
   init {
     runsDirectory.mkdirs()
     imagesDirectory.mkdirs()
-    videosDirectory.mkdirs()
     writeStaticFiles()
     writeRunJs()
     writeIndexJs()
   }
 
-  override fun newFrameHandler(snapshot: Snapshot, frameCount: Int, fps: Int): FrameHandler {
+  override fun newFrameHandler(snapshot: Snapshot): FrameHandler {
     return object : FrameHandler {
-      val snapshotDir = if (fps == -1) imagesDirectory else videosDirectory
-      val goldenDir = if (fps == -1) goldenImagesDirectory else goldenVideosDirectory
-      val hashes = mutableListOf<String>()
-      val snapshotTmpFile = File(snapshotDir, snapshot.toFileName(extension = "temp.png"))
-      val writer = ApngWriter(snapshotTmpFile.path.toPath(), fps)
+      var hash: String? = null
+      val snapshotTmpFile =
+        File(imagesDirectory, snapshot.toFileName(extension = "temp.${WebpCodec.EXTENSION}"))
 
       override fun handle(image: BufferedImage) {
-        writer.writeImage(image)
-        hashes += hash(image)
+        WebpCodec.encodeTo(snapshotTmpFile, image)
+        hash = hash(image)
       }
 
       override fun close() {
-        if (hashes.isEmpty()) return
-        writer.close()
-        val snapshotFile = File(snapshotDir, "${hash(hashes)}.png")
+        val hash = hash ?: return
+        val snapshotFile = File(imagesDirectory, "$hash.${WebpCodec.EXTENSION}")
         Files.move(snapshotTmpFile, snapshotFile)
         snapshotTmpFile.delete()
 
         if (isRecording) {
-          val goldenFile = File(goldenDir, snapshot.toFileName("_", "png"))
+          val goldenFile =
+            File(goldenImagesDirectory, snapshot.toFileName("_", WebpCodec.EXTENSION))
           if (!overwriteOnMaxPercentDifference || !goldenFile.exists()) {
             snapshotFile.copyTo(target = goldenFile, overwrite = true)
           } else {
@@ -141,18 +133,6 @@ public class HtmlReportWriter @JvmOverloads constructor(
         for (x in 0 until image.width) {
           sink.writeInt(image.getRGB(x, y))
         }
-      }
-    }
-    return hashingSink.hash.hex()
-  }
-
-  /** Returns a SHA-1 hash of [lines]. */
-  private fun hash(lines: List<String>): String {
-    val hashingSink = HashingSink.sha1(blackholeSink())
-    hashingSink.buffer().use { sink ->
-      for (hash in lines) {
-        sink.writeUtf8(hash)
-        sink.writeUtf8("\n")
       }
     }
     return hashingSink.hash.hex()
@@ -199,14 +179,14 @@ public class HtmlReportWriter @JvmOverloads constructor(
    *     "testName": "app.cash.CelebrityTest#testSettings",
    *     "timestamp": "2019-03-20T10:27:43Z",
    *     "tags": ["redesign"],
-   *     "file": "loading.png"
+   *     "file": "loading.webp"
    *   },
    *   {
    *     "name": "error",
    *     "testName": "app.cash.CelebrityTest#testSettings",
    *     "timestamp": "2019-03-20T10:27:43Z",
    *     "tags": ["redesign"],
-   *     "file": "error.png"
+   *     "file": "error.webp"
    *   }
    * ];
    * ```

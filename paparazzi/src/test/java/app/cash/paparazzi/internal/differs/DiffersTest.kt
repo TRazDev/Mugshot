@@ -10,8 +10,8 @@ class DiffersTest {
 
   @Test
   fun `test all differs with widgets`() {
-    val linuxWidget = ImageIO.read(classLoader.getResourceAsStream("differs/linux_widget.png"))
-    val macosxWidget = ImageIO.read(classLoader.getResourceAsStream("differs/macosx_widget.png"))
+    val linuxWidget = ImageIO.read(classLoader.getResourceAsStream("differs/linux_widget.webp"))
+    val macosxWidget = ImageIO.read(classLoader.getResourceAsStream("differs/macosx_widget.webp"))
 
     val pixelPerfectResult1 = PixelPerfect.compare(linuxWidget, macosxWidget)
     assertThat(pixelPerfectResult1).isInstanceOf(DiffResult.Different::class.java)
@@ -49,8 +49,8 @@ class DiffersTest {
 
   @Test
   fun `test all differs with full screens`() {
-    val linuxFullScreen = ImageIO.read(classLoader.getResourceAsStream("differs/linux_full_screen.png"))
-    val macosxFullScreen = ImageIO.read(classLoader.getResourceAsStream("differs/macosx_full_screen.png"))
+    val linuxFullScreen = ImageIO.read(classLoader.getResourceAsStream("differs/linux_full_screen.webp"))
+    val macosxFullScreen = ImageIO.read(classLoader.getResourceAsStream("differs/macosx_full_screen.webp"))
 
     val pixelPerfectResult2 = PixelPerfect.compare(linuxFullScreen, macosxFullScreen)
     assertThat(pixelPerfectResult2).isInstanceOf(DiffResult.Different::class.java)

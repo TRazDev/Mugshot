@@ -41,7 +41,7 @@ internal class ImagePanelRenderer : ReportRenderer<DiffImage, SimpleHtmlWriter>(
       .startElement("td")
       .attribute("style", "width: 100%; padding: 1em")
       .startElement("img")
-      .attribute("src", "data:image/png;base64, ${image.base64EncodedImage}")
+      .attribute("src", "data:${image.mimeType};base64, ${image.base64EncodedImage}")
       .attribute("style", "max-width: 100%; height: auto;")
       .attribute("alt", image.text)
       .endElement() // img

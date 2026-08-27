@@ -135,8 +135,9 @@ public class PaparazziPlugin @Inject constructor(
           it.group = VERIFICATION_GROUP
           it.description = "Delete all golden images for variant '$variantSlug'"
           val files = project.fileTree(snapshotOutputDir) { tree ->
+            tree.include("**/*.webp")
+            // Snapshots recorded before the switch to WebP.
             tree.include("**/*.png")
-            tree.include("**/*.mov")
           }
           it.delete(files)
         }
@@ -335,10 +336,11 @@ public class PaparazziPlugin @Inject constructor(
             val nameSegments = diff.name.split("_", limit = 3)
             val testClassPackage = nameSegments[0].replace("delta-", "")
             val testClass = "$testClassPackage.${nameSegments[1]}"
-            val testMethodWithLabel = nameSegments[2].removeSuffix(".png")
+            val testMethodWithLabel = nameSegments[2].substringBeforeLast('.')
 
             Pair(testClass, testMethodWithLabel) to DiffImage(
               path = diff.path,
+              mimeType = if (diff.extension == "png") "image/png" else "image/webp",
               base64EncodedImage =
               @OptIn(ExperimentalEncodingApi::class)
               Base64.encode(diff.readBytes())

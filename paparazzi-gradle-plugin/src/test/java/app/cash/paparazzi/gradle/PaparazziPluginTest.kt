@@ -410,10 +410,10 @@ class PaparazziPluginTest {
 
     val snapshotsDir = File(fixtureRoot, "src/test/snapshots").registerForDeletionOnExit()
 
-    val snapshot = File(snapshotsDir, "images/app.cash.paparazzi.plugin.test_RecordTest_record.png")
+    val snapshot = File(snapshotsDir, "images/app.cash.paparazzi.plugin.test_RecordTest_record.webp")
     assertThat(snapshot.exists()).isTrue()
 
-    val snapshotWithLabel = File(snapshotsDir, "images/app.cash.paparazzi.plugin.test_RecordTest_record_label.png")
+    val snapshotWithLabel = File(snapshotsDir, "images/app.cash.paparazzi.plugin.test_RecordTest_record_label.webp")
     assertThat(snapshotWithLabel.exists()).isTrue()
   }
 
@@ -443,10 +443,10 @@ class PaparazziPluginTest {
 
     val snapshotsDir = File(moduleRoot, "src/test/snapshots").registerForDeletionOnExit()
 
-    val snapshot = File(snapshotsDir, "images/app.cash.paparazzi.plugin.test_RecordTest_record.png")
+    val snapshot = File(snapshotsDir, "images/app.cash.paparazzi.plugin.test_RecordTest_record.webp")
     assertThat(snapshot.exists()).isTrue()
 
-    val snapshotWithLabel = File(snapshotsDir, "images/app.cash.paparazzi.plugin.test_RecordTest_record_label.png")
+    val snapshotWithLabel = File(snapshotsDir, "images/app.cash.paparazzi.plugin.test_RecordTest_record_label.webp")
     assertThat(snapshotWithLabel.exists()).isTrue()
   }
 
@@ -463,10 +463,10 @@ class PaparazziPluginTest {
 
     val snapshotsDir = File(moduleRoot, "src/test/snapshots").registerForDeletionOnExit()
 
-    val firstSnapshot = File(snapshotsDir, "images/app.cash.paparazzi.plugin.test_RecordTest_recordFirst.png")
+    val firstSnapshot = File(snapshotsDir, "images/app.cash.paparazzi.plugin.test_RecordTest_recordFirst.webp")
     assertThat(firstSnapshot.exists()).isFalse()
 
-    val secondSnapshot = File(snapshotsDir, "images/app.cash.paparazzi.plugin.test_RecordTest_recordSecond_label.png")
+    val secondSnapshot = File(snapshotsDir, "images/app.cash.paparazzi.plugin.test_RecordTest_recordSecond_label.webp")
     assertThat(secondSnapshot.exists()).isTrue()
   }
 
@@ -475,7 +475,7 @@ class PaparazziPluginTest {
     val fixtureRoot = File("src/test/projects/rerun-resource-change")
 
     val snapshotsDir = File(fixtureRoot, "src/test/snapshots").registerForDeletionOnExit()
-    val snapshot = File(snapshotsDir, "images/app.cash.paparazzi.plugin.test_RecordTest_record.png")
+    val snapshot = File(snapshotsDir, "images/app.cash.paparazzi.plugin.test_RecordTest_record.webp")
 
     val valuesDir = File(fixtureRoot, "src/main/res/values").registerForDeletionOnExit()
     val destResourceFile = File(valuesDir, "colors.xml")
@@ -568,7 +568,7 @@ class PaparazziPluginTest {
     val fixtureRoot = File("src/test/projects/rerun-asset-change")
 
     val snapshotsDir = File(fixtureRoot, "src/test/snapshots").registerForDeletionOnExit()
-    val snapshot = File(snapshotsDir, "images/app.cash.paparazzi.plugin.test_RecordTest_record.png")
+    val snapshot = File(snapshotsDir, "images/app.cash.paparazzi.plugin.test_RecordTest_record.webp")
 
     val assetsDir = File(fixtureRoot, "src/main/assets").registerForDeletionOnExit()
     val destAssetFile = File(assetsDir, "secret.txt")
@@ -652,7 +652,7 @@ class PaparazziPluginTest {
     val fixtureRoot = File("src/test/projects/rerun-snapshots")
 
     val snapshotsDir = File(fixtureRoot, "src/test/snapshots").registerForDeletionOnExit()
-    val snapshot = File(snapshotsDir, "images/app.cash.paparazzi.plugin.test_RecordTest_record.png")
+    val snapshot = File(snapshotsDir, "images/app.cash.paparazzi.plugin.test_RecordTest_record.webp")
     assertThat(snapshot.exists()).isFalse()
 
     // Take 1
@@ -787,10 +787,10 @@ class PaparazziPluginTest {
     assertThat(result.task(":testDebugUnitTest")).isNotNull()
 
     val failureDir = File(fixtureRoot, "build/paparazzi/failures/debug").registerForDeletionOnExit()
-    val delta = File(failureDir, "delta-app.cash.paparazzi.plugin.test_VerifyTest_verify.png")
+    val delta = File(failureDir, "delta-app.cash.paparazzi.plugin.test_VerifyTest_verify.webp")
     assertThat(delta.exists()).isTrue()
 
-    val goldenImage = File(fixtureRoot, "src/test/resources/expected_delta.png")
+    val goldenImage = File(fixtureRoot, "src/test/resources/expected_delta.webp")
     assertThat(delta).isSimilarTo(goldenImage).withDefaultThreshold()
   }
 
@@ -805,10 +805,10 @@ class PaparazziPluginTest {
     assertThat(result.task(":testDebugUnitTest")).isNotNull()
 
     val failureDir = File(fixtureRoot, "build/paparazzi/failures/debug").registerForDeletionOnExit()
-    val delta = File(failureDir, "delta-app.cash.paparazzi.plugin.test_VerifyTest_verify.png")
+    val delta = File(failureDir, "delta-app.cash.paparazzi.plugin.test_VerifyTest_verify.webp")
     assertThat(delta.exists()).isTrue()
 
-    val goldenImage = File(fixtureRoot, "src/test/resources/expected_delta.png")
+    val goldenImage = File(fixtureRoot, "src/test/resources/expected_delta.webp")
     assertThat(delta).isSimilarTo(goldenImage).withDefaultThreshold()
   }
 
@@ -823,10 +823,10 @@ class PaparazziPluginTest {
     assertThat(result.task(":testDebugUnitTest")).isNotNull()
 
     val failureDir = File(fixtureRoot, "build/paparazzi/failures/debug").registerForDeletionOnExit()
-    val delta = File(failureDir, "delta-app.cash.paparazzi.plugin.test_VerifyTest_verify.png")
+    val delta = File(failureDir, "delta-app.cash.paparazzi.plugin.test_VerifyTest_verify.webp")
     assertThat(delta.exists()).isTrue()
 
-    val goldenImage = File(fixtureRoot, "src/test/resources/expected_delta.png")
+    val goldenImage = File(fixtureRoot, "src/test/resources/expected_delta.webp")
     assertThat(delta).isSimilarTo(goldenImage).withDefaultThreshold()
   }
 
@@ -834,7 +834,7 @@ class PaparazziPluginTest {
   fun verifyMissingGolden() {
     val fixtureRoot = File("src/test/projects/verify-missing-golden")
 
-    val fileName = "app.cash.paparazzi.plugin.test_VerifyTest_verify.png"
+    val fileName = "app.cash.paparazzi.plugin.test_VerifyTest_verify.webp"
     val snapshot = File(fixtureRoot, "src/test/snapshots/images/$fileName")
     assertThat(snapshot.exists()).isFalse()
 
@@ -852,7 +852,7 @@ class PaparazziPluginTest {
     val delta = File(failureDir, "delta-$fileName")
     assertThat(delta.exists()).isTrue()
 
-    val expectedDelta = File(fixtureRoot, "src/test/resources/expected_delta.png")
+    val expectedDelta = File(fixtureRoot, "src/test/resources/expected_delta.webp")
     assertThat(delta).isSimilarTo(expectedDelta).withDefaultThreshold()
   }
 
@@ -879,10 +879,10 @@ class PaparazziPluginTest {
     assertThat(result.task(":module:testDebugUnitTest")).isNotNull()
 
     val failureDir = File(moduleRoot, "build/paparazzi/failures/debug").registerForDeletionOnExit()
-    val delta = File(failureDir, "delta-app.cash.paparazzi.plugin.test_VerifyTest_verify.png")
+    val delta = File(failureDir, "delta-app.cash.paparazzi.plugin.test_VerifyTest_verify.webp")
     assertThat(delta.exists()).isTrue()
 
-    val goldenImage = File(moduleRoot, "src/test/resources/expected_delta.png")
+    val goldenImage = File(moduleRoot, "src/test/resources/expected_delta.webp")
     assertThat(delta).isSimilarTo(goldenImage).withDefaultThreshold()
   }
 
@@ -900,8 +900,8 @@ class PaparazziPluginTest {
     val fixtureRoot = File("src/test/projects/delete-snapshots")
     val snapshotsDir = File(fixtureRoot, "src/test/snapshots").registerForDeletionOnExit()
 
-    val snapshotName1 = "app.cash.paparazzi.plugin.test_DeleteTest_delete.png"
-    val snapshotName2 = "app.cash.paparazzi.plugin.test_DeleteTest_delete_label.png"
+    val snapshotName1 = "app.cash.paparazzi.plugin.test_DeleteTest_delete.webp"
+    val snapshotName2 = "app.cash.paparazzi.plugin.test_DeleteTest_delete_label.webp"
     val firstGoldenFile = File(fixtureRoot, "src/test/resources/$snapshotName1")
     val secondGoldenFile = File(fixtureRoot, "src/test/resources/$snapshotName2")
 
@@ -927,8 +927,8 @@ class PaparazziPluginTest {
     val fixtureRoot = File("src/test/projects/clean-record")
     val snapshotsDir = File(fixtureRoot, "src/test/snapshots").registerForDeletionOnExit()
 
-    val snapshotName1 = "app.cash.paparazzi.plugin.test_CleanRecordTest_clean.png"
-    val snapshotName2 = "app.cash.paparazzi.plugin.test_CleanRecordTest_clean_keep.png"
+    val snapshotName1 = "app.cash.paparazzi.plugin.test_CleanRecordTest_clean.webp"
+    val snapshotName2 = "app.cash.paparazzi.plugin.test_CleanRecordTest_clean_keep.webp"
     val firstGoldenFile = File(fixtureRoot, "src/test/resources/$snapshotName1")
     val secondGoldenFile = File(fixtureRoot, "src/test/resources/$snapshotName2")
 
@@ -1426,18 +1426,6 @@ class PaparazziPluginTest {
   }
 
   @Test
-  fun verifyGif() {
-    val fixtureRoot = File("src/test/projects/verify-gif")
-
-    val result = gradleRunner
-      .withArguments("verifyPaparazziDebug", "--stacktrace")
-      .runFixture(fixtureRoot) { build() }
-
-    assertThat(result.task(":preparePaparazziDebugResources")).isNotNull()
-    assertThat(result.task(":testDebugUnitTest")).isNotNull()
-  }
-
-  @Test
   fun verifyVectorDrawables() {
     val fixtureRoot = File("src/test/projects/verify-svgs")
 
@@ -1610,7 +1598,7 @@ class PaparazziPluginTest {
     val simpleTestHtmlFile = File(testReportDir, "app.cash.paparazzi.plugin.test.SimpleTest.html")
     var htmlText = simpleTestHtmlFile.readText()
     assertThat(htmlText).contains("<img")
-    assertThat(htmlText).contains("delta-app.cash.paparazzi.plugin.test_SimpleTest_compose.png")
+    assertThat(htmlText).contains("delta-app.cash.paparazzi.plugin.test_SimpleTest_compose.webp")
     assertThat(htmlText).contains("Failed tests")
     assertThat(htmlText).contains("Tests")
     assertThat(htmlText).contains("Standard output")
@@ -1620,7 +1608,7 @@ class PaparazziPluginTest {
       File(testReportDir, "app.cash.paparazzi.plugin.test.TestParameterInjectorTest.html")
     htmlText = testParamInjectorTestHtmlFile.readText()
     assertThat(htmlText).contains("<img")
-    assertThat(htmlText).contains("delta-app.cash.paparazzi.plugin.test_TestParameterInjectorTest_compose[darkMode=false,fontScale=1.0].png")
+    assertThat(htmlText).contains("delta-app.cash.paparazzi.plugin.test_TestParameterInjectorTest_compose[darkMode=false,fontScale=1.0].webp")
     assertThat(htmlText).contains("Failed tests")
     assertThat(htmlText).contains("Tests")
     assertThat(htmlText).contains("Standard output")
@@ -1678,17 +1666,6 @@ class PaparazziPluginTest {
     gradleRunner
       .withArguments("testDebug")
       .runFixture(fixtureRoot) { build() }
-  }
-
-  @Test
-  fun verifyCoroutineDelay() {
-    val fixtureRoot = File("src/test/projects/coroutine-delay-main")
-
-    val result = gradleRunner
-      .withArguments("testDebug", "--stacktrace")
-      .runFixture(fixtureRoot) { build() }
-
-    assertThat(result.task(":testDebugUnitTest")).isNotNull()
   }
 
   @Test
@@ -1766,10 +1743,10 @@ class PaparazziPluginTest {
     val fixtureRoot = File("src/test/projects/overwrite-on-max-percent-difference")
 
     val dontRecordFile =
-      File(fixtureRoot, "src/test/snapshots/images/app.cash.paparazzi.plugin.test_RecordSnapshotTest_dontRecord.png")
+      File(fixtureRoot, "src/test/snapshots/images/app.cash.paparazzi.plugin.test_RecordSnapshotTest_dontRecord.webp")
     val dontRecordLastModified = dontRecordFile.lastModified()
     val recordFile =
-      File(fixtureRoot, "src/test/snapshots/images/app.cash.paparazzi.plugin.test_RecordSnapshotTest_record.png")
+      File(fixtureRoot, "src/test/snapshots/images/app.cash.paparazzi.plugin.test_RecordSnapshotTest_record.webp")
     val recordLastModified = recordFile.lastModified()
 
     gradleRunner
