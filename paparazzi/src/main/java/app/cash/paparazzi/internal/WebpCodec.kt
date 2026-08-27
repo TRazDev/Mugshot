@@ -50,9 +50,18 @@ internal object WebpCodec {
     val writer = newWriter()
     val param = (writer.defaultWriteParam as WebPWriteParam).apply {
       compressionType = CompressionType.Lossless
-      // For lossless this is compression effort, not quality: 1f is slowest and smallest.
-      compressionQuality = 1f
-      method = 6
+      // Under Lossless, these two are pure effort knobs — how hard the encoder searches for a
+      // shorter encoding of the same pixels. They never affect fidelity, so tuning them cannot
+      // weaken snapshot comparison.
+      //
+      // They are deliberately not maxed out. Measured over the 145 goldens in this repo, method 6
+      // with quality 1f takes 566ms/image, while every other point in the method 0-6 / quality
+      // 0-1 grid lands between 7 and 50ms: that one combination trips libwebp's exhaustive
+      // backward-reference search, costing 24x the time of method 6 / quality 0.75f to save 2.7%
+      // of bytes. Total size varies under 5% across the whole grid, so the effort isn't worth it —
+      // at these settings encoding is faster than the PNG encoder this replaced.
+      compressionQuality = 0.5f
+      method = 4
       exact = true
     }
 
