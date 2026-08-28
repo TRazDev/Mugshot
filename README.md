@@ -212,11 +212,23 @@ repositories {
 }
 ```
 
+Credits
+-------
+
+Mugshot is a fork of [Paparazzi][upstream], created and maintained by Square, Inc.
+Essentially all of the hard engineering here — the layoutlib integration, the
+resource loading, the rendering pipeline — is their work. This fork exists to take
+the project in a direction that would have been too breaking to land upstream, and
+is not affiliated with, endorsed by, or sponsored by Square, Inc. or Cash App.
+
+See [NOTICE](NOTICE) for the full attribution and a summary of what has changed.
+
 License
 -------
 
 ```
 Copyright 2019 Square, Inc.
+Copyright 2026 Fractal Motion
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -234,5 +246,6 @@ limitations under the License.
  [mugshot]: https://trazdev.github.io/Mugshot/
  [sample]: https://github.com/TRazDev/Mugshot/tree/main/sample
  [lfs]: https://git-lfs.github.com/
+ [upstream]: https://github.com/cashapp/paparazzi
  [changelog]: https://trazdev.github.io/Mugshot/changelog/
  [snap]: https://central.sonatype.com/service/rest/repository/browse/maven-snapshots/uk/co/fractalmotion/mugshot/

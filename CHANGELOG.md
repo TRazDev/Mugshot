@@ -1,18 +1,49 @@
 # Change Log
 
+Mugshot is a fork of [Paparazzi](https://github.com/cashapp/paparazzi). Its own
+release history starts here; Paparazzi's history is preserved verbatim further
+down, under "Upstream Paparazzi history".
+
 ## [Unreleased]
 
 ### Changed
+* **Breaking:** the project is renamed from Paparazzi to Mugshot. There is no
+  compatibility layer — every name below changes at once:
+  * Maven group `app.cash.paparazzi` -> `uk.co.fractalmotion.mugshot`, and the
+    artifacts `paparazzi`, `paparazzi-gradle-plugin`, `paparazzi-annotations`,
+    `paparazzi-preview-{runtime,processor,lints}` gain the `mugshot` prefix.
+  * Gradle plugin id `app.cash.paparazzi` -> `uk.co.fractalmotion.mugshot`.
+  * Kotlin package `app.cash.paparazzi.**` -> `uk.co.fractalmotion.mugshot.**`.
+  * Types `Paparazzi` -> `Mugshot`, `PaparazziSdk` -> `MugshotSdk`, and the
+    `@Paparazzi` annotation -> `@Mugshot`.
+  * Tasks `recordPaparazzi*`, `verifyPaparazzi*`, `cleanRecordPaparazzi*`,
+    `deletePaparazziSnapshots` -> the same names with `Mugshot`.
+  * System properties `paparazzi.*` -> `mugshot.*`, and Gradle properties
+    `app.cash.paparazzi.*` -> `uk.co.fractalmotion.mugshot.*`.
+  * Output directories `build/reports/paparazzi` -> `build/reports/mugshot` and
+    `build/paparazzi/failures` -> `build/mugshot/failures`.
+
+  Golden snapshot filenames embed the test's package name, so renaming your own
+  test packages renames your goldens. Rename the files rather than re-recording
+  if you want to prove the rebrand changed no pixels.
 * **Breaking:** snapshots are now stored as lossless WebP (`.webp`) instead of PNG. Re-record your
-  goldens with `./gradlew recordPaparazzi<Variant>`; existing `.png` goldens are not read.
+  goldens with `./gradlew recordMugshot<Variant>`; existing `.png` goldens are not read.
 
 ### Removed
-* **Breaking:** removed animated snapshot support. `Paparazzi#gif` and `PaparazziSdk#gif` are gone,
-  along with the `snapshots/videos` directory. Paparazzi now records a single frame per snapshot.
-  Use `Paparazzi#snapshot(view, offsetMillis)` to capture a specific point in an animation, or
+* **Breaking:** removed accessibility snapshot rendering and validation.
+* **Breaking:** removed animated snapshot support. `Mugshot#gif` and `MugshotSdk#gif` are gone,
+  along with the `snapshots/videos` directory. Mugshot now records a single frame per snapshot.
+  Use `Mugshot#snapshot(view, offsetMillis)` to capture a specific point in an animation, or
   `InstantAnimationsRule` to snapshot an animation's terminal state.
 * **Breaking:** `SnapshotHandler#newFrameHandler` no longer takes `frameCount` and `fps`. Custom
   `SnapshotHandler` implementations must drop those parameters.
+
+---
+
+# Upstream Paparazzi history
+
+Everything below is Paparazzi's change log as of the fork point, Copyright 2019
+Square, Inc. Version links point at the upstream repository.
 
 ## [2.0.0-alpha05] - 2026-05-20
 
@@ -492,7 +523,7 @@ As of this release, consumers must build on Java 11 environments.
 
 
 
-[Unreleased]: https://github.com/cashapp/paparazzi/compare/2.0.0-alpha05...HEAD
+[Unreleased]: https://github.com/TRazDev/Mugshot/commits/main
 [2.0.0-alpha05]: https://github.com/cashapp/paparazzi/releases/tag/2.0.0-alpha05
 [2.0.0-alpha04]: https://github.com/cashapp/paparazzi/releases/tag/2.0.0-alpha04
 [2.0.0-alpha03]: https://github.com/cashapp/paparazzi/releases/tag/2.0.0-alpha03
