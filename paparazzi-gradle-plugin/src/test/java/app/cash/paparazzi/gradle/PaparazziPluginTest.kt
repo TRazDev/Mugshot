@@ -1575,14 +1575,6 @@ class PaparazziPluginTest {
   }
 
   @Test
-  fun accessibilityRendering() {
-    val fixtureRoot = File("src/test/projects/accessibility-rendering")
-    gradleRunner
-      .withArguments("verifyPaparazziDebug", "--stacktrace")
-      .runFixture(fixtureRoot) { build() }
-  }
-
-  @Test
   fun snapshotReport() {
     val fixtureRoot = File("src/test/projects/report-snapshots")
     val testReportDir = File(fixtureRoot, "build/reports/tests/testDebugUnitTest/classes")
@@ -1666,24 +1658,6 @@ class PaparazziPluginTest {
     gradleRunner
       .withArguments("testDebug")
       .runFixture(fixtureRoot) { build() }
-  }
-
-  @Test
-  fun accessibilityErrorsLogged() {
-    val fixtureRoot = File("src/test/projects/validate-accessibility")
-    // this is only a warning message, so subsequent runs would otherwise be UP-TO-DATE
-    fixtureRoot.resolve("build").registerForDeletionOnExit()
-
-    val result = gradleRunner
-      .withArguments("testDebug", "--stacktrace")
-      .runFixture(fixtureRoot) { build() }
-
-    assertThat(result.output).contains(
-      "\u001B[33mAccessibility issue of type LOW_CONTRAST on no-id:\u001B[0m " +
-        "The item's text contrast ratio is 1.00. This ratio is based on a text color of #FFFFFF " +
-        "and background color of #FFFFFF. Consider increasing this item's text contrast ratio to " +
-        "4.50 or greater."
-    )
   }
 
   @Test

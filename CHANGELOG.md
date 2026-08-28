@@ -43,7 +43,6 @@ As of this release, consumers must build on Java 21+ environments.
 * Introduce additional differ types (#2009)
 * Introduce defaultLocale system property (#2203)
 * Update DeviceConfigs (#2176)
-* Support custom view accessibility hierarchy ordering in accessibility snapshots (#2150)
 * Add support for overwriting snapshots when max percent diff threshold is reached (#2067)
 * LayoutLib v16.1.1
 * Compose 1.10.1
@@ -52,12 +51,7 @@ As of this release, consumers must build on Java 21+ environments.
 * [Gradle Plugin] Android Gradle Plugin 8.13.2
 
 ### Fixed
-* Handle SemanticsNode traversalIndices to support Compose accessibility reordering (#2019)
 * Add fix for boundsInWindow incorrectly calculating position on screen (#1983)
-* Fix compose accessibility ordering (#2037)
-* Fix in-list reporting for nested nodes for accessibility (#2053)
-* Fix reporting in list when item doesn't have any accessibility identifiers (#2051)
-* Fix progress bar accessibility ordering (#2208)
 * Fix font loading on Windows (#2074)
 * Fail test if exception is thrown during effect (#2214)
 * Fix differ comparison between black pixels with 100% alpha and black pixels with 0% alpha (#2078)
@@ -65,7 +59,6 @@ As of this release, consumers must build on Java 21+ environments.
 * Make plugin compatible with Gradle Isolated Projects (#2154)
 
 ### Changed
-* Deprecate validateAccessibility parameter (#1997)
 * Migrate to Dokka2 (#1783)
 
 Kudos to @geoff-powell, @colinmarsch, @SimonMarquis, @nishatoma, @joshskeen, @kboyarshinov and others for contributions this release!
@@ -87,7 +80,6 @@ Ignore; use 2.0.0-alpha04 instead.
 ### Fixed
 * Generate build failures even if golden images are not present
 * Fully advance choreographer correctly for Compose
-* [Accessibility] Denote elements in lists in the legend
 
 ### Changed
 - In-development snapshots are now published to the Central Portal Snapshots repository at https://central.sonatype.com/repository/maven-snapshots/.
@@ -97,12 +89,6 @@ Kudos to @geoff-powell, @colinmarsch, @SimonMarquis and others for contributions
 ## [2.0.0-alpha01] - 2025-04-15
 
 ### New
-* Support for editable text in accessibility snapshots
-* Support for error description in accessibility snapshots
-* Support progress compose semantics in accessibility snapshots
-* Support custom actions and link annotations in Compose accessibility snapshots
-* Support additional accessibility properties on views
-* Support live regions in accessibility snapshots
 * Add support for compose views that are hidden or invisible
 * Add gradle property to control default max percent difference
 * LayoutLib v15.1.4
@@ -111,9 +97,7 @@ Kudos to @geoff-powell, @colinmarsch, @SimonMarquis and others for contributions
 
 ### Fixed
 * Fix default layout params for compose snapshots
-* Fix accessibility overlay drawing in root view instead of window manager
 * Fix issue where unmergedNode has 0 elements
-* Don't scale accessibility legend text when font scale is non-default
 * Use compileOnly for kotlin/agp plugins
 * Bypass font path prefix check in ResourcesCompat::loadFont
 
@@ -123,10 +107,6 @@ Kudos to @geoff-powell, @colinmarsch, @darshanparajuli, @DSteve595, @adamalyyan 
 
 ### New
 * Render pending recompositions for `@Composable`s that require a second layout pass
-* Support for overlays in accessibility snapshots
-* Support for Compose UI heading and selected states in accessibility snapshots
-* Support for toggleable state in accessibility snapshots
-* Support for displaying multiple accessibility descriptions, similar to Talkback
 * Include failure delta image in JUnit test reporting
 * Migrate Paparazzi to layoutlib Jellyfish 2023.3.1
 * Compose 1.7.5
@@ -140,12 +120,10 @@ Kudos to @geoff-powell, @colinmarsch, @darshanparajuli, @DSteve595, @adamalyyan 
 * Fix support for AndroidX ResourcesCompat.getFont()
 * Fix inconsistent cross-platform text renderings in failure delta image
 * Relax image comparisons with OffByTwo differ to work around cross-platform rendering issues
-* Fix when clearAndSetSemantics is used to render content descriptions in accessibility snapshots
 * Avoid invalid chars in Windows filenames
 * Fix file move failures on Windows
 * Avoid hash collisions when images have similar RGB content
 * Cleanup unnecessary "loadPublicResourceNames" warning from log output
-* Additional bug fixes with accessibility snapshot tests
 
 Kudos to @geoff-powell, @colinmarsch, @BrianGardnerAtl, @ribafish, @gabrielittner and others for contributions this release!
 
@@ -162,7 +140,6 @@ Kudos to @geoff-powell, @colinmarsch, @BrianGardnerAtl, @ribafish, @gabrielittne
 * [Gradle Plugin] Android Gradle Plugin 8.3.2
 
 ### Fixed
-* Fix long content description being cut off in accessibility snapshots
 * Include resource references from generated resource folders
 * Fix gradle caching for resources coming from aar dependencies
 * Support SHRINK render mode when using unsafeUpdateConfig
@@ -181,7 +158,6 @@ Kudos to @geoff-powell, @gamepro65, @kevinzheng-ap, @nak5ive, @TWiStErRob, @emug
 * [Gradle Plugin] Android Gradle Plugin 8.2.1
 
 ### Fixed
-* Update the DeviceConfig screenWidth internally for accessibility tests
 * Fix variant caching issues in new resource/asset loading mechanisms
 * Remove legacy resources/assets loading mechanism
 * Set HardwareConfig width and height based on orientation
@@ -287,7 +263,6 @@ app.cash.paparazzi.legacy.asset.loading=true
 * [Gradle Plugin] Gradle 8.2.1
 
 ### Fixed
-* Fix accessibility labels when mergeDescendants is true
 * Fixes compose alert dialogs not rendering when using RenderingMode.SHRINK
 
 Kudos to @kevinzheng-ap, @adamalyyan and others for contributions this release!
@@ -298,8 +273,6 @@ As of this release, consumers must build on Java 17+ environments.
 
 ### New
 * Migrate Paparazzi to layoutlib Flamingo 2022.2.1
-* Add accessibility support for Composables
-* Add layout accessibility check support
 * Compose 1.4.7
 * Kotlin 1.8.21
 * [Gradle Plugin] Gradle 8.1.1
@@ -307,7 +280,6 @@ As of this release, consumers must build on Java 17+ environments.
 
 ### Fixed
 * Configure android.os.Build values via reflection
-* Various bug fixes with AccessibilityRenderExtension
 * Make sure changes to system properties actually affect test tasks
 * Fix caching bug with preparePaparazziResources task
 * Use Dispatchers.Main for delay functionality
@@ -389,7 +361,6 @@ Kudos to @chris-horner, @swankjesse, @yschimke, @dniHze, @TWiStErRob, @gamepro65
 ### Fixed
 * Prepend paths with file:// for clickable error output in IDE
 * Update default SDK path on Linux
-* Fix accessibility test logic to avoid unnecessary coloring changes on updated view ids
 * Fixes crash when using InputMethodManager to show/hide keyboard
 * Temporarily work around Compose runtime memory leaks
 * [Gradle Plugin] Prefer namespace DSL declaration over manifest package declaration
@@ -402,7 +373,6 @@ Kudos to @luis-cortes, @nak5ive, @alexvanyo, @gamepro65 and others for contribut
 
 ### Fixed
 * Load the correct mac arm artifact on M1 machines
-* Generate fake View.id for consistent colors for accessibility entries when views are modified
 
 Kudos to @geoff-powell, @nicbell for their contributions this release!
 
@@ -419,8 +389,6 @@ Please ignore this release
 * Support for assets from transitive dependencies
 * Add fix for ClassNotFoundException when using nonTransitiveRClass
 * Update RELEASING notes to publish plugin marker artifact
-* Avoid NPE in AccessibilityRenderExtension when layout params are not supplied
-* Use View.id to generate consistent colors for accessibility entries when views are modified
 
 Kudos to @luis-cortes, @geoff-powell, @autonomousapps and @LuK1709 for their contributions this release!
 
@@ -446,7 +414,6 @@ Kudos to @luis-cortes, @geoff-powell, @autonomousapps and @LuK1709 for their con
 * Use correct default Android SDK path on Windows
 * Use platform-agnostic file paths in Gradle artifacts to support remote caching across platforms
 * Use platform-agnostic file paths in Javascript for web page support on Windows
-* Fix font scaling issue in AccessibilityRenderExtension by using bundled font
 
 Kudos to @luis-cortes, @geoff-powell and @TWiStErRob for their contributions this release!
 
@@ -455,7 +422,6 @@ Kudos to @luis-cortes, @geoff-powell and @TWiStErRob for their contributions thi
 
 ### New
 * Migrate Paparazzi to use native layoutlib for better rendering and API 30 support
-* Add new extension for rendering accessibility metadata
 * Add support for fontScale in DeviceConfig
 * Add device config for Pixel 5
 * Add tasks to Gradle task verification group

@@ -29,7 +29,6 @@ import android.view.Choreographer_Delegate
 import android.view.Display
 import android.view.LayoutInflater
 import android.view.View
-import android.view.View.NO_ID
 import android.view.ViewGroup
 import android.view.ViewGroup.LayoutParams
 import androidx.activity.setViewTreeOnBackPressedDispatcherOwner
@@ -44,7 +43,6 @@ import androidx.compose.ui.platform.createLifecycleAwareWindowRecomposer
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.setViewTreeLifecycleOwner
 import androidx.savedstate.setViewTreeSavedStateRegistryOwner
-import app.cash.paparazzi.accessibility.AccessibilityRenderExtension
 import app.cash.paparazzi.agent.InterceptorRegistrar
 import app.cash.paparazzi.internal.ImageUtils
 import app.cash.paparazzi.internal.PaparazziCallback
@@ -68,16 +66,10 @@ import com.android.layoutlib.bridge.Bridge.prepareThread
 import com.android.layoutlib.bridge.BridgeRenderSession
 import com.android.layoutlib.bridge.impl.RenderAction
 import com.android.layoutlib.bridge.impl.RenderSessionImpl
-import com.android.resources.ScreenOrientation
 import com.android.resources.ScreenRound
-import com.android.tools.idea.validator.LayoutValidator
-import com.android.tools.idea.validator.ValidatorData.Level
-import com.android.tools.idea.validator.ValidatorData.Policy
-import com.android.tools.idea.validator.ValidatorData.Type
 import net.bytebuddy.agent.ByteBuddyAgent
 import java.awt.geom.Ellipse2D
 import java.awt.image.BufferedImage
-import java.util.EnumSet
 import java.util.concurrent.TimeUnit
 import kotlinx.coroutines.android.asCoroutineDispatcher
 
@@ -94,39 +86,6 @@ public class PaparazziSdk @JvmOverloads constructor(
   private val useDeviceResolution: Boolean = false,
   private val onNewFrame: (BufferedImage) -> Unit
 ) {
-  private var validateAccessibility = false
-
-  @Deprecated(
-    "validateAccessibility is deprecated. " +
-      "Use the AccessibilityRenderExtension for accessibility testing instead."
-  )
-  public constructor(
-    environment: Environment = detectEnvironment(),
-    deviceConfig: DeviceConfig = DeviceConfig.NEXUS_5,
-    theme: String = "android:Theme.Material.NoActionBar.Fullscreen",
-    renderingMode: RenderingMode = RenderingMode.NORMAL,
-    appCompatEnabled: Boolean = true,
-    renderExtensions: Set<RenderExtension> = setOf(),
-    supportsRtl: Boolean = false,
-    showSystemUi: Boolean = false,
-    validateAccessibility: Boolean = false,
-    useDeviceResolution: Boolean = false,
-    onNewFrame: (BufferedImage) -> Unit
-  ) : this(
-    environment,
-    deviceConfig,
-    theme,
-    renderingMode,
-    appCompatEnabled,
-    renderExtensions,
-    supportsRtl,
-    showSystemUi,
-    useDeviceResolution,
-    onNewFrame
-  ) {
-    this.validateAccessibility = validateAccessibility
-  }
-
   private val logger = PaparazziLogger()
   private lateinit var renderSession: RenderSessionImpl
   private lateinit var bridgeRenderSession: RenderSession
@@ -163,7 +122,7 @@ public class PaparazziSdk @JvmOverloads constructor(
     sessionParamsBuilder = sessionParamsBuilder
       .copy(
         layoutPullParser = LayoutPullParser.createFromString(contentRoot(renderingMode)),
-        deviceConfig = deviceConfig.updateIfAccessibilityTest(),
+        deviceConfig = deviceConfig,
         renderingMode = renderingMode,
         supportsRtl = supportsRtl,
         decor = showSystemUi,
@@ -232,7 +191,7 @@ public class PaparazziSdk @JvmOverloads constructor(
 
     if (deviceConfig != null) {
       sessionParamsBuilder = sessionParamsBuilder.copy(
-        deviceConfig = deviceConfig.updateIfAccessibilityTest()
+        deviceConfig = deviceConfig
       )
     }
 
@@ -255,15 +214,7 @@ public class PaparazziSdk @JvmOverloads constructor(
   private fun takeSnapshot(view: View, timeNanos: Long) {
     val viewGroup = bridgeRenderSession.rootViews[0].viewObject as ViewGroup
     val modifiedView = renderExtensions.fold(view) { currentView, renderExtension ->
-      val currentSessionRenderingMode = sessionParamsBuilder.build().renderingMode
-      if (currentSessionRenderingMode == RenderingMode.SHRINK && renderExtension is AccessibilityRenderExtension) {
-        throw IllegalStateException(
-          "AccessibilityRenderExtension cannot be used with the SHRINK rendering mode. " +
-            "See https://github.com/cashapp/paparazzi/issues/1350 for more context."
-        )
-      } else {
-        renderExtension.renderView(currentView)
-      }
+      renderExtension.renderView(currentView)
     }
 
     System_Delegate.setNanosTime(0L)
@@ -351,12 +302,6 @@ public class PaparazziSdk @JvmOverloads constructor(
       }
 
       val image = bridgeRenderSession.image
-      if (validateAccessibility) {
-        require(renderExtensions.isEmpty()) {
-          "Running accessibility validation and render extensions simultaneously is not supported."
-        }
-        validateLayoutAccessibility(modifiedView, image)
-      }
       onNewFrame(scaleImage(frameImage(image)))
     } finally {
       if (hasLifecycleOwnerRuntime) {
@@ -453,33 +398,6 @@ public class PaparazziSdk @JvmOverloads constructor(
     val scale = ImageUtils.getThumbnailScale(image)
     // Only scale images down, so we don't waste storage space enlarging smaller layouts.
     return if (scale < 1f && !useDeviceResolution) ImageUtils.scale(image, scale, scale) else image
-  }
-
-  private fun validateLayoutAccessibility(view: View, image: BufferedImage? = null) {
-    LayoutValidator.updatePolicy(
-      Policy(
-        EnumSet.of(Type.ACCESSIBILITY, Type.RENDER, Type.INTERNAL_ERROR),
-        EnumSet.of(Level.ERROR, Level.WARNING)
-      )
-    )
-
-    val validationResults = LayoutValidator.validate(view, image, 1f, 1f)
-    validationResults.issues.forEach { issue ->
-      val issueViewId = validationResults.srcMap[issue.mSrcId]?.id ?: NO_ID
-      val issueViewName = if (issueViewId != NO_ID) {
-        view.resources.getResourceName(issueViewId)
-      } else {
-        "no-id"
-      }
-
-      logger.warning(
-        format = "\u001B[33mAccessibility issue of type {0} on {1}:\u001B[0m {2} \nSee: {3}",
-        issue.mCategory,
-        issueViewName,
-        issue.mMsg,
-        issue.mHelpfulUrl
-      )
-    }
   }
 
   private fun forcePlatformSdkVersion(compileSdkVersion: Int) {
@@ -588,19 +506,6 @@ public class PaparazziSdk @JvmOverloads constructor(
   // This is necessary, because SystemClock_Delegate#uptimeNanos() is package-private.
   // https://android.googlesource.com/platform/frameworks/layoutlib/+/refs/tags/studio-2023.2.1-rc1/bridge/src/android/os/SystemClock_Delegate.java#56
   private fun uptimeNanos() = System_Delegate.nanoTime() - System_Delegate.bootTime()
-
-  private fun DeviceConfig.updateIfAccessibilityTest(): DeviceConfig =
-    if (renderExtensions.any { it is AccessibilityRenderExtension }) {
-      val newWidth = screenWidth * 2
-      val newOrientation = if (newWidth > screenHeight) ScreenOrientation.LANDSCAPE else ScreenOrientation.PORTRAIT
-      copy(
-        screenWidth = screenWidth * 2,
-        softButtons = false,
-        orientation = newOrientation
-      )
-    } else {
-      this
-    }
 
   internal companion object {
     internal lateinit var renderer: Renderer
