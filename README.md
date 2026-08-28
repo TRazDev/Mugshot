@@ -1,6 +1,7 @@
-Paparazzi
+Mugshot
 ========
 
+![Mugshot](.github/images/logo.webp)
 An Android library to render your application screens without a physical device or emulator.
 
 ```kotlin
