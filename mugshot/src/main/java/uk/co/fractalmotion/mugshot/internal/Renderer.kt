@@ -16,6 +16,9 @@
 
 package uk.co.fractalmotion.mugshot.internal
 
+import com.android.layoutlib.bridge.Bridge
+import com.android.layoutlib.bridge.android.RenderParamsFlags
+import com.android.layoutlib.bridge.impl.DelegateManager
 import uk.co.fractalmotion.mugshot.DeviceConfig
 import uk.co.fractalmotion.mugshot.Environment
 import uk.co.fractalmotion.mugshot.Flags
@@ -25,9 +28,6 @@ import uk.co.fractalmotion.mugshot.internal.resources.AarSourceResourceRepositor
 import uk.co.fractalmotion.mugshot.internal.resources.AppResourceRepository
 import uk.co.fractalmotion.mugshot.internal.resources.FrameworkResourceRepository
 import uk.co.fractalmotion.mugshot.setStaticValue
-import com.android.layoutlib.bridge.Bridge
-import com.android.layoutlib.bridge.android.RenderParamsFlags
-import com.android.layoutlib.bridge.impl.DelegateManager
 import java.io.Closeable
 import java.io.File
 import java.nio.file.Paths

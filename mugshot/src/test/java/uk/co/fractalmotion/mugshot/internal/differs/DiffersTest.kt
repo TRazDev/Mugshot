@@ -1,8 +1,8 @@
 package uk.co.fractalmotion.mugshot.internal.differs
 
-import uk.co.fractalmotion.mugshot.Differ.DiffResult
 import com.google.common.truth.Truth.assertThat
 import org.junit.Test
+import uk.co.fractalmotion.mugshot.Differ.DiffResult
 import javax.imageio.ImageIO
 
 class DiffersTest {

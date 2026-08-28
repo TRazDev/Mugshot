@@ -18,13 +18,13 @@ package uk.co.fractalmotion.mugshot.plugin.test
 import androidx.compose.foundation.layout.Box
 import androidx.compose.material.Text
 import androidx.compose.ui.graphics.Color
-import uk.co.fractalmotion.mugshot.Mugshot
 import com.google.testing.junit.testparameterinjector.TestParameter
 import com.google.testing.junit.testparameterinjector.TestParameterInjector
 import com.google.testing.junit.testparameterinjector.TestParameterValuesProvider
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import uk.co.fractalmotion.mugshot.Mugshot
 
 @RunWith(TestParameterInjector::class)
 class InvalidCharsTest {

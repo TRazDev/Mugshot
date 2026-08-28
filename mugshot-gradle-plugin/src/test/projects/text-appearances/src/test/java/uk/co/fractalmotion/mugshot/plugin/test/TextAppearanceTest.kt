@@ -22,9 +22,9 @@ import android.view.ViewGroup.LayoutParams.MATCH_PARENT
 import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
 import android.widget.LinearLayout
 import android.widget.TextView
-import uk.co.fractalmotion.mugshot.Mugshot
 import org.junit.Rule
 import org.junit.Test
+import uk.co.fractalmotion.mugshot.Mugshot
 
 class TextAppearanceTest {
   @get:Rule

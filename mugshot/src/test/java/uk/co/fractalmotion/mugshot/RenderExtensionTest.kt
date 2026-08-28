@@ -9,9 +9,9 @@ import android.widget.Button
 import android.widget.FrameLayout
 import android.widget.LinearLayout
 import android.widget.TextView
-import uk.co.fractalmotion.mugshot.internal.differs.OffByTwo
 import org.junit.Rule
 import org.junit.Test
+import uk.co.fractalmotion.mugshot.internal.differs.OffByTwo
 
 class RenderExtensionTest {
   @get:Rule

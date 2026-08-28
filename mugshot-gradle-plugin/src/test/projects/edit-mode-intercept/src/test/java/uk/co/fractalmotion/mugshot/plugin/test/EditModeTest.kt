@@ -17,9 +17,9 @@ package uk.co.fractalmotion.mugshot.plugin.test
 
 import android.content.Context
 import android.widget.LinearLayout
-import uk.co.fractalmotion.mugshot.Mugshot
 import org.junit.Rule
 import org.junit.Test
+import uk.co.fractalmotion.mugshot.Mugshot
 
 class EditModeTest {
   @get:Rule

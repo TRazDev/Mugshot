@@ -1,10 +1,10 @@
 package runner
 
-import uk.co.fractalmotion.mugshot.Mugshot
-import uk.co.fractalmotion.mugshot.TestName
 import org.junit.jupiter.api.extension.AfterEachCallback
 import org.junit.jupiter.api.extension.BeforeEachCallback
 import org.junit.jupiter.api.extension.ExtensionContext
+import uk.co.fractalmotion.mugshot.Mugshot
+import uk.co.fractalmotion.mugshot.TestName
 
 class MugshotExtension(
   val api: Mugshot

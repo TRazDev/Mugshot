@@ -15,7 +15,6 @@
  */
 package uk.co.fractalmotion.mugshot.internal.resources.base
 
-import uk.co.fractalmotion.mugshot.internal.resources.ResourceSourceFile
 import com.android.ide.common.rendering.api.ResourceNamespace
 import com.android.ide.common.rendering.api.ResourceReference
 import com.android.ide.common.rendering.api.StyleItemResourceValue
@@ -27,6 +26,7 @@ import com.android.utils.Base128InputStream
 import com.android.utils.Base128InputStream.StreamFormatException
 import com.google.common.collect.ImmutableTable
 import com.google.common.collect.Table
+import uk.co.fractalmotion.mugshot.internal.resources.ResourceSourceFile
 import java.io.IOException
 import java.util.logging.Logger
 

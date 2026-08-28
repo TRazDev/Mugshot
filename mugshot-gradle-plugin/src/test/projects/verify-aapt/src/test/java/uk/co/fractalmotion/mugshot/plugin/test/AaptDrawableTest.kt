@@ -8,9 +8,9 @@ import android.widget.FrameLayout
 import android.widget.FrameLayout.LayoutParams
 import android.widget.ImageView
 import androidx.appcompat.widget.AppCompatImageView
-import uk.co.fractalmotion.mugshot.Mugshot
 import org.junit.Rule
 import org.junit.Test
+import uk.co.fractalmotion.mugshot.Mugshot
 
 class AaptDrawableTest {
   @get:Rule

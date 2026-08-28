@@ -15,8 +15,6 @@
  */
 package uk.co.fractalmotion.mugshot.internal.resources.base
 
-import uk.co.fractalmotion.mugshot.internal.resources.RepositoryConfiguration
-import uk.co.fractalmotion.mugshot.internal.resources.ResourceSourceFile
 import com.android.ide.common.rendering.api.ResourceNamespace
 import com.android.ide.common.util.PathString
 import com.android.resources.ResourceType
@@ -28,6 +26,8 @@ import com.android.resources.ResourceType.STYLEABLE
 import com.android.resources.ResourceVisibility
 import com.android.utils.Base128InputStream
 import com.android.utils.HashCodes
+import uk.co.fractalmotion.mugshot.internal.resources.RepositoryConfiguration
+import uk.co.fractalmotion.mugshot.internal.resources.ResourceSourceFile
 import java.io.IOException
 
 /**

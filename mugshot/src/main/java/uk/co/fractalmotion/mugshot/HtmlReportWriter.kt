@@ -15,10 +15,6 @@
  */
 package uk.co.fractalmotion.mugshot
 
-import uk.co.fractalmotion.mugshot.SnapshotHandler.FrameHandler
-import uk.co.fractalmotion.mugshot.internal.ImageUtils
-import uk.co.fractalmotion.mugshot.internal.MugshotJson
-import uk.co.fractalmotion.mugshot.internal.WebpCodec
 import com.google.common.base.CharMatcher
 import com.google.common.io.Files
 import okio.BufferedSink
@@ -27,6 +23,10 @@ import okio.blackholeSink
 import okio.buffer
 import okio.sink
 import okio.source
+import uk.co.fractalmotion.mugshot.SnapshotHandler.FrameHandler
+import uk.co.fractalmotion.mugshot.internal.ImageUtils
+import uk.co.fractalmotion.mugshot.internal.MugshotJson
+import uk.co.fractalmotion.mugshot.internal.WebpCodec
 import java.awt.image.BufferedImage
 import java.io.File
 import java.text.SimpleDateFormat

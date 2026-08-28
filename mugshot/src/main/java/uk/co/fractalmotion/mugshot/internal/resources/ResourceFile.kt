@@ -15,8 +15,8 @@
  */
 package uk.co.fractalmotion.mugshot.internal.resources
 
-import uk.co.fractalmotion.mugshot.internal.resources.base.BasicResourceItem
 import com.android.ide.common.resources.configuration.FolderConfiguration
+import uk.co.fractalmotion.mugshot.internal.resources.base.BasicResourceItem
 import java.io.File
 
 /**

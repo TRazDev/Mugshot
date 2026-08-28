@@ -15,10 +15,10 @@
  */
 package uk.co.fractalmotion.mugshot.internal.resources.base
 
-import uk.co.fractalmotion.mugshot.internal.resources.ResourceSourceFile
 import com.android.ide.common.rendering.api.AttributeFormat
 import com.android.ide.common.rendering.api.ResourceNamespace
 import com.android.resources.ResourceVisibility
+import uk.co.fractalmotion.mugshot.internal.resources.ResourceSourceFile
 
 /**
  * Ported from: [BasicForeignAttrResourceItem.java](https://cs.android.com/android-studio/platform/tools/base/+/47d204001bf0cb6273d8b135c7eece3a982cf0e0:resource-repository/main/java/com/android/resources/base/BasicForeignAttrResourceItem.java)

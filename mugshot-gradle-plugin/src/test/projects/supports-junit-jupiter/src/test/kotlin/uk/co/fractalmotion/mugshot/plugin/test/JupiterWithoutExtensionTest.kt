@@ -2,14 +2,14 @@ package uk.co.fractalmotion.mugshot.plugin.test
 
 import android.view.Gravity
 import android.widget.TextView
-import uk.co.fractalmotion.mugshot.Mugshot
-import uk.co.fractalmotion.mugshot.TestName
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.TestInfo
 import org.junit.jupiter.api.TestInstance
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.ValueSource
+import uk.co.fractalmotion.mugshot.Mugshot
+import uk.co.fractalmotion.mugshot.TestName
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class JupiterWithoutExtensionTest {

@@ -1,10 +1,10 @@
 package uk.co.fractalmotion.mugshot.plugin.test
 
 import androidx.compose.ui.platform.ComposeView
-import uk.co.fractalmotion.mugshot.Mugshot
 import org.junit.AfterClass
 import org.junit.Rule
 import org.junit.Test
+import uk.co.fractalmotion.mugshot.Mugshot
 import java.lang.ref.WeakReference
 
 class ComposeReferenceLeakTest {

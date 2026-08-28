@@ -1,12 +1,12 @@
 package uk.co.fractalmotion.mugshot.plugin.test
 
 import androidx.compose.runtime.Composable
-import uk.co.fractalmotion.mugshot.Mugshot
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.RuleChain
 import org.junit.rules.TestRule
 import org.junit.runners.model.Statement
+import uk.co.fractalmotion.mugshot.Mugshot
 
 class LoggerLeakTest {
   private val mugshot = Mugshot()

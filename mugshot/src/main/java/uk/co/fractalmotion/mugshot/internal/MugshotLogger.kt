@@ -15,9 +15,9 @@
  */
 package uk.co.fractalmotion.mugshot.internal
 
-import uk.co.fractalmotion.mugshot.Mugshot
 import com.android.ide.common.rendering.api.ILayoutLog
 import com.android.utils.ILogger
+import uk.co.fractalmotion.mugshot.Mugshot
 import java.io.PrintStream
 import java.io.PrintWriter
 import java.util.logging.Level

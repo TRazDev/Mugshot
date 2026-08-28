@@ -1,8 +1,6 @@
 package uk.co.fractalmotion.mugshot.internal.resources
 
 import android.annotation.SuppressLint
-import uk.co.fractalmotion.mugshot.internal.resources.base.BasicResourceItem
-import uk.co.fractalmotion.mugshot.internal.resources.base.BasicValueResourceItemBase
 import com.android.SdkConstants.DOT_9PNG
 import com.android.SdkConstants.FD_RES_RAW
 import com.android.ide.common.rendering.api.ResourceNamespace
@@ -13,6 +11,8 @@ import com.android.resources.ResourceType
 import com.android.utils.Base128InputStream
 import com.google.common.collect.Maps
 import com.google.common.collect.Sets
+import uk.co.fractalmotion.mugshot.internal.resources.base.BasicResourceItem
+import uk.co.fractalmotion.mugshot.internal.resources.base.BasicValueResourceItemBase
 import java.io.IOException
 import java.nio.file.Path
 import java.nio.file.attribute.BasicFileAttributes

@@ -13,11 +13,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import uk.co.fractalmotion.mugshot.DeviceConfig
-import uk.co.fractalmotion.mugshot.Mugshot
 import com.android.ide.common.rendering.api.SessionParams.RenderingMode
 import org.junit.Rule
 import org.junit.Test
+import uk.co.fractalmotion.mugshot.DeviceConfig
+import uk.co.fractalmotion.mugshot.Mugshot
 
 class ComposeDialogShrinkTest {
   @get:Rule

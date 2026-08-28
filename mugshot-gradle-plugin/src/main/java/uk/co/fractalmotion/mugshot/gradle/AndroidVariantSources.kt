@@ -1,12 +1,12 @@
 package uk.co.fractalmotion.mugshot.gradle
 
-import uk.co.fractalmotion.mugshot.gradle.utils.artifactsFor
 import com.android.build.api.variant.Variant
 import com.android.build.gradle.internal.publishing.AndroidArtifacts
 import org.gradle.api.artifacts.component.ProjectComponentIdentifier
 import org.gradle.api.file.Directory
 import org.gradle.api.file.FileCollection
 import org.gradle.api.provider.Provider
+import uk.co.fractalmotion.mugshot.gradle.utils.artifactsFor
 
 /**
  * All the relevant sources for a given Android variant.

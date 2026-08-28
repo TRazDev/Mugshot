@@ -1,7 +1,5 @@
 package uk.co.fractalmotion.mugshot.gradle
 
-import uk.co.fractalmotion.mugshot.gradle.ImageSubject.Companion.assertThat
-import uk.co.fractalmotion.mugshot.gradle.PrepareResourcesTask.Config
 import com.google.common.truth.Correspondence
 import com.google.common.truth.Truth.assertThat
 import com.squareup.moshi.Moshi
@@ -17,6 +15,8 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Ignore
 import org.junit.Test
+import uk.co.fractalmotion.mugshot.gradle.ImageSubject.Companion.assertThat
+import uk.co.fractalmotion.mugshot.gradle.PrepareResourcesTask.Config
 import java.io.File
 
 @Suppress("ktlint:standard:max-line-length")
@@ -413,7 +413,8 @@ class MugshotPluginTest {
     val snapshot = File(snapshotsDir, "images/uk.co.fractalmotion.mugshot.plugin.test_RecordTest_record.webp")
     assertThat(snapshot.exists()).isTrue()
 
-    val snapshotWithLabel = File(snapshotsDir, "images/uk.co.fractalmotion.mugshot.plugin.test_RecordTest_record_label.webp")
+    val snapshotWithLabel =
+      File(snapshotsDir, "images/uk.co.fractalmotion.mugshot.plugin.test_RecordTest_record_label.webp")
     assertThat(snapshotWithLabel.exists()).isTrue()
   }
 
@@ -446,7 +447,8 @@ class MugshotPluginTest {
     val snapshot = File(snapshotsDir, "images/uk.co.fractalmotion.mugshot.plugin.test_RecordTest_record.webp")
     assertThat(snapshot.exists()).isTrue()
 
-    val snapshotWithLabel = File(snapshotsDir, "images/uk.co.fractalmotion.mugshot.plugin.test_RecordTest_record_label.webp")
+    val snapshotWithLabel =
+      File(snapshotsDir, "images/uk.co.fractalmotion.mugshot.plugin.test_RecordTest_record_label.webp")
     assertThat(snapshotWithLabel.exists()).isTrue()
   }
 
@@ -466,7 +468,8 @@ class MugshotPluginTest {
     val firstSnapshot = File(snapshotsDir, "images/uk.co.fractalmotion.mugshot.plugin.test_RecordTest_recordFirst.webp")
     assertThat(firstSnapshot.exists()).isFalse()
 
-    val secondSnapshot = File(snapshotsDir, "images/uk.co.fractalmotion.mugshot.plugin.test_RecordTest_recordSecond_label.webp")
+    val secondSnapshot =
+      File(snapshotsDir, "images/uk.co.fractalmotion.mugshot.plugin.test_RecordTest_recordSecond_label.webp")
     assertThat(secondSnapshot.exists()).isTrue()
   }
 

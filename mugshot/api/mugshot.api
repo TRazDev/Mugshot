@@ -185,6 +185,8 @@ public final class uk/co/fractalmotion/mugshot/Mugshot : org/junit/rules/TestRul
 
 public final class uk/co/fractalmotion/mugshot/MugshotSdk {
 	public static final field $stable I
+	public fun <init> (Lkotlin/jvm/functions/Function1;)V
+	public fun <init> (Luk/co/fractalmotion/mugshot/Environment;Lkotlin/jvm/functions/Function1;)V
 	public fun <init> (Luk/co/fractalmotion/mugshot/Environment;Luk/co/fractalmotion/mugshot/DeviceConfig;Ljava/lang/String;Lcom/android/ide/common/rendering/api/SessionParams$RenderingMode;Lkotlin/jvm/functions/Function1;)V
 	public fun <init> (Luk/co/fractalmotion/mugshot/Environment;Luk/co/fractalmotion/mugshot/DeviceConfig;Ljava/lang/String;Lcom/android/ide/common/rendering/api/SessionParams$RenderingMode;ZLjava/util/Set;Lkotlin/jvm/functions/Function1;)V
 	public fun <init> (Luk/co/fractalmotion/mugshot/Environment;Luk/co/fractalmotion/mugshot/DeviceConfig;Ljava/lang/String;Lcom/android/ide/common/rendering/api/SessionParams$RenderingMode;ZLjava/util/Set;ZLkotlin/jvm/functions/Function1;)V
@@ -194,8 +196,6 @@ public final class uk/co/fractalmotion/mugshot/MugshotSdk {
 	public fun <init> (Luk/co/fractalmotion/mugshot/Environment;Luk/co/fractalmotion/mugshot/DeviceConfig;Ljava/lang/String;Lcom/android/ide/common/rendering/api/SessionParams$RenderingMode;ZLkotlin/jvm/functions/Function1;)V
 	public fun <init> (Luk/co/fractalmotion/mugshot/Environment;Luk/co/fractalmotion/mugshot/DeviceConfig;Ljava/lang/String;Lkotlin/jvm/functions/Function1;)V
 	public fun <init> (Luk/co/fractalmotion/mugshot/Environment;Luk/co/fractalmotion/mugshot/DeviceConfig;Lkotlin/jvm/functions/Function1;)V
-	public fun <init> (Luk/co/fractalmotion/mugshot/Environment;Lkotlin/jvm/functions/Function1;)V
-	public fun <init> (Lkotlin/jvm/functions/Function1;)V
 	public final fun getContext ()Landroid/content/Context;
 	public final fun getLayoutInflater ()Landroid/view/LayoutInflater;
 	public final fun getResources ()Landroid/content/res/Resources;

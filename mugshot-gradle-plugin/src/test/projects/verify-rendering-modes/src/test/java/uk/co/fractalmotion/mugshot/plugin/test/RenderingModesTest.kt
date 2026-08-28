@@ -5,11 +5,11 @@ import android.view.ViewGroup.LayoutParams
 import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
 import android.widget.LinearLayout
 import android.widget.TextView
-import uk.co.fractalmotion.mugshot.DeviceConfig
-import uk.co.fractalmotion.mugshot.Mugshot
 import com.android.ide.common.rendering.api.SessionParams.RenderingMode
 import org.junit.Rule
 import org.junit.Test
+import uk.co.fractalmotion.mugshot.DeviceConfig
+import uk.co.fractalmotion.mugshot.Mugshot
 
 class RenderingModesTest {
   @get:Rule

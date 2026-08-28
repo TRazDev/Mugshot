@@ -36,11 +36,11 @@ import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Popup
-import uk.co.fractalmotion.mugshot.DeviceConfig
-import uk.co.fractalmotion.mugshot.Mugshot
 import com.android.ide.common.rendering.api.SessionParams.RenderingMode.SHRINK
 import org.junit.Rule
 import org.junit.Test
+import uk.co.fractalmotion.mugshot.DeviceConfig
+import uk.co.fractalmotion.mugshot.Mugshot
 import kotlin.math.roundToInt
 import android.view.WindowInsets as ViewWindowInsets
 

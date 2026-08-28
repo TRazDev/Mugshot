@@ -8,9 +8,9 @@ import android.widget.LinearLayout
 import android.widget.LinearLayout.VERTICAL
 import android.widget.TextView
 import androidx.appcompat.content.res.AppCompatResources
-import uk.co.fractalmotion.mugshot.Mugshot
 import org.junit.Rule
 import org.junit.Test
+import uk.co.fractalmotion.mugshot.Mugshot
 
 class NinePatchTest {
   @get:Rule

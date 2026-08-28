@@ -1,9 +1,9 @@
 package uk.co.fractalmotion.mugshot.plugin.test
 
 import android.view.View
-import uk.co.fractalmotion.mugshot.Mugshot
 import org.junit.Rule
 import org.junit.Test
+import uk.co.fractalmotion.mugshot.Mugshot
 
 class RecordTest {
   @get:Rule

@@ -16,8 +16,6 @@
 
 package uk.co.fractalmotion.mugshot.internal
 
-import uk.co.fractalmotion.mugshot.internal.parsers.LayoutPullParser
-import uk.co.fractalmotion.mugshot.internal.parsers.TagSnapshot
 import com.android.AndroidXConstants.CLASS_RECYCLER_VIEW_ADAPTER
 import com.android.ide.common.rendering.api.ActionBarCallback
 import com.android.ide.common.rendering.api.AdapterBinding
@@ -32,6 +30,8 @@ import com.google.common.io.ByteStreams
 import org.kxml2.io.KXmlParser
 import org.xmlpull.v1.XmlPullParser
 import org.xmlpull.v1.XmlPullParserException
+import uk.co.fractalmotion.mugshot.internal.parsers.LayoutPullParser
+import uk.co.fractalmotion.mugshot.internal.parsers.TagSnapshot
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import java.io.File

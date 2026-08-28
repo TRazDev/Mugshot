@@ -15,13 +15,13 @@
  */
 package uk.co.fractalmotion.mugshot.internal.resources.base
 
-import uk.co.fractalmotion.mugshot.internal.resources.RepositoryConfiguration
 import com.android.ide.common.rendering.api.DensityBasedResourceValue
 import com.android.resources.Density
 import com.android.resources.ResourceType
 import com.android.resources.ResourceVisibility
 import com.android.utils.HashCodes
 import com.google.common.base.MoreObjects
+import uk.co.fractalmotion.mugshot.internal.resources.RepositoryConfiguration
 
 /**
  * Ported from: [BasicDensityBasedFileResourceItem.java](https://cs.android.com/android-studio/platform/tools/base/+/47d204001bf0cb6273d8b135c7eece3a982cf0e0:resource-repository/main/java/com/android/resources/base/BasicDensityBasedFileResourceItem.java)

@@ -1,6 +1,5 @@
 package uk.co.fractalmotion.mugshot.plugin.test
 
-import uk.co.fractalmotion.mugshot.Mugshot
 import com.google.testing.junit.testparameterinjector.TestParameter
 import com.google.testing.junit.testparameterinjector.TestParameterInjector
 import org.junit.Rule
@@ -8,6 +7,7 @@ import org.junit.Test
 import org.junit.rules.RuleChain
 import org.junit.runner.RunWith
 import org.junit.runners.model.Statement
+import uk.co.fractalmotion.mugshot.Mugshot
 
 @RunWith(TestParameterInjector::class)
 class DefaultLocaleTest(@TestParameter val locale: Locale) {

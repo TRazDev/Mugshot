@@ -15,14 +15,14 @@
  */
 package uk.co.fractalmotion.mugshot
 
-import uk.co.fractalmotion.mugshot.FileSubject.Companion.assertThat
-import uk.co.fractalmotion.mugshot.internal.ImageUtils
-import uk.co.fractalmotion.mugshot.internal.differs.PixelPerfect
 import com.google.common.truth.Truth.assertThat
 import org.junit.Assert.assertThrows
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.TemporaryFolder
+import uk.co.fractalmotion.mugshot.FileSubject.Companion.assertThat
+import uk.co.fractalmotion.mugshot.internal.ImageUtils
+import uk.co.fractalmotion.mugshot.internal.differs.PixelPerfect
 import java.awt.image.BufferedImage
 import java.io.File
 import java.nio.file.Files

@@ -15,9 +15,9 @@ public abstract class uk/co/fractalmotion/mugshot/gradle/PrepareResourcesTask : 
 	public abstract fun getAarExplodedDirs ()Lorg/gradle/api/provider/ListProperty;
 	public abstract fun getArtifactFiles ()Lorg/gradle/api/file/ConfigurableFileCollection;
 	public abstract fun getModuleResourceDirs ()Lorg/gradle/api/provider/ListProperty;
+	public abstract fun getMugshotResources ()Lorg/gradle/api/file/RegularFileProperty;
 	public abstract fun getNonTransitiveRClassEnabled ()Lorg/gradle/api/provider/Property;
 	public abstract fun getPackageName ()Lorg/gradle/api/provider/Property;
-	public abstract fun getMugshotResources ()Lorg/gradle/api/file/RegularFileProperty;
 	public abstract fun getProjectAssetDirs ()Lorg/gradle/api/provider/ListProperty;
 	public abstract fun getProjectResourceDirs ()Lorg/gradle/api/provider/ListProperty;
 	public abstract fun getTargetSdkVersion ()Lorg/gradle/api/provider/Property;

@@ -1,16 +1,16 @@
 package uk.co.fractalmotion.mugshot.internal.resources
 
-import uk.co.fractalmotion.mugshot.internal.resources.base.BasicArrayResourceItem
-import uk.co.fractalmotion.mugshot.internal.resources.base.BasicPluralsResourceItem
-import uk.co.fractalmotion.mugshot.internal.resources.base.BasicTextValueResourceItem
-import uk.co.fractalmotion.mugshot.internal.resources.base.BasicValueResourceItem
-import uk.co.fractalmotion.mugshot.internal.resources.base.BasicValueResourceItemBase
 import com.android.ide.common.rendering.api.ResourceNamespace
 import com.android.ide.common.resources.ResourceValueMap
 import com.android.ide.common.resources.configuration.FolderConfiguration
 import com.android.ide.common.resources.configuration.LocaleQualifier
 import com.android.resources.ResourceType
 import com.google.common.collect.Table
+import uk.co.fractalmotion.mugshot.internal.resources.base.BasicArrayResourceItem
+import uk.co.fractalmotion.mugshot.internal.resources.base.BasicPluralsResourceItem
+import uk.co.fractalmotion.mugshot.internal.resources.base.BasicTextValueResourceItem
+import uk.co.fractalmotion.mugshot.internal.resources.base.BasicValueResourceItem
+import uk.co.fractalmotion.mugshot.internal.resources.base.BasicValueResourceItemBase
 
 private const val DO_NOT_TRANSLATE = "donottranslate"
 

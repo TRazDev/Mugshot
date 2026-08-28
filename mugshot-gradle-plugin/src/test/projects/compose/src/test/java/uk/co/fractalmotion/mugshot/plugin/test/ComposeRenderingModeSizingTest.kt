@@ -17,14 +17,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.unit.dp
-import uk.co.fractalmotion.mugshot.DeviceConfig
-import uk.co.fractalmotion.mugshot.Mugshot
-import uk.co.fractalmotion.mugshot.Snapshot
-import uk.co.fractalmotion.mugshot.SnapshotHandler
 import com.android.ide.common.rendering.api.SessionParams.RenderingMode
 import org.junit.Assert.assertEquals
 import org.junit.Rule
 import org.junit.Test
+import uk.co.fractalmotion.mugshot.DeviceConfig
+import uk.co.fractalmotion.mugshot.Mugshot
+import uk.co.fractalmotion.mugshot.Snapshot
+import uk.co.fractalmotion.mugshot.SnapshotHandler
 import java.awt.image.BufferedImage
 import kotlin.math.min
 

@@ -1,9 +1,6 @@
 package uk.co.fractalmotion.mugshot.sample
 
 import android.widget.LinearLayout
-import uk.co.fractalmotion.mugshot.DeviceConfig
-import uk.co.fractalmotion.mugshot.Mugshot
-import uk.co.fractalmotion.mugshot.sample.databinding.KeypadBinding
 import com.android.resources.ScreenOrientation.LANDSCAPE
 import com.google.testing.junit.testparameterinjector.TestParameter
 import com.google.testing.junit.testparameterinjector.TestParameterInjector
@@ -11,6 +8,9 @@ import com.google.testing.junit.testparameterinjector.TestParameterValuesProvide
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import uk.co.fractalmotion.mugshot.DeviceConfig
+import uk.co.fractalmotion.mugshot.Mugshot
+import uk.co.fractalmotion.mugshot.sample.databinding.KeypadBinding
 
 @RunWith(TestParameterInjector::class)
 class TestParameterInjectorTest(

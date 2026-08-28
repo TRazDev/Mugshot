@@ -15,9 +15,9 @@
  */
 package uk.co.fractalmotion.mugshot.internal
 
-import uk.co.fractalmotion.mugshot.TestName
 import com.google.common.truth.Truth.assertThat
 import org.junit.Test
+import uk.co.fractalmotion.mugshot.TestName
 
 class MugshotJsonTest {
   @Test

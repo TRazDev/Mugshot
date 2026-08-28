@@ -1,11 +1,11 @@
 package uk.co.fractalmotion.mugshot.internal.resources
 
-import uk.co.fractalmotion.mugshot.internal.resources.base.BasicFileResourceItem
 import com.android.ide.common.resources.SingleNamespaceResourceRepository
 import com.android.ide.common.util.PathString
 import com.android.resources.ResourceType
 import com.android.resources.ResourceVisibility
 import com.android.utils.Base128InputStream
+import uk.co.fractalmotion.mugshot.internal.resources.base.BasicFileResourceItem
 import java.io.IOException
 import java.nio.file.Path
 

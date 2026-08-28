@@ -16,10 +16,10 @@
 package uk.co.fractalmotion.mugshot.plugin.test
 
 import android.os.Build
-import uk.co.fractalmotion.mugshot.Mugshot
 import com.google.common.truth.Truth.assertThat
 import org.junit.Rule
 import org.junit.Test
+import uk.co.fractalmotion.mugshot.Mugshot
 
 class BuildClassTest {
   @get:Rule

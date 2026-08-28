@@ -12,8 +12,6 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.compose.foundation.layout.Box
 import androidx.compose.ui.viewinterop.AndroidView
-import uk.co.fractalmotion.mugshot.DeviceConfig
-import uk.co.fractalmotion.mugshot.Mugshot
 import com.android.ide.common.rendering.api.SessionParams.RenderingMode
 import com.android.ide.common.rendering.api.SessionParams.RenderingMode.NORMAL
 import com.android.ide.common.rendering.api.SessionParams.RenderingMode.SHRINK
@@ -22,6 +20,8 @@ import com.google.testing.junit.testparameterinjector.TestParameterInjector
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import uk.co.fractalmotion.mugshot.DeviceConfig
+import uk.co.fractalmotion.mugshot.Mugshot
 
 @RunWith(TestParameterInjector::class)
 class RenderingModeTest(

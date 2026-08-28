@@ -15,18 +15,6 @@
  */
 package uk.co.fractalmotion.mugshot.internal.resources
 
-import uk.co.fractalmotion.mugshot.internal.resources.base.BasicArrayResourceItem
-import uk.co.fractalmotion.mugshot.internal.resources.base.BasicAttrResourceItem
-import uk.co.fractalmotion.mugshot.internal.resources.base.BasicDensityBasedFileResourceItem
-import uk.co.fractalmotion.mugshot.internal.resources.base.BasicFileResourceItem
-import uk.co.fractalmotion.mugshot.internal.resources.base.BasicForeignAttrResourceItem
-import uk.co.fractalmotion.mugshot.internal.resources.base.BasicPluralsResourceItem
-import uk.co.fractalmotion.mugshot.internal.resources.base.BasicResourceItem
-import uk.co.fractalmotion.mugshot.internal.resources.base.BasicStyleResourceItem
-import uk.co.fractalmotion.mugshot.internal.resources.base.BasicStyleableResourceItem
-import uk.co.fractalmotion.mugshot.internal.resources.base.BasicTextValueResourceItem
-import uk.co.fractalmotion.mugshot.internal.resources.base.BasicValueResourceItem
-import uk.co.fractalmotion.mugshot.internal.resources.base.BasicValueResourceItemBase
 import com.android.SdkConstants.ANDROID_NS_NAME
 import com.android.SdkConstants.ATTR_FORMAT
 import com.android.SdkConstants.ATTR_INDEX
@@ -98,6 +86,18 @@ import com.google.common.collect.Tables
 import org.kxml2.io.KXmlParser
 import org.xmlpull.v1.XmlPullParser
 import org.xmlpull.v1.XmlPullParserException
+import uk.co.fractalmotion.mugshot.internal.resources.base.BasicArrayResourceItem
+import uk.co.fractalmotion.mugshot.internal.resources.base.BasicAttrResourceItem
+import uk.co.fractalmotion.mugshot.internal.resources.base.BasicDensityBasedFileResourceItem
+import uk.co.fractalmotion.mugshot.internal.resources.base.BasicFileResourceItem
+import uk.co.fractalmotion.mugshot.internal.resources.base.BasicForeignAttrResourceItem
+import uk.co.fractalmotion.mugshot.internal.resources.base.BasicPluralsResourceItem
+import uk.co.fractalmotion.mugshot.internal.resources.base.BasicResourceItem
+import uk.co.fractalmotion.mugshot.internal.resources.base.BasicStyleResourceItem
+import uk.co.fractalmotion.mugshot.internal.resources.base.BasicStyleableResourceItem
+import uk.co.fractalmotion.mugshot.internal.resources.base.BasicTextValueResourceItem
+import uk.co.fractalmotion.mugshot.internal.resources.base.BasicValueResourceItem
+import uk.co.fractalmotion.mugshot.internal.resources.base.BasicValueResourceItemBase
 import java.io.BufferedInputStream
 import java.io.File
 import java.io.IOException

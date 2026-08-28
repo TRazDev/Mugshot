@@ -18,10 +18,10 @@ package uk.co.fractalmotion.mugshot.plugin.test
 import android.graphics.Color
 import android.view.View
 import android.view.ViewGroup.LayoutParams
-import uk.co.fractalmotion.mugshot.Mugshot
 import com.android.ide.common.rendering.api.SessionParams.RenderingMode.SHRINK
 import org.junit.Rule
 import org.junit.Test
+import uk.co.fractalmotion.mugshot.Mugshot
 
 class VerifyTest {
 

@@ -15,12 +15,6 @@
  */
 package uk.co.fractalmotion.mugshot.gradle
 
-import uk.co.fractalmotion.mugshot.gradle.instrumentation.ResourcesCompatVisitorFactory
-import uk.co.fractalmotion.mugshot.gradle.reporting.DiffImage
-import uk.co.fractalmotion.mugshot.gradle.reporting.MugshotTestReporter
-import uk.co.fractalmotion.mugshot.gradle.utils.artifactViewFor
-import uk.co.fractalmotion.mugshot.gradle.utils.capitalize
-import uk.co.fractalmotion.mugshot.gradle.utils.relativize
 import com.android.build.api.dsl.CommonExtension
 import com.android.build.api.dsl.KotlinMultiplatformAndroidHostTestCompilation
 import com.android.build.api.instrumentation.FramesComputationMode
@@ -59,6 +53,12 @@ import org.gradle.internal.os.OperatingSystem
 import org.gradle.language.base.plugins.LifecycleBasePlugin.VERIFICATION_GROUP
 import org.gradle.process.CommandLineArgumentProvider
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
+import uk.co.fractalmotion.mugshot.gradle.instrumentation.ResourcesCompatVisitorFactory
+import uk.co.fractalmotion.mugshot.gradle.reporting.DiffImage
+import uk.co.fractalmotion.mugshot.gradle.reporting.MugshotTestReporter
+import uk.co.fractalmotion.mugshot.gradle.utils.artifactViewFor
+import uk.co.fractalmotion.mugshot.gradle.utils.capitalize
+import uk.co.fractalmotion.mugshot.gradle.utils.relativize
 import java.util.Locale
 import javax.inject.Inject
 import kotlin.io.encoding.Base64
@@ -482,7 +482,8 @@ public class MugshotPlugin @Inject constructor(
     }
   }
 
-  private fun Project.isInternal(): Boolean = providers.gradleProperty("uk.co.fractalmotion.mugshot.internal").orNull == "true"
+  private fun Project.isInternal(): Boolean =
+    providers.gradleProperty("uk.co.fractalmotion.mugshot.internal").orNull == "true"
 
   private fun Project.overwriteOnMaxPercentDifferenceProvider(): Provider<String> =
     providers.gradleProperty("uk.co.fractalmotion.mugshot.overwriteOnMaxPercentDifference")

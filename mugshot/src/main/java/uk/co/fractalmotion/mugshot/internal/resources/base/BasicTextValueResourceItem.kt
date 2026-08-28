@@ -15,11 +15,11 @@
  */
 package uk.co.fractalmotion.mugshot.internal.resources.base
 
-import uk.co.fractalmotion.mugshot.internal.resources.ResourceSourceFile
 import com.android.ide.common.rendering.api.TextResourceValue
 import com.android.resources.ResourceType
 import com.android.resources.ResourceVisibility
 import com.android.utils.HashCodes
+import uk.co.fractalmotion.mugshot.internal.resources.ResourceSourceFile
 
 /**
  * Ported from: [BasicTextValueResourceItem.java](https://cs.android.com/android-studio/platform/tools/base/+/47d204001bf0cb6273d8b135c7eece3a982cf0e0:resource-repository/main/java/com/android/resources/base/BasicTextValueResourceItem.java)

@@ -15,8 +15,6 @@
  */
 package uk.co.fractalmotion.mugshot.internal
 
-import uk.co.fractalmotion.mugshot.Snapshot
-import uk.co.fractalmotion.mugshot.TestName
 import com.squareup.moshi.FromJson
 import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.Moshi
@@ -24,6 +22,8 @@ import com.squareup.moshi.ToJson
 import com.squareup.moshi.Types
 import com.squareup.moshi.adapters.Rfc3339DateJsonAdapter
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
+import uk.co.fractalmotion.mugshot.Snapshot
+import uk.co.fractalmotion.mugshot.TestName
 import java.util.Date
 
 internal object MugshotJson {

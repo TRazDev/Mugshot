@@ -16,11 +16,11 @@
 package uk.co.fractalmotion.mugshot.plugin.test
 
 import android.widget.LinearLayout
+import org.junit.Rule
+import org.junit.Test
 import uk.co.fractalmotion.mugshot.DeviceConfig.Companion.NEXUS_7
 import uk.co.fractalmotion.mugshot.DeviceConfig.Companion.PIXEL_3
 import uk.co.fractalmotion.mugshot.Mugshot
-import org.junit.Rule
-import org.junit.Test
 
 class LaunchViewTest {
   @get:Rule

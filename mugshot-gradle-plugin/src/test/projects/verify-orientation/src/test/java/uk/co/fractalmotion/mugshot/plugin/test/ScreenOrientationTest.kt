@@ -16,14 +16,14 @@
 package uk.co.fractalmotion.mugshot.plugin.test
 
 import android.widget.FrameLayout
-import uk.co.fractalmotion.mugshot.DeviceConfig.Companion.PIXEL_C
-import uk.co.fractalmotion.mugshot.Mugshot
 import com.android.resources.ScreenOrientation
 import com.google.testing.junit.testparameterinjector.TestParameter
 import com.google.testing.junit.testparameterinjector.TestParameterInjector
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import uk.co.fractalmotion.mugshot.DeviceConfig.Companion.PIXEL_C
+import uk.co.fractalmotion.mugshot.Mugshot
 
 @RunWith(TestParameterInjector::class)
 class ScreenOrientationTest(

@@ -16,9 +16,6 @@
 
 package uk.co.fractalmotion.mugshot.internal
 
-import uk.co.fractalmotion.mugshot.DeviceConfig
-import uk.co.fractalmotion.mugshot.internal.parsers.LayoutPullParser
-import uk.co.fractalmotion.mugshot.internal.resources.pseudolocalizeIfNeeded
 import com.android.SdkConstants
 import com.android.ide.common.rendering.api.AssetRepository
 import com.android.ide.common.rendering.api.ResourceNamespace
@@ -33,6 +30,9 @@ import com.android.ide.common.resources.getConfiguredResources
 import com.android.layoutlib.bridge.Bridge
 import com.android.resources.LayoutDirection
 import com.android.resources.ResourceType
+import uk.co.fractalmotion.mugshot.DeviceConfig
+import uk.co.fractalmotion.mugshot.internal.parsers.LayoutPullParser
+import uk.co.fractalmotion.mugshot.internal.resources.pseudolocalizeIfNeeded
 
 /** Creates [SessionParams] objects. */
 internal data class SessionParamsBuilder(

@@ -15,10 +15,10 @@
  */
 package uk.co.fractalmotion.mugshot.sample
 
-import uk.co.fractalmotion.mugshot.Mugshot
-import uk.co.fractalmotion.mugshot.sample.databinding.KeypadBinding
 import org.junit.Rule
 import org.junit.Test
+import uk.co.fractalmotion.mugshot.Mugshot
+import uk.co.fractalmotion.mugshot.sample.databinding.KeypadBinding
 
 class KeypadViewTest {
   @get:Rule

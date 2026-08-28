@@ -1,7 +1,6 @@
 package uk.co.fractalmotion.mugshot.internal.resources
 
 import android.annotation.SuppressLint
-import uk.co.fractalmotion.mugshot.internal.resources.base.BasicResourceItem
 import com.android.SdkConstants.FN_ANDROID_MANIFEST_XML
 import com.android.SdkConstants.FN_PUBLIC_TXT
 import com.android.SdkConstants.FN_RESOURCE_TEXT
@@ -15,6 +14,7 @@ import com.android.ide.common.util.PathString
 import com.android.resources.ResourceType
 import com.android.resources.ResourceVisibility.PUBLIC
 import com.android.utils.Base128InputStream
+import uk.co.fractalmotion.mugshot.internal.resources.base.BasicResourceItem
 import java.io.BufferedReader
 import java.io.FileNotFoundException
 import java.io.IOException

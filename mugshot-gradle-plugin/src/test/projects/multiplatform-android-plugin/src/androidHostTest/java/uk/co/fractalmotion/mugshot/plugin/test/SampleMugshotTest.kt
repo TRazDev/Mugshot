@@ -2,10 +2,10 @@ package uk.co.fractalmotion.mugshot.plugin.test
 
 import android.widget.ImageView
 import android.widget.TextView
-import uk.co.fractalmotion.mugshot.Mugshot
-import uk.co.fractalmotion.mugshot.plugin.test.R
 import org.junit.Rule
 import org.junit.Test
+import uk.co.fractalmotion.mugshot.Mugshot
+import uk.co.fractalmotion.mugshot.plugin.test.R
 
 class SampleMugshotTest {
   @get:Rule

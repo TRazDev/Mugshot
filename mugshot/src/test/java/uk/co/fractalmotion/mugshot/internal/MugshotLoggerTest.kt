@@ -1,9 +1,9 @@
 package uk.co.fractalmotion.mugshot.internal
 
-import uk.co.fractalmotion.mugshot.internal.MugshotLogger.MultipleFailuresException
 import com.google.common.truth.Truth.assertThat
 import org.junit.Assert.fail
 import org.junit.Test
+import uk.co.fractalmotion.mugshot.internal.MugshotLogger.MultipleFailuresException
 import java.io.FileNotFoundException
 
 class MugshotLoggerTest {

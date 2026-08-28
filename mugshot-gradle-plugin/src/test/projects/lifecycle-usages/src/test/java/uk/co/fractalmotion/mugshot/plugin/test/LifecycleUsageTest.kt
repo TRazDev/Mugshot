@@ -8,10 +8,10 @@ import androidx.activity.findViewTreeOnBackPressedDispatcherOwner
 import androidx.lifecycle.Lifecycle
 import androidx.savedstate.SavedStateRegistry
 import androidx.savedstate.findViewTreeSavedStateRegistryOwner
-import uk.co.fractalmotion.mugshot.Mugshot
 import com.google.common.truth.Truth.assertThat
 import org.junit.Rule
 import org.junit.Test
+import uk.co.fractalmotion.mugshot.Mugshot
 
 class LifecycleUsageTest {
   @get:Rule

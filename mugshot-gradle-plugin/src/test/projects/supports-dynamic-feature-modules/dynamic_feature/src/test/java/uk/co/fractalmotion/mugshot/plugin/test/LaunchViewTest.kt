@@ -16,9 +16,10 @@
 package uk.co.fractalmotion.mugshot.plugin.test
 
 import android.widget.LinearLayout
-import uk.co.fractalmotion.mugshot.Mugshot
 import org.junit.Rule
 import org.junit.Test
+import uk.co.fractalmotion.mugshot.Mugshot
+import uk.co.fractalmotion.mugshot.plugin.dynamic.feature.feature.R
 
 class LaunchViewTest {
   @get:Rule
@@ -26,7 +27,7 @@ class LaunchViewTest {
 
   @Test
   fun testViews() {
-    val launch = mugshot.inflate<LinearLayout>(uk.co.fractalmotion.mugshot.plugin.dynamic.feature.feature.R.layout.launch)
+    val launch = mugshot.inflate<LinearLayout>(R.layout.launch)
     mugshot.snapshot(launch, "launch")
   }
 }

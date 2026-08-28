@@ -15,10 +15,10 @@
  */
 package uk.co.fractalmotion.mugshot.internal.resources
 
-import uk.co.fractalmotion.mugshot.internal.resources.base.BasicResourceItem
 import com.android.ide.common.resources.configuration.FolderConfiguration
 import com.android.utils.Base128InputStream
 import com.android.utils.Base128InputStream.StreamFormatException
+import uk.co.fractalmotion.mugshot.internal.resources.base.BasicResourceItem
 import java.io.IOException
 import java.util.function.Consumer
 import java.util.function.Function
