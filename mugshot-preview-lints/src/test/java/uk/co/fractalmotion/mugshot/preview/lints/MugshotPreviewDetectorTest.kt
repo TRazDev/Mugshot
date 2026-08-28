@@ -91,7 +91,7 @@ class MugshotPreviewDetectorTest {
         """
         src/test/test.kt:6: Error: SamplePreview is not annotated with @Composable. [ComposableAnnotationNotFound]
         @Mugshot
-        ~~~~~~~~~~
+        ~~~~~~~~
         1 errors, 0 warnings
         """.trimIndent()
       )
@@ -123,7 +123,7 @@ class MugshotPreviewDetectorTest {
         """
         src/test/test.kt:6: Error: SamplePreview is not annotated with @Preview. [PreviewAnnotationNotFound]
         @Mugshot
-        ~~~~~~~~~~
+        ~~~~~~~~
         1 errors, 0 warnings
         """.trimIndent()
       )
@@ -157,7 +157,7 @@ class MugshotPreviewDetectorTest {
         """
         src/test/test.kt:7: Error: SamplePreview is private. Make it internal or public to generate a snapshot. [PrivatePreviewDetected]
         @Mugshot
-        ~~~~~~~~~~
+        ~~~~~~~~
         1 errors, 0 warnings
         """.trimIndent()
       )
@@ -199,7 +199,7 @@ class MugshotPreviewDetectorTest {
         """
         src/test/SamplePreviewParameter.kt:9: Error: @Preview of SamplePreview uses PreviewParameters which aren't currently supported. [PreviewParametersNotSupported]
         @Mugshot
-        ~~~~~~~~~~
+        ~~~~~~~~
         1 errors, 0 warnings
         """.trimIndent()
       )
