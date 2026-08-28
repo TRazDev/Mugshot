@@ -140,7 +140,7 @@ public final class app/cash/paparazzi/HtmlReportWriter : app/cash/paparazzi/Snap
 	public fun <init> (Ljava/lang/String;Ljava/io/File;DLapp/cash/paparazzi/Differ;Ljava/io/File;)V
 	public synthetic fun <init> (Ljava/lang/String;Ljava/io/File;DLapp/cash/paparazzi/Differ;Ljava/io/File;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public fun close ()V
-	public fun newFrameHandler (Lapp/cash/paparazzi/Snapshot;II)Lapp/cash/paparazzi/SnapshotHandler$FrameHandler;
+	public fun newFrameHandler (Lapp/cash/paparazzi/Snapshot;)Lapp/cash/paparazzi/SnapshotHandler$FrameHandler;
 }
 
 public final class app/cash/paparazzi/InstantAnimationsRule : org/junit/rules/TestRule {
@@ -171,14 +171,6 @@ public final class app/cash/paparazzi/Paparazzi : org/junit/rules/TestRule {
 	public final fun getContext ()Landroid/content/Context;
 	public final fun getLayoutInflater ()Landroid/view/LayoutInflater;
 	public final fun getResources ()Landroid/content/res/Resources;
-	public final fun gif (Landroid/view/View;)V
-	public final fun gif (Landroid/view/View;Ljava/lang/String;)V
-	public final fun gif (Landroid/view/View;Ljava/lang/String;J)V
-	public final fun gif (Landroid/view/View;Ljava/lang/String;JJ)V
-	public final fun gif (Landroid/view/View;Ljava/lang/String;JJI)V
-	public final fun gif (Ljava/lang/String;JJILkotlin/jvm/functions/Function2;)V
-	public static synthetic fun gif$default (Lapp/cash/paparazzi/Paparazzi;Landroid/view/View;Ljava/lang/String;JJIILjava/lang/Object;)V
-	public static synthetic fun gif$default (Lapp/cash/paparazzi/Paparazzi;Ljava/lang/String;JJILkotlin/jvm/functions/Function2;ILjava/lang/Object;)V
 	public final fun inflate (I)Landroid/view/View;
 	public final fun prepare (Lorg/junit/runner/Description;)V
 	public final fun setup (Lapp/cash/paparazzi/TestName;)V
@@ -211,11 +203,6 @@ public final class app/cash/paparazzi/PaparazziSdk {
 	public final fun getContext ()Landroid/content/Context;
 	public final fun getLayoutInflater ()Landroid/view/LayoutInflater;
 	public final fun getResources ()Landroid/content/res/Resources;
-	public final fun gif (Landroid/view/View;)V
-	public final fun gif (Landroid/view/View;J)V
-	public final fun gif (Landroid/view/View;JJ)V
-	public final fun gif (Landroid/view/View;JJI)V
-	public static synthetic fun gif$default (Lapp/cash/paparazzi/PaparazziSdk;Landroid/view/View;JJIILjava/lang/Object;)V
 	public final fun inflate (I)Landroid/view/View;
 	public final fun prepare ()V
 	public final fun setup ()V
@@ -249,7 +236,7 @@ public final class app/cash/paparazzi/Snapshot {
 }
 
 public abstract interface class app/cash/paparazzi/SnapshotHandler : java/io/Closeable {
-	public abstract fun newFrameHandler (Lapp/cash/paparazzi/Snapshot;II)Lapp/cash/paparazzi/SnapshotHandler$FrameHandler;
+	public abstract fun newFrameHandler (Lapp/cash/paparazzi/Snapshot;)Lapp/cash/paparazzi/SnapshotHandler$FrameHandler;
 }
 
 public abstract interface class app/cash/paparazzi/SnapshotHandler$FrameHandler : java/io/Closeable {
@@ -267,7 +254,7 @@ public final class app/cash/paparazzi/SnapshotVerifier : app/cash/paparazzi/Snap
 	public fun <init> (DLjava/io/File;Lapp/cash/paparazzi/Differ;)V
 	public synthetic fun <init> (DLjava/io/File;Lapp/cash/paparazzi/Differ;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public fun close ()V
-	public fun newFrameHandler (Lapp/cash/paparazzi/Snapshot;II)Lapp/cash/paparazzi/SnapshotHandler$FrameHandler;
+	public fun newFrameHandler (Lapp/cash/paparazzi/Snapshot;)Lapp/cash/paparazzi/SnapshotHandler$FrameHandler;
 }
 
 public final class app/cash/paparazzi/TestName {

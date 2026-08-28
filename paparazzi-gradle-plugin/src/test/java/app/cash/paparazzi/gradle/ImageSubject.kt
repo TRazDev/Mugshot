@@ -29,8 +29,12 @@ internal class ImageSubject private constructor(
     assertThat(actual).exists()
     assertThat(expected).exists()
 
-    return ImageAssert(ImageIO.read(actual), ImageIO.read(expected))
+    return ImageAssert(readImage(actual!!), readImage(expected!!))
   }
+
+  private fun readImage(file: File): BufferedImage =
+    // ImageIO.read returns null rather than throwing when no reader is registered for the format.
+    checkNotNull(ImageIO.read(file)) { "No ImageIO reader could decode $file" }
 
   class ImageAssert(
     private val img1: BufferedImage,

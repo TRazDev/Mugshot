@@ -69,59 +69,6 @@ class PaparazziTest {
   }
 
   @Test
-  fun animationEvents() {
-    val log = mutableListOf<String>()
-
-    val animator = ValueAnimator.ofFloat(0.0f, 1.0f)
-    animator.addListener(object : AnimatorListenerAdapter() {
-      override fun onAnimationStart(animation: Animator) {
-        log += "onAnimationStart time=$time animationElapsed=${animator.animatedValue}"
-      }
-
-      override fun onAnimationEnd(animation: Animator) {
-        log += "onAnimationEnd time=$time animationElapsed=${animator.animatedValue}"
-      }
-    })
-
-    val view = object : View(paparazzi.context) {
-      override fun onDraw(canvas: Canvas) {
-        log += "onDraw time=$time animationElapsed=${animator.animatedValue}"
-      }
-    }
-
-    animator.addUpdateListener {
-      log += "onAnimationUpdate time=$time animationElapsed=${animator.animatedValue}"
-
-      val colorComponent = it.animatedFraction
-      view.setBackgroundColor(Color.argb(1f, colorComponent, colorComponent, colorComponent))
-    }
-
-    animator.startDelay = 2_000L
-    animator.duration = 1_000L
-    animator.interpolator = LinearInterpolator()
-    animator.start()
-
-    paparazzi.gif(view, start = 1_000L, end = 4_000L, fps = 4)
-
-    assertThat(log).containsExactly(
-      "onDraw time=1000 animationElapsed=0.0",
-      "onDraw time=1000 animationElapsed=0.0",
-      "onAnimationStart time=2000 animationElapsed=0.0",
-      "onAnimationUpdate time=2000 animationElapsed=0.0",
-      "onDraw time=2000 animationElapsed=0.0",
-      "onAnimationUpdate time=2250 animationElapsed=0.25",
-      "onDraw time=2250 animationElapsed=0.25",
-      "onAnimationUpdate time=2500 animationElapsed=0.5",
-      "onDraw time=2500 animationElapsed=0.5",
-      "onAnimationUpdate time=2750 animationElapsed=0.75",
-      "onDraw time=2750 animationElapsed=0.75",
-      "onAnimationUpdate time=3000 animationElapsed=1.0",
-      "onAnimationEnd time=3000 animationElapsed=1.0",
-      "onDraw time=3000 animationElapsed=1.0"
-    )
-  }
-
-  @Test
   fun animationCallbacksForStaticSnapshots() {
     val log = mutableListOf<String>()
 
@@ -219,29 +166,6 @@ class PaparazziTest {
     }
 
     assertThat(thrown).isTrue()
-  }
-
-  @Test
-  fun preDrawOnEveryFrame() {
-    val log = mutableListOf<String>()
-
-    val view = object : View(paparazzi.context) {
-      override fun onAttachedToWindow() {
-        viewTreeObserver.addOnPreDrawListener {
-          log += "predraw"
-          true
-        }
-      }
-
-      override fun onDraw(canvas: Canvas) {
-        super.onDraw(canvas)
-        log += "draw"
-      }
-    }
-
-    paparazzi.gif(view, fps = 4)
-
-    assertThat(log).isEqualTo(listOf("predraw", "draw", "draw", "predraw", "predraw", "predraw"))
   }
 
   private val time: Long

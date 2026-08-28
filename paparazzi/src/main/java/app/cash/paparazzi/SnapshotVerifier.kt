@@ -18,14 +18,13 @@ package app.cash.paparazzi
 import app.cash.paparazzi.Differ
 import app.cash.paparazzi.SnapshotHandler.FrameHandler
 import app.cash.paparazzi.internal.ImageUtils
-import app.cash.paparazzi.internal.apng.ApngVerifier
+import app.cash.paparazzi.internal.WebpCodec
 import app.cash.paparazzi.internal.differs.DeltaE2000
 import app.cash.paparazzi.internal.differs.Flip
 import app.cash.paparazzi.internal.differs.Mssim
 import app.cash.paparazzi.internal.differs.OffByTwo
 import app.cash.paparazzi.internal.differs.PixelPerfect
 import app.cash.paparazzi.internal.differs.Sift
-import okio.Path.Companion.toOkioPath
 import java.awt.image.BufferedImage
 import java.awt.image.BufferedImage.TYPE_INT_ARGB
 import java.io.File
@@ -37,30 +36,16 @@ public class SnapshotVerifier @JvmOverloads constructor(
   private val differ: Differ = determineDiffer()
 ) : SnapshotHandler {
   private val imagesDirectory: File = File(rootDirectory, "images")
-  private val videosDirectory: File = File(rootDirectory, "videos")
 
   init {
     imagesDirectory.mkdirs()
-    videosDirectory.mkdirs()
   }
 
-  override fun newFrameHandler(snapshot: Snapshot, frameCount: Int, fps: Int): FrameHandler {
+  override fun newFrameHandler(snapshot: Snapshot): FrameHandler {
     return object : FrameHandler {
-      val snapshotDir = if (fps == -1) imagesDirectory else videosDirectory
-      val expected = File(snapshotDir, snapshot.toFileName(extension = "png"))
-      val failurePath = File(failureDir, "delta-${expected.name}").toOkioPath()
-      val pngVerifier: ApngVerifier? = if (fps != -1) {
-        ApngVerifier(expected.toOkioPath(), failurePath, fps, frameCount, maxPercentDifference, differ = differ)
-      } else {
-        null
-      }
+      val expected = File(imagesDirectory, snapshot.toFileName(extension = WebpCodec.EXTENSION))
 
       override fun handle(image: BufferedImage) {
-        if (pngVerifier != null) {
-          pngVerifier.verifyFrame(image)
-          return
-        }
-
         val goldenImage = if (!expected.exists()) {
           // Stub image for comparison and to proceed with failure output
           BufferedImage(image.width, image.height, TYPE_INT_ARGB)
@@ -86,13 +71,7 @@ public class SnapshotVerifier @JvmOverloads constructor(
         )
       }
 
-      override fun close() {
-        try {
-          pngVerifier?.assertFinished()
-        } finally {
-          pngVerifier?.close()
-        }
-      }
+      override fun close(): Unit = Unit
     }
   }
 

@@ -15,8 +15,6 @@
  */
 package app.cash.paparazzi.sample
 
-import android.animation.ObjectAnimator
-import android.view.View
 import app.cash.paparazzi.Paparazzi
 import app.cash.paparazzi.sample.databinding.KeypadBinding
 import org.junit.Rule
@@ -53,14 +51,6 @@ class KeypadViewTest {
       amount.text = ".01 BTC"
 
       paparazzi.snapshot(root, "bolt")
-
-      val rotation = ObjectAnimator.ofFloat(amount, View.ROTATION, 0.0f, 360.0f).apply {
-        duration = 500
-        startDelay = 500
-      }
-      rotation.start()
-
-      paparazzi.gif(root, "spin", start = 500, end = 1500, fps = 30)
     }
   }
 }

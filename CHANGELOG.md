@@ -2,14 +2,17 @@
 
 ## [Unreleased]
 
-### New
-* Add `Paparazzi#gif` overloads that accept a `@Composable` directly, mirroring the existing `snapshot` Compose overloads:
+### Changed
+* **Breaking:** snapshots are now stored as lossless WebP (`.webp`) instead of PNG. Re-record your
+  goldens with `./gradlew recordPaparazzi<Variant>`; existing `.png` goldens are not read.
 
-```kotlin
-paparazzi.gif {
-  CircularProgressIndicator()
-}
-```
+### Removed
+* **Breaking:** removed animated snapshot support. `Paparazzi#gif` and `PaparazziSdk#gif` are gone,
+  along with the `snapshots/videos` directory. Paparazzi now records a single frame per snapshot.
+  Use `Paparazzi#snapshot(view, offsetMillis)` to capture a specific point in an animation, or
+  `InstantAnimationsRule` to snapshot an animation's terminal state.
+* **Breaking:** `SnapshotHandler#newFrameHandler` no longer takes `frameCount` and `fps`. Custom
+  `SnapshotHandler` implementations must drop those parameters.
 
 ## [2.0.0-alpha05] - 2026-05-20
 

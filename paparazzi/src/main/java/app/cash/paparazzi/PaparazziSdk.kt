@@ -207,18 +207,7 @@ public class PaparazziSdk @JvmOverloads constructor(
 
   @JvmOverloads
   public fun snapshot(view: View, offsetMillis: Long = 0L) {
-    takeSnapshots(view, TimeUnit.MILLISECONDS.toNanos(offsetMillis), -1, 1)
-  }
-
-  @JvmOverloads
-  public fun gif(view: View, start: Long = 0L, end: Long = 500L, fps: Int = 30) {
-    // Add one to the frame count so we get the last frame. Otherwise a 1 second, 60 FPS animation
-    // our 60th frame will be at time 983 ms, and we want our last frame to be 1,000 ms. This gets
-    // us 61 frames for a 1 second animation, 121 frames for a 2 second animation, etc.
-    val durationMillis = (end - start).toInt()
-    val frameCount = (durationMillis * fps) / 1000 + 1
-    val startNanos = TimeUnit.MILLISECONDS.toNanos(start)
-    takeSnapshots(view, startNanos, fps, frameCount)
+    takeSnapshot(view, TimeUnit.MILLISECONDS.toNanos(offsetMillis))
   }
 
   public fun unsafeUpdateConfig(
@@ -263,7 +252,7 @@ public class PaparazziSdk @JvmOverloads constructor(
     bridgeRenderSession = createBridgeSession(renderSession, renderSession.inflate())
   }
 
-  private fun takeSnapshots(view: View, startNanos: Long, fps: Int, frameCount: Int) {
+  private fun takeSnapshot(view: View, timeNanos: Long) {
     val viewGroup = bridgeRenderSession.rootViews[0].viewObject as ViewGroup
     val modifiedView = renderExtensions.fold(view) { currentView, renderExtension ->
       val currentSessionRenderingMode = sessionParamsBuilder.build().renderingMode
@@ -330,49 +319,45 @@ public class PaparazziSdk @JvmOverloads constructor(
       }
 
       viewGroup.addView(modifiedView)
-      for (frame in 0 until frameCount) {
-        val nowNanos = (startNanos + (frame * 1_000_000_000.0 / fps)).toLong()
 
-        // If we have pendingTasks run recomposer to ensure we get the correct frame.
-        var hasPendingWork = false
-        withTime(nowNanos) {
+      // If we have pendingTasks run recomposer to ensure we get the correct frame.
+      var hasPendingWork = false
+      withTime(timeNanos) {
+        val result = renderSession.render(true)
+        if (result.status == ERROR_UNKNOWN) {
+          throw result.exception
+        }
+        if (hasComposeRuntime && recomposer != null) {
+          if ((recomposer as Recomposer).hasPendingWork) {
+            hasPendingWork = true
+          }
+        }
+      }
+
+      if (hasPendingWork) {
+        withTime(timeNanos) {
           val result = renderSession.render(true)
           if (result.status == ERROR_UNKNOWN) {
             throw result.exception
           }
-          if (hasComposeRuntime && recomposer != null) {
-            // If we have pending tasks, we need to trigger it within the context of the first frame.
-            if (frame == 0 && (recomposer as Recomposer).hasPendingWork) {
-              hasPendingWork = true
-            }
-          }
         }
 
-        if (hasPendingWork) {
-          withTime(nowNanos) {
-            val result = renderSession.render(true)
-            if (result.status == ERROR_UNKNOWN) {
-              throw result.exception
-            }
-          }
-
-          val recomposerInstance = recomposer as Recomposer
-          if (recomposerInstance.hasPendingWork) {
-            logger.warning(
-              "Pending work detected. This may cause unexpected results in your generated snapshots. ${recomposerInstance.changeCount}"
-            )
-          }
+        val recomposerInstance = recomposer as Recomposer
+        if (recomposerInstance.hasPendingWork) {
+          logger.warning(
+            "Pending work detected. This may cause unexpected results in your generated snapshots. ${recomposerInstance.changeCount}"
+          )
         }
-
-        val image = bridgeRenderSession.image
-        if (validateAccessibility) {
-          require(renderExtensions.isEmpty()) {
-            "Running accessibility validation and render extensions simultaneously is not supported."
-          }
-          validateLayoutAccessibility(modifiedView, image)
-        }
-        onNewFrame(scaleImage(frameImage(image)))
       }
+
+      val image = bridgeRenderSession.image
+      if (validateAccessibility) {
+        require(renderExtensions.isEmpty()) {
+          "Running accessibility validation and render extensions simultaneously is not supported."
+        }
+        validateLayoutAccessibility(modifiedView, image)
+      }
+      onNewFrame(scaleImage(frameImage(image)))
     } finally {
       if (hasLifecycleOwnerRuntime) {
         lifecycleOwner.registry.currentState = Lifecycle.State.DESTROYED
