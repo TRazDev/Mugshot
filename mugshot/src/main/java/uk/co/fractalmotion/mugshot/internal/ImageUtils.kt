@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package app.cash.paparazzi.internal
+package uk.co.fractalmotion.mugshot.internal
 
-import app.cash.paparazzi.Differ
-import app.cash.paparazzi.Differ.DiffResult.Different
-import app.cash.paparazzi.Differ.DiffResult.Identical
-import app.cash.paparazzi.Differ.DiffResult.Similar
+import uk.co.fractalmotion.mugshot.Differ
+import uk.co.fractalmotion.mugshot.Differ.DiffResult.Different
+import uk.co.fractalmotion.mugshot.Differ.DiffResult.Identical
+import uk.co.fractalmotion.mugshot.Differ.DiffResult.Similar
 import java.awt.AlphaComposite
 import java.awt.Color
 import java.awt.Graphics2D

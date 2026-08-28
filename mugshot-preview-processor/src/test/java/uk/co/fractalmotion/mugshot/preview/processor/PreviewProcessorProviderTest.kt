@@ -1,6 +1,6 @@
 @file:OptIn(ExperimentalCompilerApi::class)
 
-package app.cash.paparazzi.preview.processor
+package uk.co.fractalmotion.mugshot.preview.processor
 
 import com.google.common.truth.Truth.assertThat
 import com.tschuchort.compiletesting.KotlinCompilation
@@ -20,9 +20,9 @@ class PreviewProcessorProviderTest {
   private val kspRoot: File
     get() = temporaryFolder.root.resolve("debug/ksp/sources")
   private val variantFile: File
-    get() = kspRoot.resolve("resources/$TEST_NAMESPACE/paparazziVariant.txt")
+    get() = kspRoot.resolve("resources/$TEST_NAMESPACE/mugshotVariant.txt")
   private val previewsFile: File
-    get() = kspRoot.resolve("kotlin/$TEST_NAMESPACE/PaparazziPreviews.kt")
+    get() = kspRoot.resolve("kotlin/$TEST_NAMESPACE/MugshotPreviews.kt")
 
   @Test
   fun noAnnotatedPreviews() {
@@ -34,7 +34,7 @@ class PreviewProcessorProviderTest {
 
         import androidx.compose.runtime.Composable
         import androidx.compose.ui.tooling.preview.Preview
-        import app.cash.paparazzi.annotations.Paparazzi
+        import uk.co.fractalmotion.mugshot.annotations.Mugshot
 
         @Preview
         @Composable
@@ -45,7 +45,7 @@ class PreviewProcessorProviderTest {
     val result = compilation.compile()
 
     assertThat(result.exitCode).isEqualTo(KotlinCompilation.ExitCode.OK)
-    assertThat(result.messages).contains("i: [ksp] No functions found with @Paparazzi annotation.")
+    assertThat(result.messages).contains("i: [ksp] No functions found with @Mugshot annotation.")
     // Assertion for variant has "sources" as we can't specify the variant name in testing KSP
     assertThat(variantFile.readText()).isEqualTo("sources")
   }
@@ -60,9 +60,9 @@ class PreviewProcessorProviderTest {
 
         import androidx.compose.runtime.Composable
         import androidx.compose.ui.tooling.preview.Preview
-        import app.cash.paparazzi.annotations.Paparazzi
+        import uk.co.fractalmotion.mugshot.annotations.Mugshot
 
-        @Paparazzi
+        @Mugshot
         @Preview
         @Composable
         fun SamplePreview() = Unit
@@ -79,8 +79,8 @@ class PreviewProcessorProviderTest {
         """
         package test
 
-        internal val paparazziPreviews = listOf<app.cash.paparazzi.preview.runtime.PaparazziPreviewData>(
-          app.cash.paparazzi.preview.runtime.PaparazziPreviewData(
+        internal val mugshotPreviews = listOf<uk.co.fractalmotion.mugshot.preview.runtime.MugshotPreviewData>(
+          uk.co.fractalmotion.mugshot.preview.runtime.MugshotPreviewData(
             snapshotName = "SamplePreview_SamplePreview",
             composable = { test.SamplePreview() },
           ),
@@ -99,9 +99,9 @@ class PreviewProcessorProviderTest {
 
         import androidx.compose.runtime.Composable
         import androidx.compose.ui.tooling.preview.Preview
-        import app.cash.paparazzi.annotations.Paparazzi
+        import uk.co.fractalmotion.mugshot.annotations.Mugshot
 
-        @Paparazzi
+        @Mugshot
         @Preview
         @Composable
         private fun SamplePreview() = Unit
@@ -127,9 +127,9 @@ class PreviewProcessorProviderTest {
         import androidx.compose.ui.tooling.preview.Preview
         import androidx.compose.ui.tooling.preview.PreviewParameter
         import androidx.compose.ui.tooling.preview.PreviewParameterProvider
-        import app.cash.paparazzi.annotations.Paparazzi
+        import uk.co.fractalmotion.mugshot.annotations.Mugshot
 
-        @Paparazzi
+        @Mugshot
         @Preview
         @Composable
         fun SamplePreview(
@@ -159,9 +159,9 @@ class PreviewProcessorProviderTest {
 
         import androidx.compose.runtime.Composable
         import androidx.compose.ui.tooling.preview.Preview
-        import app.cash.paparazzi.annotations.Paparazzi
+        import uk.co.fractalmotion.mugshot.annotations.Mugshot
 
-        @Paparazzi
+        @Mugshot
         @Preview
         @Preview(
            name = "Night Pixel 4",
@@ -181,12 +181,12 @@ class PreviewProcessorProviderTest {
         """
         package test
 
-        internal val paparazziPreviews = listOf<app.cash.paparazzi.preview.runtime.PaparazziPreviewData>(
-          app.cash.paparazzi.preview.runtime.PaparazziPreviewData(
+        internal val mugshotPreviews = listOf<uk.co.fractalmotion.mugshot.preview.runtime.MugshotPreviewData>(
+          uk.co.fractalmotion.mugshot.preview.runtime.MugshotPreviewData(
             snapshotName = "SamplePreview_SamplePreview",
             composable = { test.SamplePreview() },
           ),
-          app.cash.paparazzi.preview.runtime.PaparazziPreviewData(
+          uk.co.fractalmotion.mugshot.preview.runtime.MugshotPreviewData(
             snapshotName = "SamplePreview_SamplePreview",
             composable = { test.SamplePreview() },
           ),
@@ -201,14 +201,14 @@ class PreviewProcessorProviderTest {
         workingDir = File(temporaryFolder.root, "debug")
         inheritClassPath = true
         sources =
-          sourceFiles.asList() + COMPOSE_SOURCES + PAPARAZZI_ANNOTATION_SOURCE + PAPARAZZI_PREVIEW_DATA_RUNTIME_SOURCE
+          sourceFiles.asList() + COMPOSE_SOURCES + MUGSHOT_ANNOTATION_SOURCE + MUGSHOT_PREVIEW_DATA_RUNTIME_SOURCE
         verbose = false
         // Needed for @PreviewParameterProvider annotation that uses `@JvmDefaultWithCompatibility`
         kotlincArguments = listOf("-Xjvm-default=all")
 
         configureKsp {
           allWarningsAsErrors = true
-          kspProcessorOptions += "app.cash.paparazzi.preview.namespace" to TEST_NAMESPACE
+          kspProcessorOptions += "uk.co.fractalmotion.mugshot.preview.namespace" to TEST_NAMESPACE
           kspIncremental = true
           symbolProcessorProviders += PreviewProcessorProvider()
         }
@@ -283,25 +283,25 @@ class PreviewProcessorProviderTest {
         )
       )
 
-    private val PAPARAZZI_ANNOTATION_SOURCE =
+    private val MUGSHOT_ANNOTATION_SOURCE =
       SourceFile.kotlin(
-        "Paparazzi.kt",
+        "Mugshot.kt",
         """
-        package app.cash.paparazzi.annotations
+        package uk.co.fractalmotion.mugshot.annotations
         @Target(AnnotationTarget.FUNCTION)
         @Retention(AnnotationRetention.BINARY)
-        annotation class Paparazzi
+        annotation class Mugshot
         """.trimIndent()
       )
 
-    private val PAPARAZZI_PREVIEW_DATA_RUNTIME_SOURCE = SourceFile.kotlin(
-      "PaparazziPreviewData.kt",
+    private val MUGSHOT_PREVIEW_DATA_RUNTIME_SOURCE = SourceFile.kotlin(
+      "MugshotPreviewData.kt",
       """
-        package app.cash.paparazzi.preview.runtime
+        package uk.co.fractalmotion.mugshot.preview.runtime
 
         import androidx.compose.runtime.Composable
 
-        data class PaparazziPreviewData(
+        data class MugshotPreviewData(
           val snapshotName: String,
           val composable: @Composable () -> Unit
         )

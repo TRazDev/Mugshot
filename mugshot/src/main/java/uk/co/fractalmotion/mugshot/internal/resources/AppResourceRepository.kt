@@ -1,4 +1,4 @@
-package app.cash.paparazzi.internal.resources
+package uk.co.fractalmotion.mugshot.internal.resources
 
 import java.io.File
 

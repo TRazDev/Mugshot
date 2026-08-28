@@ -13,17 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.cash.paparazzi.plugin.test
+package uk.co.fractalmotion.mugshot.plugin.test
 
 import android.os.Build
-import app.cash.paparazzi.Paparazzi
+import uk.co.fractalmotion.mugshot.Mugshot
 import com.google.common.truth.Truth.assertThat
 import org.junit.Rule
 import org.junit.Test
 
 class BuildClassTest {
   @get:Rule
-  val paparazzi = Paparazzi()
+  val mugshot = Mugshot()
 
   @Test
   fun verifyFields() {

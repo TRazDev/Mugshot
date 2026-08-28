@@ -1,4 +1,4 @@
-package app.cash.paparazzi
+package uk.co.fractalmotion.mugshot
 
 import org.junit.rules.ExternalResource
 import org.junit.rules.TemporaryFolder
@@ -6,12 +6,12 @@ import org.junit.runner.Description
 import org.junit.runners.model.MultipleFailureException
 import org.junit.runners.model.Statement
 
-class PaparazziTestRule : ExternalResource() {
+class MugshotTestRule : ExternalResource() {
   private val tmpFolder = TemporaryFolder.builder().assureDeletion().build()
-  private val reportDirKey = "paparazzi.snapshot.dir"
+  private val reportDirKey = "mugshot.snapshot.dir"
   private var oldReportDir: String? = null
 
-  internal lateinit var paparazzi: Paparazzi
+  internal lateinit var mugshot: Mugshot
 
   override fun before() {
     tmpFolder.create()
@@ -19,7 +19,7 @@ class PaparazziTestRule : ExternalResource() {
     oldReportDir = System.getProperty(reportDirKey)
     System.setProperty(reportDirKey, tmpFolder.newFolder().path)
 
-    paparazzi = Paparazzi()
+    mugshot = Mugshot()
   }
 
   override fun after() {
@@ -39,7 +39,7 @@ class PaparazziTestRule : ExternalResource() {
 
         val errors: MutableList<Throwable> = ArrayList()
         try {
-          paparazzi.apply(base, description).evaluate()
+          mugshot.apply(base, description).evaluate()
         } catch (t: Throwable) {
           errors.add(t)
         } finally {

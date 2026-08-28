@@ -1,4 +1,4 @@
-package app.cash.paparazzi
+package uk.co.fractalmotion.mugshot
 
 import android.content.Context
 import android.graphics.Color
@@ -9,13 +9,13 @@ import android.widget.Button
 import android.widget.FrameLayout
 import android.widget.LinearLayout
 import android.widget.TextView
-import app.cash.paparazzi.internal.differs.OffByTwo
+import uk.co.fractalmotion.mugshot.internal.differs.OffByTwo
 import org.junit.Rule
 import org.junit.Test
 
 class RenderExtensionTest {
   @get:Rule
-  val paparazzi = Paparazzi(
+  val mugshot = Mugshot(
     deviceConfig = DeviceConfig.NEXUS_5,
     snapshotHandler = SnapshotVerifier(maxPercentDifference = 0.01, differ = OffByTwo),
     renderExtensions = setOf(
@@ -28,9 +28,9 @@ class RenderExtensionTest {
 
   @Test
   fun `call multiple snapshots on view`() {
-    val view = buildView(paparazzi.context)
-    paparazzi.snapshot(view, name = "wrapped")
-    paparazzi.snapshot(view, name = "wrapped")
+    val view = buildView(mugshot.context)
+    mugshot.snapshot(view, name = "wrapped")
+    mugshot.snapshot(view, name = "wrapped")
   }
 
   private fun buildView(

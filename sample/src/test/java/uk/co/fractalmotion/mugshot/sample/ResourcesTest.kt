@@ -1,7 +1,7 @@
-package app.cash.paparazzi.sample
+package uk.co.fractalmotion.mugshot.sample
 
-import app.cash.paparazzi.DeviceConfig
-import app.cash.paparazzi.Paparazzi
+import uk.co.fractalmotion.mugshot.DeviceConfig
+import uk.co.fractalmotion.mugshot.Mugshot
 import com.google.testing.junit.testparameterinjector.TestParameter
 import com.google.testing.junit.testparameterinjector.TestParameterInjector
 import org.junit.Rule
@@ -13,18 +13,18 @@ class ResourcesTest(
   @TestParameter locale: Locale
 ) {
   @get:Rule
-  val paparazzi = Paparazzi(
+  val mugshot = Mugshot(
     deviceConfig = DeviceConfig.PIXEL_5.copy(locale = locale.tag)
   )
 
   @Test
   fun legacy() {
-    paparazzi.snapshot(ResourcesDemoView(paparazzi.context))
+    mugshot.snapshot(ResourcesDemoView(mugshot.context))
   }
 
   @Test
   fun compose() {
-    paparazzi.snapshot { ResourcesDemo() }
+    mugshot.snapshot { ResourcesDemo() }
   }
 
   enum class Locale(val tag: String?) {

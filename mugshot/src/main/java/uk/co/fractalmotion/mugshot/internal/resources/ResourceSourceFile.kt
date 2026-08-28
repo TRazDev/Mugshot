@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.cash.paparazzi.internal.resources
+package uk.co.fractalmotion.mugshot.internal.resources
 
 /**
  * Ported from: [ResourceSourceFile.kt](https://cs.android.com/android-studio/platform/tools/base/+/18047faf69512736b8ddb1f6a6785f58d47c893f:resource-repository/main/java/com/android/resources/base/ResourceSourceFile.kt)

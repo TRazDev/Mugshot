@@ -1,4 +1,4 @@
-package app.cash.paparazzi.plugin.test
+package uk.co.fractalmotion.mugshot.plugin.test
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
@@ -10,8 +10,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 
 @Composable
-fun HelloPaparazzi() {
-  val text = "Hello, Paparazzi"
+fun HelloMugshot() {
+  val text = "Hello, Mugshot"
   Column(
     Modifier
       .background(Color.White)

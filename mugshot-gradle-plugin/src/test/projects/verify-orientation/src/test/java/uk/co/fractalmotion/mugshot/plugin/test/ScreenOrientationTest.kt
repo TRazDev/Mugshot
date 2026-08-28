@@ -13,11 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.cash.paparazzi.plugin.test
+package uk.co.fractalmotion.mugshot.plugin.test
 
 import android.widget.FrameLayout
-import app.cash.paparazzi.DeviceConfig.Companion.PIXEL_C
-import app.cash.paparazzi.Paparazzi
+import uk.co.fractalmotion.mugshot.DeviceConfig.Companion.PIXEL_C
+import uk.co.fractalmotion.mugshot.Mugshot
 import com.android.resources.ScreenOrientation
 import com.google.testing.junit.testparameterinjector.TestParameter
 import com.google.testing.junit.testparameterinjector.TestParameterInjector
@@ -30,12 +30,12 @@ class ScreenOrientationTest(
   @TestParameter val configuration: OrientationTestConfiguration
 ) {
   @get:Rule
-  val paparazzi = Paparazzi(deviceConfig = PIXEL_C.copy(orientation = configuration.orientation))
+  val mugshot = Mugshot(deviceConfig = PIXEL_C.copy(orientation = configuration.orientation))
 
   @Test
   fun test() {
-    paparazzi.snapshot(
-      view = FrameLayout(paparazzi.context).apply {
+    mugshot.snapshot(
+      view = FrameLayout(mugshot.context).apply {
         setBackgroundColor(configuration.backgroundColor)
       }
     )

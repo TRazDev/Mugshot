@@ -1,29 +1,29 @@
-package app.cash.paparazzi.plugin.test
+package uk.co.fractalmotion.mugshot.plugin.test
 
 import android.view.Gravity
 import android.view.ViewGroup.LayoutParams
 import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
 import android.widget.LinearLayout
 import android.widget.TextView
-import app.cash.paparazzi.DeviceConfig
-import app.cash.paparazzi.Paparazzi
+import uk.co.fractalmotion.mugshot.DeviceConfig
+import uk.co.fractalmotion.mugshot.Mugshot
 import com.android.ide.common.rendering.api.SessionParams.RenderingMode
 import org.junit.Rule
 import org.junit.Test
 
 class RenderingModesTest {
   @get:Rule
-  val paparazzi = Paparazzi()
+  val mugshot = Mugshot()
 
   @Test
   fun renderingModes() {
-    val linearLayout = LinearLayout(paparazzi.context).apply {
+    val linearLayout = LinearLayout(mugshot.context).apply {
       layoutParams = LayoutParams(WRAP_CONTENT, WRAP_CONTENT)
     }
 
     (0..2).forEach {
       linearLayout.addView(
-        TextView(paparazzi.context).apply {
+        TextView(mugshot.context).apply {
           text = "$it"
           textSize = 128f
           gravity = Gravity.CENTER
@@ -32,17 +32,17 @@ class RenderingModesTest {
       )
     }
 
-    paparazzi.snapshot(view = linearLayout, name = "normal") // defaults to NORMAL
-    paparazzi.unsafeUpdateConfig(renderingMode = RenderingMode.H_SCROLL)
-    paparazzi.snapshot(view = linearLayout, name = "horizontal_scroll")
+    mugshot.snapshot(view = linearLayout, name = "normal") // defaults to NORMAL
+    mugshot.unsafeUpdateConfig(renderingMode = RenderingMode.H_SCROLL)
+    mugshot.snapshot(view = linearLayout, name = "horizontal_scroll")
 
-    paparazzi.unsafeUpdateConfig(renderingMode = RenderingMode.V_SCROLL)
+    mugshot.unsafeUpdateConfig(renderingMode = RenderingMode.V_SCROLL)
     linearLayout.orientation = LinearLayout.VERTICAL
-    paparazzi.snapshot(view = linearLayout, name = "vertical_scroll")
+    mugshot.snapshot(view = linearLayout, name = "vertical_scroll")
 
-    paparazzi.unsafeUpdateConfig(renderingMode = RenderingMode.SHRINK)
-    paparazzi.snapshot(
-      view = TextView(paparazzi.context).apply {
+    mugshot.unsafeUpdateConfig(renderingMode = RenderingMode.SHRINK)
+    mugshot.snapshot(
+      view = TextView(mugshot.context).apply {
         text = "0"
         textSize = 20f
         layoutParams = LayoutParams(WRAP_CONTENT, WRAP_CONTENT)

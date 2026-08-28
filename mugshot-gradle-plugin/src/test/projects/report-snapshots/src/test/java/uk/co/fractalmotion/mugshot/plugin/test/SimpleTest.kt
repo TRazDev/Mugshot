@@ -1,18 +1,18 @@
-package app.cash.paparazzi.plugin.test
+package uk.co.fractalmotion.mugshot.plugin.test
 
 import androidx.compose.material.Text
-import app.cash.paparazzi.Paparazzi
+import uk.co.fractalmotion.mugshot.Mugshot
 import org.junit.Rule
 import org.junit.Test
 
 class SimpleTest {
   @get:Rule
-  val paparazzi = Paparazzi(maxPercentDifference = 0.0)
+  val mugshot = Mugshot(maxPercentDifference = 0.0)
 
   @Test
   fun compose() {
-    paparazzi.snapshot {
-      Text("Hello Paparazzi!")
+    mugshot.snapshot {
+      Text("Hello Mugshot!")
     }
   }
 }

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.cash.paparazzi
+package uk.co.fractalmotion.mugshot
 
 import android.content.Context
 import android.content.res.Resources
@@ -27,7 +27,7 @@ import org.junit.runner.Description
 import org.junit.runners.model.Statement
 import java.util.Date
 
-public class Paparazzi @JvmOverloads constructor(
+public class Mugshot @JvmOverloads constructor(
   private val environment: Environment = detectEnvironment(),
   private val deviceConfig: DeviceConfig = DeviceConfig.NEXUS_5,
   private val theme: String = "android:Theme.Material.NoActionBar.Fullscreen",
@@ -40,7 +40,7 @@ public class Paparazzi @JvmOverloads constructor(
   private val showSystemUi: Boolean = false,
   private val useDeviceResolution: Boolean = false
 ) : TestRule {
-  private lateinit var sdk: PaparazziSdk
+  private lateinit var sdk: MugshotSdk
   private lateinit var frameHandler: SnapshotHandler.FrameHandler
   private var testName: TestName? = null
 
@@ -72,7 +72,7 @@ public class Paparazzi @JvmOverloads constructor(
   }
 
   public fun setup(testName: TestName) {
-    sdk = PaparazziSdk(
+    sdk = MugshotSdk(
       environment = environment,
       deviceConfig = deviceConfig,
       theme = theme,
@@ -139,7 +139,7 @@ public class Paparazzi @JvmOverloads constructor(
 
   private companion object {
     private val isVerifying: Boolean =
-      System.getProperty("paparazzi.test.verify")?.toBoolean() == true
+      System.getProperty("mugshot.test.verify")?.toBoolean() == true
 
     private fun determineHandler(maxPercentDifference: Double): SnapshotHandler =
       if (isVerifying) {

@@ -1,4 +1,4 @@
-package app.cash.paparazzi.sample
+package uk.co.fractalmotion.mugshot.sample
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
@@ -12,24 +12,24 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
-import app.cash.paparazzi.Paparazzi
+import uk.co.fractalmotion.mugshot.Mugshot
 import org.junit.Rule
 import org.junit.Test
 
 class HelloComposeTest {
   @get:Rule
-  val paparazzi = Paparazzi()
+  val mugshot = Mugshot()
 
   @Test
   fun compose() {
-    paparazzi.snapshot { HelloPaparazzi() }
+    mugshot.snapshot { HelloMugshot() }
   }
 }
 
 @Suppress("TestFunctionName")
 @Composable
-fun HelloPaparazzi() {
-  val text = "Hello, Paparazzi"
+fun HelloMugshot() {
+  val text = "Hello, Mugshot"
   Column(
     Modifier
       .background(Color.White)

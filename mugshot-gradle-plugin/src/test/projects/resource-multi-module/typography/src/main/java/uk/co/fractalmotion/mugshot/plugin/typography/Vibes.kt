@@ -13,13 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.cash.paparazzi.plugin.typography
+package uk.co.fractalmotion.mugshot.plugin.typography
 
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
-import app.cash.paparazzi.plugin.typography.R
+import uk.co.fractalmotion.mugshot.plugin.typography.R
 
 val GreatVibes = FontFamily(
   Font(

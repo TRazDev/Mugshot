@@ -1,13 +1,13 @@
-package app.cash.paparazzi.plugin.test
+package uk.co.fractalmotion.mugshot.plugin.test
 
-import app.cash.paparazzi.Paparazzi
+import uk.co.fractalmotion.mugshot.Mugshot
 import com.google.common.truth.Truth.assertThat
 import org.junit.Rule
 import org.junit.Test
 
 class AssetAccessTest {
   @get:Rule
-  val paparazzi = Paparazzi()
+  val mugshot = Mugshot()
 
   @Test
   fun testViews() {
@@ -20,7 +20,7 @@ class AssetAccessTest {
 
     pairs.forEach { (key, value) ->
       val contents =
-        paparazzi.context.assets.open(key).bufferedReader().use { it.readText() }
+        mugshot.context.assets.open(key).bufferedReader().use { it.readText() }
       assertThat(contents).isEqualTo(value)
     }
   }

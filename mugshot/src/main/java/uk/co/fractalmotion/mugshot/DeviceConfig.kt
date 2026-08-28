@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package app.cash.paparazzi
+package uk.co.fractalmotion.mugshot
 
 import android.content.res.Configuration
 import com.android.ide.common.rendering.api.HardwareConfig
@@ -919,7 +919,7 @@ public class DeviceConfig(
     }
 
     internal fun detectLocaleProperty(): String? =
-      System.getProperty("app.cash.paparazzi.defaultLocale")
+      System.getProperty("uk.co.fractalmotion.mugshot.defaultLocale")
         ?.takeIf { it.isNotEmpty() }
   }
 }

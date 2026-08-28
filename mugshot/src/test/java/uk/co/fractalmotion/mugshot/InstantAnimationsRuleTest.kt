@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.cash.paparazzi
+package uk.co.fractalmotion.mugshot
 
 import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
@@ -27,13 +27,13 @@ import org.junit.Test
 
 class InstantAnimationsRuleTest {
   @get:Rule
-  val testRule = PaparazziTestRule()
+  val testRule = MugshotTestRule()
 
   @get:Rule
   val instantAnimationsRule = InstantAnimationsRule()
 
-  val paparazzi
-    get() = testRule.paparazzi
+  val mugshot
+    get() = testRule.mugshot
 
   /**
    * Confirm that animations and their event listeners are all executed immediately, even though
@@ -43,7 +43,7 @@ class InstantAnimationsRuleTest {
   fun happyPath() {
     val log = mutableListOf<String>()
 
-    val view = object : TextView(paparazzi.context) {
+    val view = object : TextView(mugshot.context) {
       override fun onDraw(canvas: Canvas) {
         log += "onDraw text=$text"
       }
@@ -68,7 +68,7 @@ class InstantAnimationsRuleTest {
     animator.interpolator = LinearInterpolator()
     animator.start()
 
-    paparazzi.snapshot(view)
+    mugshot.snapshot(view)
     assertThat(log)
       .containsExactly("onAnimationStart", "onAnimationEnd", "onDraw text=1.0", "onDraw text=1.0").inOrder()
     log.clear()

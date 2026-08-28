@@ -13,12 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.cash.paparazzi
+package uk.co.fractalmotion.mugshot
 
-import app.cash.paparazzi.SnapshotHandler.FrameHandler
-import app.cash.paparazzi.internal.ImageUtils
-import app.cash.paparazzi.internal.PaparazziJson
-import app.cash.paparazzi.internal.WebpCodec
+import uk.co.fractalmotion.mugshot.SnapshotHandler.FrameHandler
+import uk.co.fractalmotion.mugshot.internal.ImageUtils
+import uk.co.fractalmotion.mugshot.internal.MugshotJson
+import uk.co.fractalmotion.mugshot.internal.WebpCodec
 import com.google.common.base.CharMatcher
 import com.google.common.io.Files
 import okio.BufferedSink
@@ -38,7 +38,7 @@ import javax.imageio.ImageIO
 /**
  * Creates an HTML report that avoids writing files that have already been written.
  *
- * Images are named by hashes of their contents. Paparazzi won't write two images with the same
+ * Images are named by hashes of their contents. Mugshot won't write two images with the same
  * contents.
  *
  * Runs are named by their date.
@@ -54,15 +54,15 @@ import javax.imageio.ImageIO
  *   20190626002345_b1e882.js
  * index.html
  * index.js
- * paparazzi.js
+ * mugshot.js
  * ```
  */
 public class HtmlReportWriter @JvmOverloads constructor(
   private val runName: String = defaultRunName(),
-  private val rootDirectory: File = File(System.getProperty("paparazzi.report.dir")),
+  private val rootDirectory: File = File(System.getProperty("mugshot.report.dir")),
   private val maxPercentDifference: Double,
   private val differ: Differ = determineDiffer(),
-  snapshotRootDirectory: File = File(System.getProperty("paparazzi.snapshot.dir"))
+  snapshotRootDirectory: File = File(System.getProperty("mugshot.snapshot.dir"))
 ) : SnapshotHandler {
   private val runsDirectory: File = File(rootDirectory, "runs")
   private val imagesDirectory: File = File(rootDirectory, "images")
@@ -72,9 +72,9 @@ public class HtmlReportWriter @JvmOverloads constructor(
   private val shots = mutableListOf<Snapshot>()
 
   private val isRecording: Boolean =
-    System.getProperty("paparazzi.test.record")?.toBoolean() == true
+    System.getProperty("mugshot.test.record")?.toBoolean() == true
   private val overwriteOnMaxPercentDifference: Boolean =
-    System.getProperty("paparazzi.test.record.overwriteOnMaxPercentDifference")?.toBoolean() == true
+    System.getProperty("mugshot.test.record.overwriteOnMaxPercentDifference")?.toBoolean() == true
 
   init {
     runsDirectory.mkdirs()
@@ -164,7 +164,7 @@ public class HtmlReportWriter @JvmOverloads constructor(
 
     File(rootDirectory, "index.js").writeAtomically {
       writeUtf8("window.all_runs = ")
-      PaparazziJson.listOfStringsAdapter.toJson(this, runNames)
+      MugshotJson.listOfStringsAdapter.toJson(this, runNames)
       writeUtf8(";")
     }
   }
@@ -195,13 +195,13 @@ public class HtmlReportWriter @JvmOverloads constructor(
     val runJs = File(runsDirectory, "${runName.sanitizeForFilename()}.js")
     runJs.writeAtomically {
       writeUtf8("window.runs[\"$runName\"] = ")
-      PaparazziJson.listOfShotsAdapter.toJson(this, shots)
+      MugshotJson.listOfShotsAdapter.toJson(this, shots)
       writeUtf8(";")
     }
   }
 
   private fun writeStaticFiles() {
-    for (staticFile in listOf("index.html", "paparazzi.js")) {
+    for (staticFile in listOf("index.html", "mugshot.js")) {
       File(rootDirectory, staticFile).writeAtomically {
         writeAll(HtmlReportWriter::class.java.classLoader.getResourceAsStream(staticFile).source())
       }

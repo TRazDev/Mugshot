@@ -1,4 +1,4 @@
-package app.cash.paparazzi.sample
+package uk.co.fractalmotion.mugshot.sample
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -13,22 +13,22 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import app.cash.paparazzi.DeviceConfig
-import app.cash.paparazzi.Paparazzi
+import uk.co.fractalmotion.mugshot.DeviceConfig
+import uk.co.fractalmotion.mugshot.Mugshot
 import com.android.ide.common.rendering.api.SessionParams.RenderingMode
 import org.junit.Rule
 import org.junit.Test
 
 class ComposeDialogShrinkTest {
   @get:Rule
-  val paparazzi = Paparazzi(
+  val mugshot = Mugshot(
     deviceConfig = DeviceConfig.PIXEL_5.copy(softButtons = false),
     renderingMode = RenderingMode.SHRINK
   )
 
   @Test
   fun test() {
-    paparazzi.snapshot {
+    mugshot.snapshot {
       AlertDialog(
         modifier = Modifier
           .fillMaxWidth()

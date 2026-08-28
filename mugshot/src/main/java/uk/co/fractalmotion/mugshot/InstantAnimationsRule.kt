@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.cash.paparazzi
+package uk.co.fractalmotion.mugshot
 
 import android.animation.Animator.AnimatorListener
 import android.animation.ValueAnimator
@@ -22,7 +22,7 @@ import org.junit.runner.Description
 import org.junit.runners.model.Statement
 
 /**
- * Sets animation duration scale to 0 so all animations run instantly. Use this with Paparazzi to
+ * Sets animation duration scale to 0 so all animations run instantly. Use this with Mugshot to
  * skip animations and snapshot their terminal state.
  *
  * Note that animation side effects are still performed, including calls like

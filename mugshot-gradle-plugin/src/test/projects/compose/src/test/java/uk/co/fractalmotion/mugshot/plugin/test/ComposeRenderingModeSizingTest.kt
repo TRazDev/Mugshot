@@ -1,4 +1,4 @@
-package app.cash.paparazzi.plugin.test
+package uk.co.fractalmotion.mugshot.plugin.test
 
 import android.content.Context
 import android.view.ViewGroup.LayoutParams
@@ -17,10 +17,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.unit.dp
-import app.cash.paparazzi.DeviceConfig
-import app.cash.paparazzi.Paparazzi
-import app.cash.paparazzi.Snapshot
-import app.cash.paparazzi.SnapshotHandler
+import uk.co.fractalmotion.mugshot.DeviceConfig
+import uk.co.fractalmotion.mugshot.Mugshot
+import uk.co.fractalmotion.mugshot.Snapshot
+import uk.co.fractalmotion.mugshot.SnapshotHandler
 import com.android.ide.common.rendering.api.SessionParams.RenderingMode
 import org.junit.Assert.assertEquals
 import org.junit.Rule
@@ -36,8 +36,8 @@ class ComposeRenderingModeSizingTest {
   private val snapshotHandler = DimensionAssertingSnapshotHandler()
 
   @get:Rule
-  val paparazzi =
-    Paparazzi(
+  val mugshot =
+    Mugshot(
       deviceConfig = DeviceConfig.NEXUS_5,
       renderingMode = RenderingMode.V_SCROLL,
       snapshotHandler = snapshotHandler
@@ -52,7 +52,7 @@ class ComposeRenderingModeSizingTest {
     )
 
     val composeView =
-      ComposeView(paparazzi.context).apply {
+      ComposeView(mugshot.context).apply {
         layoutParams = LayoutParams(WRAP_CONTENT, WRAP_CONTENT)
         setContent {
           Column(
@@ -83,8 +83,8 @@ class ComposeRenderingModeSizingTest {
         }
       }
 
-    paparazzi.snapshot(
-      view = BoundedLayout(paparazzi.context).apply {
+    mugshot.snapshot(
+      view = BoundedLayout(mugshot.context).apply {
         layoutParams = LayoutParams(WRAP_CONTENT, WRAP_CONTENT)
         addView(composeView)
       },

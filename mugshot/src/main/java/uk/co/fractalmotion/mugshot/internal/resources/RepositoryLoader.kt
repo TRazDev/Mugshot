@@ -13,20 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.cash.paparazzi.internal.resources
+package uk.co.fractalmotion.mugshot.internal.resources
 
-import app.cash.paparazzi.internal.resources.base.BasicArrayResourceItem
-import app.cash.paparazzi.internal.resources.base.BasicAttrResourceItem
-import app.cash.paparazzi.internal.resources.base.BasicDensityBasedFileResourceItem
-import app.cash.paparazzi.internal.resources.base.BasicFileResourceItem
-import app.cash.paparazzi.internal.resources.base.BasicForeignAttrResourceItem
-import app.cash.paparazzi.internal.resources.base.BasicPluralsResourceItem
-import app.cash.paparazzi.internal.resources.base.BasicResourceItem
-import app.cash.paparazzi.internal.resources.base.BasicStyleResourceItem
-import app.cash.paparazzi.internal.resources.base.BasicStyleableResourceItem
-import app.cash.paparazzi.internal.resources.base.BasicTextValueResourceItem
-import app.cash.paparazzi.internal.resources.base.BasicValueResourceItem
-import app.cash.paparazzi.internal.resources.base.BasicValueResourceItemBase
+import uk.co.fractalmotion.mugshot.internal.resources.base.BasicArrayResourceItem
+import uk.co.fractalmotion.mugshot.internal.resources.base.BasicAttrResourceItem
+import uk.co.fractalmotion.mugshot.internal.resources.base.BasicDensityBasedFileResourceItem
+import uk.co.fractalmotion.mugshot.internal.resources.base.BasicFileResourceItem
+import uk.co.fractalmotion.mugshot.internal.resources.base.BasicForeignAttrResourceItem
+import uk.co.fractalmotion.mugshot.internal.resources.base.BasicPluralsResourceItem
+import uk.co.fractalmotion.mugshot.internal.resources.base.BasicResourceItem
+import uk.co.fractalmotion.mugshot.internal.resources.base.BasicStyleResourceItem
+import uk.co.fractalmotion.mugshot.internal.resources.base.BasicStyleableResourceItem
+import uk.co.fractalmotion.mugshot.internal.resources.base.BasicTextValueResourceItem
+import uk.co.fractalmotion.mugshot.internal.resources.base.BasicValueResourceItem
+import uk.co.fractalmotion.mugshot.internal.resources.base.BasicValueResourceItemBase
 import com.android.SdkConstants.ANDROID_NS_NAME
 import com.android.SdkConstants.ATTR_FORMAT
 import com.android.SdkConstants.ATTR_INDEX

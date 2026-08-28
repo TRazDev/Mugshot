@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.cash.paparazzi.gradle.utils
+package uk.co.fractalmotion.mugshot.gradle.utils
 
 import java.util.Locale
 

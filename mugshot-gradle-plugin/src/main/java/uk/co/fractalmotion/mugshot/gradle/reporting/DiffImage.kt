@@ -1,4 +1,4 @@
-package app.cash.paparazzi.gradle.reporting
+package uk.co.fractalmotion.mugshot.gradle.reporting
 
 internal data class DiffImage(
   val path: String, // TODO relative path

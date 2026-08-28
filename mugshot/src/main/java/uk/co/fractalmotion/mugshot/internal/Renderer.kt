@@ -14,17 +14,17 @@
  * limitations under the License.
  */
 
-package app.cash.paparazzi.internal
+package uk.co.fractalmotion.mugshot.internal
 
-import app.cash.paparazzi.DeviceConfig
-import app.cash.paparazzi.Environment
-import app.cash.paparazzi.Flags
-import app.cash.paparazzi.Paparazzi
-import app.cash.paparazzi.getFieldReflectively
-import app.cash.paparazzi.internal.resources.AarSourceResourceRepository
-import app.cash.paparazzi.internal.resources.AppResourceRepository
-import app.cash.paparazzi.internal.resources.FrameworkResourceRepository
-import app.cash.paparazzi.setStaticValue
+import uk.co.fractalmotion.mugshot.DeviceConfig
+import uk.co.fractalmotion.mugshot.Environment
+import uk.co.fractalmotion.mugshot.Flags
+import uk.co.fractalmotion.mugshot.Mugshot
+import uk.co.fractalmotion.mugshot.getFieldReflectively
+import uk.co.fractalmotion.mugshot.internal.resources.AarSourceResourceRepository
+import uk.co.fractalmotion.mugshot.internal.resources.AppResourceRepository
+import uk.co.fractalmotion.mugshot.internal.resources.FrameworkResourceRepository
+import uk.co.fractalmotion.mugshot.setStaticValue
 import com.android.layoutlib.bridge.Bridge
 import com.android.layoutlib.bridge.android.RenderParamsFlags
 import com.android.layoutlib.bridge.impl.DelegateManager
@@ -37,16 +37,16 @@ import kotlin.io.path.name
 /** View rendering. */
 internal class Renderer(
   private val environment: Environment,
-  private val layoutlibCallback: PaparazziCallback,
-  private val logger: PaparazziLogger
+  private val layoutlibCallback: MugshotCallback,
+  private val logger: MugshotLogger
 ) : Closeable {
   private var bridge: Bridge? = null
   private lateinit var sessionParamsBuilder: SessionParamsBuilder
 
   /** Initialize the bridge and the resource maps. */
   fun prepare(): SessionParamsBuilder {
-    val layoutlibResourcesRoot = System.getProperty("paparazzi.layoutlib.resources.root")
-      ?: throw RuntimeException("Missing system property for 'paparazzi.layoutlib.resources.root'")
+    val layoutlibResourcesRoot = System.getProperty("mugshot.layoutlib.resources.root")
+      ?: throw RuntimeException("Missing system property for 'mugshot.layoutlib.resources.root'")
     val layoutlibResDir = File("$layoutlibResourcesRoot/res")
 
     val frameworkResources = FrameworkResourceRepository.create(
@@ -71,7 +71,7 @@ internal class Renderer(
       logger = logger,
       frameworkResources = frameworkResources,
       projectResources = projectResources,
-      assetRepository = PaparazziAssetRepository(
+      assetRepository = MugshotAssetRepository(
         assetDirs = environment.allModuleAssetDirs + environment.libraryAssetDirs
       )
     )
@@ -79,8 +79,8 @@ internal class Renderer(
       .plusFlag(RenderParamsFlags.FLAG_KEY_DISABLE_BITMAP_CACHING, true)
       .withTheme("AppTheme", true)
 
-    val layoutlibRuntimeRoot = System.getProperty("paparazzi.layoutlib.runtime.root")
-      ?: throw RuntimeException("Missing system property for 'paparazzi.layoutlib.runtime.root'")
+    val layoutlibRuntimeRoot = System.getProperty("mugshot.layoutlib.runtime.root")
+      ?: throw RuntimeException("Missing system property for 'mugshot.layoutlib.runtime.root'")
     val buildProp = File(layoutlibRuntimeRoot, "build.prop")
     val platformDataDir = File(layoutlibRuntimeRoot, "data")
     val fontLocation = File(platformDataDir, "fonts")
@@ -121,7 +121,7 @@ internal class Renderer(
   }
 
   private fun configureBuildProperties() {
-    val classLoader = Paparazzi::class.java.classLoader
+    val classLoader = Mugshot::class.java.classLoader
     val buildClass = try {
       classLoader.loadClass("android.os.Build")
     } catch (e: ClassNotFoundException) {

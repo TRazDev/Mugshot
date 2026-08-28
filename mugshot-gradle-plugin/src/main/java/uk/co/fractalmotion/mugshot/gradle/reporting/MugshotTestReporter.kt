@@ -1,4 +1,4 @@
-package app.cash.paparazzi.gradle.reporting
+package uk.co.fractalmotion.mugshot.gradle.reporting
 
 import org.gradle.api.GradleException
 import org.gradle.api.internal.tasks.testing.junit.result.TestResultsProvider
@@ -19,7 +19,7 @@ import java.io.File
 import java.io.IOException
 import kotlin.time.measureTime
 
-internal class PaparazziTestReporter(
+internal class MugshotTestReporter(
   private val buildOperationRunner: BuildOperationRunner,
   private val buildOperationExecutor: BuildOperationExecutor,
   private val diffRegistryFactory: () -> Map<Pair<String, String>, DiffImage>
@@ -134,7 +134,7 @@ internal class PaparazziTestReporter(
   }
 
   companion object {
-    private val LOG: Logger = Logging.getLogger(PaparazziTestReporter::class.java)
+    private val LOG: Logger = Logging.getLogger(MugshotTestReporter::class.java)
 
     fun <T : CompositeTestResults> generator(
       fileUrl: String,

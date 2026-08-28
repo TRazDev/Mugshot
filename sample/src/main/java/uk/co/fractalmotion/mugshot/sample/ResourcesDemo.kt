@@ -1,4 +1,4 @@
-package app.cash.paparazzi.sample
+package uk.co.fractalmotion.mugshot.sample
 
 import android.icu.text.MessageFormat
 import android.text.Html
@@ -22,12 +22,12 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
-import app.cash.paparazzi.annotations.Paparazzi
-import app.cash.paparazzi.sample.ResourcesDemoView.Companion.plurals
+import uk.co.fractalmotion.mugshot.annotations.Mugshot
+import uk.co.fractalmotion.mugshot.sample.ResourcesDemoView.Companion.plurals
 
 const val IMAGE_SIZE = 120f
 
-@Paparazzi
+@Mugshot
 @Preview
 @Composable
 fun ResourcesDemo() {

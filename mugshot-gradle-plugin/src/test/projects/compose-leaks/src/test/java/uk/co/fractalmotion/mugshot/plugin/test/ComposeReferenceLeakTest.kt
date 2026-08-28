@@ -1,7 +1,7 @@
-package app.cash.paparazzi.plugin.test
+package uk.co.fractalmotion.mugshot.plugin.test
 
 import androidx.compose.ui.platform.ComposeView
-import app.cash.paparazzi.Paparazzi
+import uk.co.fractalmotion.mugshot.Mugshot
 import org.junit.AfterClass
 import org.junit.Rule
 import org.junit.Test
@@ -9,16 +9,16 @@ import java.lang.ref.WeakReference
 
 class ComposeReferenceLeakTest {
   @get:Rule
-  val paparazzi = Paparazzi()
+  val mugshot = Mugshot()
 
   @Test
   fun cleansUpComposeReferences() {
-    composeView = ComposeView(paparazzi.context).apply {
+    composeView = ComposeView(mugshot.context).apply {
       setContent {
-        HelloPaparazzi()
+        HelloMugshot()
       }
 
-      paparazzi.snapshot(this)
+      mugshot.snapshot(this)
     }
   }
 

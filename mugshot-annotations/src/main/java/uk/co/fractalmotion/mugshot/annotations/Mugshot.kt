@@ -1,5 +1,5 @@
-package app.cash.paparazzi.annotations
+package uk.co.fractalmotion.mugshot.annotations
 
 @Target(AnnotationTarget.FUNCTION)
 @Retention(AnnotationRetention.BINARY)
-public annotation class Paparazzi
+public annotation class Mugshot

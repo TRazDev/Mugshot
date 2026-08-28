@@ -1,4 +1,4 @@
-package app.cash.paparazzi.gradle.reporting
+package uk.co.fractalmotion.mugshot.gradle.reporting
 
 import java.math.BigDecimal
 import java.math.RoundingMode

@@ -1,6 +1,6 @@
-package app.cash.paparazzi.internal.resources
+package uk.co.fractalmotion.mugshot.internal.resources
 
-import app.cash.paparazzi.internal.resources.base.BasicFileResourceItem
+import uk.co.fractalmotion.mugshot.internal.resources.base.BasicFileResourceItem
 import com.android.ide.common.resources.SingleNamespaceResourceRepository
 import com.android.ide.common.util.PathString
 import com.android.resources.ResourceType

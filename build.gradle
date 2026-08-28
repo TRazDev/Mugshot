@@ -22,14 +22,14 @@ buildscript {
 
     // Normally you would declare a version here, but we use dependency substitution in
     // settings.gradle to use the version built from inside the repo.
-    classpath 'app.cash.paparazzi:paparazzi-gradle-plugin'
-    classpath 'app.cash.paparazzi:aar2jar'
+    classpath 'uk.co.fractalmotion.mugshot:mugshot-gradle-plugin'
+    classpath 'uk.co.fractalmotion.mugshot:aar2jar'
   }
 }
 
 apply plugin: 'binary-compatibility-validator'
 
-def testProjectProp = System.getProperty("app.cash.paparazzi.testProjectNames")
+def testProjectProp = System.getProperty("uk.co.fractalmotion.mugshot.testProjectNames")
 apiValidation {
   ignoredProjects += ['sample']
 

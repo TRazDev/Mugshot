@@ -13,11 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.cash.paparazzi
+package uk.co.fractalmotion.mugshot
 
-import app.cash.paparazzi.FileSubject.Companion.assertThat
-import app.cash.paparazzi.internal.ImageUtils
-import app.cash.paparazzi.internal.differs.PixelPerfect
+import uk.co.fractalmotion.mugshot.FileSubject.Companion.assertThat
+import uk.co.fractalmotion.mugshot.internal.ImageUtils
+import uk.co.fractalmotion.mugshot.internal.differs.PixelPerfect
 import com.google.common.truth.Truth.assertThat
 import org.junit.Assert.assertThrows
 import org.junit.Rule
@@ -57,7 +57,7 @@ class HtmlReportWriterTest {
       val frameHandler = htmlReportWriter.newFrameHandler(
         snapshot = Snapshot(
           name = "loading",
-          testName = TestName("app.cash.paparazzi", "CelebrityTest", "testSettings"),
+          testName = TestName("uk.co.fractalmotion.mugshot", "CelebrityTest", "testSettings"),
           timestamp = Instant.parse("2019-03-20T10:27:43Z").toDate(),
           tags = listOf("redesign")
         )
@@ -80,7 +80,7 @@ class HtmlReportWriterTest {
         |window.runs["run_one"] = [
         |  {
         |    "name": "loading",
-        |    "testName": "app.cash.paparazzi.CelebrityTest#testSettings",
+        |    "testName": "uk.co.fractalmotion.mugshot.CelebrityTest#testSettings",
         |    "timestamp": "2019-03-20T10:27:43.000Z",
         |    "tags": [
         |      "redesign"
@@ -95,7 +95,7 @@ class HtmlReportWriterTest {
   @Test
   fun failureActualImageMatchesRecordedGoldenImageBytes() {
     try {
-      System.setProperty("paparazzi.test.record", "true")
+      System.setProperty("mugshot.test.record", "true")
 
       val htmlReportWriter = HtmlReportWriter(
         runName = "record_run",
@@ -106,10 +106,10 @@ class HtmlReportWriterTest {
       )
       val snapshot = Snapshot(
         name = "test",
-        testName = TestName("app.cash.paparazzi", "HomeView", "testSettings"),
+        testName = TestName("uk.co.fractalmotion.mugshot", "HomeView", "testSettings"),
         timestamp = Instant.parse("2021-02-23T10:27:43Z").toDate()
       )
-      val golden = File("${snapshotRoot.root}/images/app.cash.paparazzi_HomeView_testSettings_test.webp")
+      val golden = File("${snapshotRoot.root}/images/uk.co.fractalmotion.mugshot_HomeView_testSettings_test.webp")
 
       htmlReportWriter.use {
         htmlReportWriter.newFrameHandler(snapshot = snapshot).use { frameHandler ->
@@ -131,7 +131,7 @@ class HtmlReportWriterTest {
 
       assertThat(File(failureDir, golden.name).readBytes()).isEqualTo(golden.readBytes())
     } finally {
-      System.clearProperty("paparazzi.test.record")
+      System.clearProperty("mugshot.test.record")
     }
   }
 
@@ -155,7 +155,7 @@ class HtmlReportWriterTest {
       val frameHandler = htmlReportWriter.newFrameHandler(
         snapshot = Snapshot(
           name = "loading",
-          testName = TestName("app.cash.paparazzi", "CelebrityTest", "testSettings"),
+          testName = TestName("uk.co.fractalmotion.mugshot", "CelebrityTest", "testSettings"),
           timestamp = Instant.parse("2019-03-20T10:27:43Z").toDate()
         )
       )
@@ -171,7 +171,7 @@ class HtmlReportWriterTest {
   fun imagesAlwaysOverwriteOnRecord() {
     try {
       // set record mode
-      System.setProperty("paparazzi.test.record", "true")
+      System.setProperty("mugshot.test.record", "true")
 
       val htmlReportWriter = HtmlReportWriter(
         runName = "record_run",
@@ -184,11 +184,11 @@ class HtmlReportWriterTest {
         val now = Instant.parse("2021-02-23T10:27:43Z")
         val snapshot = Snapshot(
           name = "test",
-          testName = TestName("app.cash.paparazzi", "HomeView", "testSettings"),
+          testName = TestName("uk.co.fractalmotion.mugshot", "HomeView", "testSettings"),
           timestamp = now.toDate()
         )
         val golden =
-          File("${snapshotRoot.root}/images/app.cash.paparazzi_HomeView_testSettings_test.webp")
+          File("${snapshotRoot.root}/images/uk.co.fractalmotion.mugshot_HomeView_testSettings_test.webp")
 
         // precondition
         assertThat(golden).doesNotExist()
@@ -214,7 +214,7 @@ class HtmlReportWriterTest {
         assertThat(timeOverwrite).isGreaterThan(timeFirstWrite)
       }
     } finally {
-      System.clearProperty("paparazzi.test.record")
+      System.clearProperty("mugshot.test.record")
     }
   }
 
@@ -222,8 +222,8 @@ class HtmlReportWriterTest {
   fun imagesDoesntOverwriteOnRecordWithFlag() {
     try {
       // set record mode
-      System.setProperty("paparazzi.test.record", "true")
-      System.setProperty("paparazzi.test.record.overwriteOnMaxPercentDifference", "true")
+      System.setProperty("mugshot.test.record", "true")
+      System.setProperty("mugshot.test.record.overwriteOnMaxPercentDifference", "true")
 
       val htmlReportWriter = HtmlReportWriter(
         runName = "record_run",
@@ -236,11 +236,11 @@ class HtmlReportWriterTest {
         val now = Instant.parse("2021-02-23T10:27:43Z")
         val snapshot = Snapshot(
           name = "test",
-          testName = TestName("app.cash.paparazzi", "HomeView", "testSettings"),
+          testName = TestName("uk.co.fractalmotion.mugshot", "HomeView", "testSettings"),
           timestamp = now.toDate()
         )
         val golden =
-          File("${snapshotRoot.root}/images/app.cash.paparazzi_HomeView_testSettings_test.webp")
+          File("${snapshotRoot.root}/images/uk.co.fractalmotion.mugshot_HomeView_testSettings_test.webp")
 
         // precondition
         assertThat(golden).doesNotExist()
@@ -266,8 +266,8 @@ class HtmlReportWriterTest {
         assertThat(timeOverwrite).isEqualTo(timeFirstWrite)
       }
     } finally {
-      System.clearProperty("paparazzi.test.record")
-      System.clearProperty("paparazzi.test.record.overwriteOnMaxPercentDifference")
+      System.clearProperty("mugshot.test.record")
+      System.clearProperty("mugshot.test.record.overwriteOnMaxPercentDifference")
     }
   }
 
@@ -275,8 +275,8 @@ class HtmlReportWriterTest {
   fun imagesOverwriteOnRecordWithFlagAndImageDiff() {
     try {
       // set record mode
-      System.setProperty("paparazzi.test.record", "true")
-      System.setProperty("paparazzi.test.record.overwriteOnMaxPercentDifference", "true")
+      System.setProperty("mugshot.test.record", "true")
+      System.setProperty("mugshot.test.record.overwriteOnMaxPercentDifference", "true")
 
       val htmlReportWriter = HtmlReportWriter(
         runName = "record_run",
@@ -289,11 +289,11 @@ class HtmlReportWriterTest {
         val now = Instant.parse("2021-02-23T10:27:43Z")
         val snapshot = Snapshot(
           name = "test",
-          testName = TestName("app.cash.paparazzi", "HomeView", "testSettings"),
+          testName = TestName("uk.co.fractalmotion.mugshot", "HomeView", "testSettings"),
           timestamp = now.toDate()
         )
         val golden =
-          File("${snapshotRoot.root}/images/app.cash.paparazzi_HomeView_testSettings_test.webp")
+          File("${snapshotRoot.root}/images/uk.co.fractalmotion.mugshot_HomeView_testSettings_test.webp")
 
         // precondition
         assertThat(golden).doesNotExist()
@@ -319,8 +319,8 @@ class HtmlReportWriterTest {
         assertThat(timeOverwrite).isGreaterThan(timeFirstWrite)
       }
     } finally {
-      System.clearProperty("paparazzi.test.record")
-      System.clearProperty("paparazzi.test.record.overwriteOnMaxPercentDifference")
+      System.clearProperty("mugshot.test.record")
+      System.clearProperty("mugshot.test.record.overwriteOnMaxPercentDifference")
     }
   }
 

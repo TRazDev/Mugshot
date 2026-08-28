@@ -1,4 +1,4 @@
-package app.cash.paparazzi.internal.differs
+package uk.co.fractalmotion.mugshot.internal.differs
 
 import java.awt.image.BufferedImage
 

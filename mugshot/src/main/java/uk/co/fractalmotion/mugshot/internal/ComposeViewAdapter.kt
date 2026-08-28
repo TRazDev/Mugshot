@@ -1,4 +1,4 @@
-package app.cash.paparazzi.internal
+package uk.co.fractalmotion.mugshot.internal
 
 import android.content.Context
 import android.graphics.Color

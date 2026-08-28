@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.cash.paparazzi.plugin.test
+package uk.co.fractalmotion.mugshot.plugin.test
 
 import android.content.Context
 import android.graphics.Typeface
@@ -27,17 +27,17 @@ import android.widget.LinearLayout.VERTICAL
 import android.widget.TextView
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.core.content.res.ResourcesCompat
-import app.cash.paparazzi.Paparazzi
+import uk.co.fractalmotion.mugshot.Mugshot
 import org.junit.Rule
 import org.junit.Test
 
 class CustomFontsTest {
   @get:Rule
-  val paparazzi = Paparazzi()
+  val mugshot = Mugshot()
 
   @Test
   fun inCode() {
-    val context = paparazzi.context
+    val context = mugshot.context
 
     val root = LinearLayout(context).apply {
       orientation = VERTICAL
@@ -75,18 +75,18 @@ class CustomFontsTest {
       )
     }
 
-    paparazzi.snapshot(root)
+    mugshot.snapshot(root)
   }
 
   @Test
   fun inXml() {
-    val view = paparazzi.inflate<View>(R.layout.textviews)
-    paparazzi.snapshot(view)
+    val view = mugshot.inflate<View>(R.layout.textviews)
+    mugshot.snapshot(view)
   }
 
   @Test
   fun singleLine() {
-    val text = object : TextView(paparazzi.context) {
+    val text = object : TextView(mugshot.context) {
       init {
         layoutParams = LayoutParams(MATCH_PARENT, WRAP_CONTENT, 1f)
         textSize = 32f
@@ -96,7 +96,7 @@ class CustomFontsTest {
         gravity = CENTER
       }
     }
-    paparazzi.snapshot(text)
+    mugshot.snapshot(text)
   }
 
   private fun createTextView(context: Context) =

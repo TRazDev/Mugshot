@@ -1,4 +1,4 @@
-package app.cash.paparazzi.gradle
+package uk.co.fractalmotion.mugshot.gradle
 
 import com.google.common.truth.FailureMetadata
 import com.google.common.truth.Subject

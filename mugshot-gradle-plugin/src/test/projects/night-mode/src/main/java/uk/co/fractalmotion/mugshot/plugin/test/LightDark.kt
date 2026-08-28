@@ -1,4 +1,4 @@
-package app.cash.paparazzi.plugin.test
+package uk.co.fractalmotion.mugshot.plugin.test
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.isSystemInDarkTheme

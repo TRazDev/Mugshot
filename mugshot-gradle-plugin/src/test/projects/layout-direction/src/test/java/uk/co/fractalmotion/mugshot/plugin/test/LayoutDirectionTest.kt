@@ -1,7 +1,7 @@
-package app.cash.paparazzi.plugin.test
+package uk.co.fractalmotion.mugshot.plugin.test
 
-import app.cash.paparazzi.DeviceConfig
-import app.cash.paparazzi.Paparazzi
+import uk.co.fractalmotion.mugshot.DeviceConfig
+import uk.co.fractalmotion.mugshot.Mugshot
 import com.android.resources.LayoutDirection
 import com.google.testing.junit.testparameterinjector.TestParameter
 import com.google.testing.junit.testparameterinjector.TestParameterInjector
@@ -28,7 +28,7 @@ class LayoutDirectionTest(
   }
 
   @get:Rule
-  val paparazzi = Paparazzi(
+  val mugshot = Mugshot(
     deviceConfig = DeviceConfig.NEXUS_5.copy(
       layoutDirection = localeAndDirection.direction,
       locale = localeAndDirection.tag
@@ -38,6 +38,6 @@ class LayoutDirectionTest(
 
   @Test
   fun layoutDirection() {
-    paparazzi.snapshot(paparazzi.inflate(R.layout.title_color))
+    mugshot.snapshot(mugshot.inflate(R.layout.title_color))
   }
 }

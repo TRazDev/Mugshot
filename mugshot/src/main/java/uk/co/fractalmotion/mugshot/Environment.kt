@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.cash.paparazzi
+package uk.co.fractalmotion.mugshot
 
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
@@ -62,11 +62,11 @@ public class Environment(
 public fun detectEnvironment(): Environment {
   checkInstalledJvm()
 
-  val projectDir = Paths.get(System.getProperty("paparazzi.project.dir"))
-  val appTestDir = Paths.get(System.getProperty("paparazzi.build.dir"))
-  val artifactsCacheDir = Paths.get(System.getProperty("paparazzi.artifacts.cache.dir"))
+  val projectDir = Paths.get(System.getProperty("mugshot.project.dir"))
+  val appTestDir = Paths.get(System.getProperty("mugshot.build.dir"))
+  val artifactsCacheDir = Paths.get(System.getProperty("mugshot.artifacts.cache.dir"))
 
-  val resourcesFile = File(System.getProperty("paparazzi.test.resources"))
+  val resourcesFile = File(System.getProperty("mugshot.test.resources"))
   val moshi = Moshi.Builder().addLast(KotlinJsonAdapterFactory()).build()!!
   val config =
     resourcesFile.source().buffer().use { moshi.adapter(Config::class.java).fromJson(it)!! }
@@ -107,7 +107,7 @@ private fun checkInstalledJvm() {
 
   if (feature < 11) {
     throw IllegalStateException(
-      "Unsupported JRE detected! Please install and run Paparazzi test suites on JDK 11+."
+      "Unsupported JRE detected! Please install and run Mugshot test suites on JDK 11+."
     )
   }
 }

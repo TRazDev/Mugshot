@@ -1,4 +1,4 @@
-package app.cash.paparazzi.agent
+package uk.co.fractalmotion.mugshot.agent
 
 import com.google.common.truth.Truth.assertThat
 import net.bytebuddy.agent.ByteBuddyAgent
@@ -10,7 +10,7 @@ class InterceptorRegistrarTest {
   @Before
   fun setup() {
     InterceptorRegistrar.addMethodInterceptors(
-      "app.cash.paparazzi.agent.InterceptorRegistrarTest\$Utils",
+      "uk.co.fractalmotion.mugshot.agent.InterceptorRegistrarTest\$Utils",
       setOf(
         "log1" to Interceptor1::class.java,
         "log2" to Interceptor2::class.java

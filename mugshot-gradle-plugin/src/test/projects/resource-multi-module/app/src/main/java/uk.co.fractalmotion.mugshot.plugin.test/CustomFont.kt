@@ -1,4 +1,4 @@
-package app.cash.paparazzi.plugin.test
+package uk.co.fractalmotion.mugshot.plugin.test
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -9,14 +9,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
-import app.cash.paparazzi.plugin.typography.GreatVibes
+import uk.co.fractalmotion.mugshot.plugin.typography.GreatVibes
 
 @Composable
 fun CustomFont() {
   MaterialTheme {
     Box(Modifier.fillMaxSize().background(color = Color.White)) {
       Text(
-        text = "Hello, Paparazzi!",
+        text = "Hello, Mugshot!",
         style = TextStyle(
           fontFamily = GreatVibes
         )

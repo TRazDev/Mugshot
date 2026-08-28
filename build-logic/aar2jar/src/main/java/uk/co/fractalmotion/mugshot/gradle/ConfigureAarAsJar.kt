@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.cash.paparazzi.gradle
+package uk.co.fractalmotion.mugshot.gradle
 
 import com.android.build.gradle.internal.publishing.AndroidArtifacts
 import org.gradle.api.Project

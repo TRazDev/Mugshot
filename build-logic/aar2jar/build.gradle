@@ -15,7 +15,7 @@ gradlePlugin {
   plugins {
     aar2jar {
       id = 'aar2jar'
-      implementationClass = 'app.cash.paparazzi.gradle.Aar2JarPlugin'
+      implementationClass = 'uk.co.fractalmotion.mugshot.gradle.Aar2JarPlugin'
     }
   }
 }

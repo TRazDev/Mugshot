@@ -1,13 +1,13 @@
 package runner
 
-import app.cash.paparazzi.Paparazzi
-import app.cash.paparazzi.TestName
+import uk.co.fractalmotion.mugshot.Mugshot
+import uk.co.fractalmotion.mugshot.TestName
 import org.junit.jupiter.api.extension.AfterEachCallback
 import org.junit.jupiter.api.extension.BeforeEachCallback
 import org.junit.jupiter.api.extension.ExtensionContext
 
-class PaparazziExtension(
-  val api: Paparazzi
+class MugshotExtension(
+  val api: Mugshot
 ) : BeforeEachCallback, AfterEachCallback {
 
   override fun beforeEach(context: ExtensionContext) {

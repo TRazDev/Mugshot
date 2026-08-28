@@ -1,4 +1,4 @@
-package app.cash.paparazzi.internal.interceptors
+package uk.co.fractalmotion.mugshot.internal.interceptors
 
 internal object EditModeInterceptor {
   @JvmStatic

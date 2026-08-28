@@ -1,4 +1,4 @@
-package app.cash.paparazzi
+package uk.co.fractalmotion.mugshot
 
 import sun.misc.Unsafe
 import java.lang.reflect.Field

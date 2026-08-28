@@ -1,4 +1,4 @@
-package app.cash.paparazzi.preview.lints
+package uk.co.fractalmotion.mugshot.preview.lints
 
 import com.android.tools.lint.detector.api.AnnotationInfo
 import com.android.tools.lint.detector.api.AnnotationUsageInfo
@@ -16,8 +16,8 @@ import org.jetbrains.uast.UElement
 import org.jetbrains.uast.UMethod
 import org.jetbrains.uast.UastVisibility
 
-public class PaparazziPreviewDetector : Detector(), SourceCodeScanner {
-  override fun applicableAnnotations(): List<String> = listOf(PAPARAZZI_ANNOTATION)
+public class MugshotPreviewDetector : Detector(), SourceCodeScanner {
+  override fun applicableAnnotations(): List<String> = listOf(MUGSHOT_ANNOTATION)
 
   override fun isApplicableAnnotationUsage(type: AnnotationUsageType): Boolean =
     type == DEFINITION || super.isApplicableAnnotationUsage(type)
@@ -32,7 +32,7 @@ public class PaparazziPreviewDetector : Detector(), SourceCodeScanner {
     usageInfo: AnnotationUsageInfo
   ) {
     val qualifiedName = annotationInfo.qualifiedName
-    if (qualifiedName != PAPARAZZI_ANNOTATION) return
+    if (qualifiedName != MUGSHOT_ANNOTATION) return
 
     val annotatedMethod = annotationInfo.annotation.uastParent as? UMethod
       ?: throw IllegalStateException("Expected annotated method given declared target type")
@@ -81,7 +81,7 @@ public class PaparazziPreviewDetector : Detector(), SourceCodeScanner {
   }
 
   internal companion object {
-    private const val PAPARAZZI_ANNOTATION = "app.cash.paparazzi.annotations.Paparazzi"
+    private const val MUGSHOT_ANNOTATION = "uk.co.fractalmotion.mugshot.annotations.Mugshot"
     private const val COMPOSABLE_ANNOTATION = "androidx.compose.runtime.Composable"
     private const val PREVIEW_ANNOTATION = "androidx.compose.ui.tooling.preview.Preview"
     private const val PREVIEW_PARAMETER_ANNOTATION = "androidx.compose.ui.tooling.preview.PreviewParameter"
@@ -89,12 +89,12 @@ public class PaparazziPreviewDetector : Detector(), SourceCodeScanner {
     val COMPOSABLE_NOT_DETECTED: Issue = Issue.create(
       id = "ComposableAnnotationNotFound",
       briefDescription = "Composable Annotation not found",
-      explanation = "Paparazzi Previews require a @Composable annotation to be applied.",
+      explanation = "Mugshot Previews require a @Composable annotation to be applied.",
       category = Category.CUSTOM_LINT_CHECKS,
       priority = 10,
       severity = Severity.ERROR,
       implementation = Implementation(
-        PaparazziPreviewDetector::class.java,
+        MugshotPreviewDetector::class.java,
         Scope.JAVA_FILE_SCOPE,
         Scope.JAVA_FILE_SCOPE
       )
@@ -103,12 +103,12 @@ public class PaparazziPreviewDetector : Detector(), SourceCodeScanner {
     val PREVIEW_NOT_DETECTED: Issue = Issue.create(
       id = "PreviewAnnotationNotFound",
       briefDescription = "Preview Annotation not found",
-      explanation = "Paparazzi Previews require a @Preview annotation to be applied.",
+      explanation = "Mugshot Previews require a @Preview annotation to be applied.",
       category = Category.CUSTOM_LINT_CHECKS,
       priority = 10,
       severity = Severity.ERROR,
       implementation = Implementation(
-        PaparazziPreviewDetector::class.java,
+        MugshotPreviewDetector::class.java,
         Scope.JAVA_FILE_SCOPE,
         Scope.JAVA_FILE_SCOPE
       )
@@ -117,12 +117,12 @@ public class PaparazziPreviewDetector : Detector(), SourceCodeScanner {
     val PRIVATE_PREVIEW_DETECTED: Issue = Issue.create(
       id = "PrivatePreviewDetected",
       briefDescription = "@Preview of private Composable detected",
-      explanation = "Paparazzi Previews does not support private Composables.",
+      explanation = "Mugshot Previews does not support private Composables.",
       category = Category.CUSTOM_LINT_CHECKS,
       priority = 10,
       severity = Severity.ERROR,
       implementation = Implementation(
-        PaparazziPreviewDetector::class.java,
+        MugshotPreviewDetector::class.java,
         Scope.JAVA_FILE_SCOPE,
         Scope.JAVA_FILE_SCOPE
       )
@@ -131,12 +131,12 @@ public class PaparazziPreviewDetector : Detector(), SourceCodeScanner {
     val PREVIEW_PARAMETERS_NOT_SUPPORTED: Issue = Issue.create(
       id = "PreviewParametersNotSupported",
       briefDescription = "Preview Parameters not supported",
-      explanation = "Paparazzi Previews does not support Preview Parameters.",
+      explanation = "Mugshot Previews does not support Preview Parameters.",
       category = Category.CUSTOM_LINT_CHECKS,
       priority = 10,
       severity = Severity.ERROR,
       implementation = Implementation(
-        PaparazziPreviewDetector::class.java,
+        MugshotPreviewDetector::class.java,
         Scope.JAVA_FILE_SCOPE,
         Scope.JAVA_FILE_SCOPE
       )

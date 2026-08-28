@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.cash.paparazzi.gradle
+package uk.co.fractalmotion.mugshot.gradle
 
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
@@ -61,11 +61,11 @@ public abstract class PrepareResourcesTask : DefaultTask() {
   public abstract val artifactFiles: ConfigurableFileCollection
 
   @get:OutputFile
-  public abstract val paparazziResources: RegularFileProperty
+  public abstract val mugshotResources: RegularFileProperty
 
   @TaskAction
   public fun writeResourcesFile() {
-    val out = paparazziResources.get().asFile
+    val out = mugshotResources.get().asFile
     out.delete()
 
     val mainPackage = packageName.get()

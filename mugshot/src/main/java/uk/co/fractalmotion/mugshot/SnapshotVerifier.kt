@@ -13,18 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.cash.paparazzi
+package uk.co.fractalmotion.mugshot
 
-import app.cash.paparazzi.Differ
-import app.cash.paparazzi.SnapshotHandler.FrameHandler
-import app.cash.paparazzi.internal.ImageUtils
-import app.cash.paparazzi.internal.WebpCodec
-import app.cash.paparazzi.internal.differs.DeltaE2000
-import app.cash.paparazzi.internal.differs.Flip
-import app.cash.paparazzi.internal.differs.Mssim
-import app.cash.paparazzi.internal.differs.OffByTwo
-import app.cash.paparazzi.internal.differs.PixelPerfect
-import app.cash.paparazzi.internal.differs.Sift
+import uk.co.fractalmotion.mugshot.Differ
+import uk.co.fractalmotion.mugshot.SnapshotHandler.FrameHandler
+import uk.co.fractalmotion.mugshot.internal.ImageUtils
+import uk.co.fractalmotion.mugshot.internal.WebpCodec
+import uk.co.fractalmotion.mugshot.internal.differs.DeltaE2000
+import uk.co.fractalmotion.mugshot.internal.differs.Flip
+import uk.co.fractalmotion.mugshot.internal.differs.Mssim
+import uk.co.fractalmotion.mugshot.internal.differs.OffByTwo
+import uk.co.fractalmotion.mugshot.internal.differs.PixelPerfect
+import uk.co.fractalmotion.mugshot.internal.differs.Sift
 import java.awt.image.BufferedImage
 import java.awt.image.BufferedImage.TYPE_INT_ARGB
 import java.io.File
@@ -32,7 +32,7 @@ import javax.imageio.ImageIO
 
 public class SnapshotVerifier @JvmOverloads constructor(
   private val maxPercentDifference: Double,
-  rootDirectory: File = File(System.getProperty("paparazzi.snapshot.dir")),
+  rootDirectory: File = File(System.getProperty("mugshot.snapshot.dir")),
   private val differ: Differ = determineDiffer()
 ) : SnapshotHandler {
   private val imagesDirectory: File = File(rootDirectory, "images")
@@ -56,7 +56,7 @@ public class SnapshotVerifier @JvmOverloads constructor(
           Failed to read the snapshot file from the file system.
 
           If your project uses git LFS, it's possible that it's misconfigured on your machine and
-          Paparazzi has just loaded a pointer file instead of the real snapshot file. Follow git
+          Mugshot has just loaded a pointer file instead of the real snapshot file. Follow git
           LFS troubleshooting instructions and try again.
 
           """.trimIndent()
@@ -81,15 +81,15 @@ public class SnapshotVerifier @JvmOverloads constructor(
     /** Directory where to write the thumbnails and deltas. */
     private val failureDir: File
       get() {
-        val path = System.getProperty("paparazzi.failures.dir")
-          ?: error("paparazzi.failures.dir system property is required")
+        val path = System.getProperty("mugshot.failures.dir")
+          ?: error("mugshot.failures.dir system property is required")
         return File(path).apply { mkdirs() }
       }
   }
 }
 
 internal fun determineDiffer() =
-  System.getProperty("app.cash.paparazzi.differ")?.lowercase().let { differ ->
+  System.getProperty("uk.co.fractalmotion.mugshot.differ")?.lowercase().let { differ ->
     when (differ) {
       "offbytwo" -> OffByTwo
       "pixelperfect" -> PixelPerfect

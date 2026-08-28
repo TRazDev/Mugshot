@@ -1,15 +1,15 @@
-package app.cash.paparazzi.internal
+package uk.co.fractalmotion.mugshot.internal
 
-import app.cash.paparazzi.internal.PaparazziLogger.MultipleFailuresException
+import uk.co.fractalmotion.mugshot.internal.MugshotLogger.MultipleFailuresException
 import com.google.common.truth.Truth.assertThat
 import org.junit.Assert.fail
 import org.junit.Test
 import java.io.FileNotFoundException
 
-class PaparazziLoggerTest {
+class MugshotLoggerTest {
   @Test
   fun testNoErrors() {
-    val logger = PaparazziLogger()
+    val logger = MugshotLogger()
 
     try {
       logger.assertNoErrors()
@@ -20,7 +20,7 @@ class PaparazziLoggerTest {
 
   @Test
   fun testSingleError() {
-    val logger = PaparazziLogger()
+    val logger = MugshotLogger()
     logger.error(FileNotFoundException("error1"), null)
 
     try {
@@ -33,7 +33,7 @@ class PaparazziLoggerTest {
 
   @Test
   fun testMultipleErrors() {
-    val logger = PaparazziLogger()
+    val logger = MugshotLogger()
     logger.error(FileNotFoundException("error1"), null)
     logger.error("tag", null, IllegalStateException("error2"), null, null)
 
@@ -50,7 +50,7 @@ class PaparazziLoggerTest {
 
   @Test
   fun testFlushErrors() {
-    val logger = PaparazziLogger()
+    val logger = MugshotLogger()
     logger.error(FileNotFoundException("error1"), null)
     logger.flushErrors()
     logger.assertNoErrors()

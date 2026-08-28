@@ -6,7 +6,7 @@
   tools:parentTag="android.widget.FrameLayout"
   >
 
-  <app.cash.paparazzi.plugin.test.PaparazziRecyclerView
+  <uk.co.fractalmotion.mugshot.plugin.test.MugshotRecyclerView
     android:id="@+id/list"
     android:layout_width="match_parent"
     android:layout_height="match_parent"

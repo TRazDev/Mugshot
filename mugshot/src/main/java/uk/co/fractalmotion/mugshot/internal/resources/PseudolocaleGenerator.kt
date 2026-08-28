@@ -1,10 +1,10 @@
-package app.cash.paparazzi.internal.resources
+package uk.co.fractalmotion.mugshot.internal.resources
 
-import app.cash.paparazzi.internal.resources.base.BasicArrayResourceItem
-import app.cash.paparazzi.internal.resources.base.BasicPluralsResourceItem
-import app.cash.paparazzi.internal.resources.base.BasicTextValueResourceItem
-import app.cash.paparazzi.internal.resources.base.BasicValueResourceItem
-import app.cash.paparazzi.internal.resources.base.BasicValueResourceItemBase
+import uk.co.fractalmotion.mugshot.internal.resources.base.BasicArrayResourceItem
+import uk.co.fractalmotion.mugshot.internal.resources.base.BasicPluralsResourceItem
+import uk.co.fractalmotion.mugshot.internal.resources.base.BasicTextValueResourceItem
+import uk.co.fractalmotion.mugshot.internal.resources.base.BasicValueResourceItem
+import uk.co.fractalmotion.mugshot.internal.resources.base.BasicValueResourceItemBase
 import com.android.ide.common.rendering.api.ResourceNamespace
 import com.android.ide.common.resources.ResourceValueMap
 import com.android.ide.common.resources.configuration.FolderConfiguration

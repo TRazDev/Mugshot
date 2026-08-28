@@ -1,4 +1,4 @@
-package app.cash.paparazzi.gradle.reporting
+package uk.co.fractalmotion.mugshot.gradle.reporting
 
 import sun.misc.Unsafe
 import java.lang.reflect.Field
@@ -7,7 +7,7 @@ import java.security.AccessController
 import java.security.PrivilegedAction
 
 /**
- * Copied from :paparazzi
+ * Copied from :mugshot
  * Merge usages if "friend paths" or similar is supported: https://youtrack.jetbrains.com/issue/KT-67920
  *
  * Inspired by and ported from:

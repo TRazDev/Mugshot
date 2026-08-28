@@ -1,4 +1,4 @@
-package app.cash.paparazzi.gradle.reporting
+package uk.co.fractalmotion.mugshot.gradle.reporting
 
 import org.gradle.api.internal.tasks.testing.results.serializable.SerializableFailure
 import org.gradle.api.tasks.testing.TestResult.ResultType

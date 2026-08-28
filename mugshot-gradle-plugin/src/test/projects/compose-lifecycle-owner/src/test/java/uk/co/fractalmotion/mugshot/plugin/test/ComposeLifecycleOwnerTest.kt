@@ -1,19 +1,19 @@
-package app.cash.paparazzi.plugin.test
+package uk.co.fractalmotion.mugshot.plugin.test
 
-import app.cash.paparazzi.Paparazzi
+import uk.co.fractalmotion.mugshot.Mugshot
 import org.junit.Rule
 import org.junit.Test
 
 class ComposeLifecycleOwnerTest {
   @get:Rule
-  val paparazzi = Paparazzi(
+  val mugshot = Mugshot(
     renderExtensions = setOf()
   )
 
   @Test
   fun lifecycleOwnerAvailableWithRendererExtension() {
-    paparazzi.snapshot {
-      HelloPaparazzi()
+    mugshot.snapshot {
+      HelloMugshot()
     }
   }
 }

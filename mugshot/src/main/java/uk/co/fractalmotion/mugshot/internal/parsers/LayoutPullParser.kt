@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package app.cash.paparazzi.internal.parsers
+package uk.co.fractalmotion.mugshot.internal.parsers
 
 import com.android.SdkConstants.ATTR_IGNORE
 import com.android.SdkConstants.EXPANDABLE_LIST_VIEW

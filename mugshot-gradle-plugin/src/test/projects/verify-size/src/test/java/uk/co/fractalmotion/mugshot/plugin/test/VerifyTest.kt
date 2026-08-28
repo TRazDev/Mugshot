@@ -13,12 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.cash.paparazzi.plugin.test
+package uk.co.fractalmotion.mugshot.plugin.test
 
 import android.graphics.Color
 import android.view.View
 import android.view.ViewGroup.LayoutParams
-import app.cash.paparazzi.Paparazzi
+import uk.co.fractalmotion.mugshot.Mugshot
 import com.android.ide.common.rendering.api.SessionParams.RenderingMode.SHRINK
 import org.junit.Rule
 import org.junit.Test
@@ -26,14 +26,14 @@ import org.junit.Test
 class VerifyTest {
 
   @get:Rule
-  val paparazzi = Paparazzi(renderingMode = SHRINK)
+  val mugshot = Mugshot(renderingMode = SHRINK)
 
   @Test
   fun verify() {
-    val view = View(paparazzi.context).apply {
+    val view = View(mugshot.context).apply {
       layoutParams = LayoutParams(300, 200)
       setBackgroundColor(Color.RED)
     }
-    paparazzi.snapshot(view)
+    mugshot.snapshot(view)
   }
 }

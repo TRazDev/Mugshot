@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.cash.paparazzi.internal.parsers
+package uk.co.fractalmotion.mugshot.internal.parsers
 
 /**
  * Derived from https://cs.android.com/android-studio/platform/tools/adt/idea/+/mirror-goog-studio-master-dev:android/src/com/android/tools/idea/rendering/parsers/AttributeSnapshot.java

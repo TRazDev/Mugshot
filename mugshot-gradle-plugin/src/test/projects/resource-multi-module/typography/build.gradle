@@ -4,7 +4,7 @@ plugins {
 }
 
 android {
-  namespace = 'app.cash.paparazzi.plugin.typography'
+  namespace = 'uk.co.fractalmotion.mugshot.plugin.typography'
   compileSdk = libs.versions.compileSdk.get() as int
   defaultConfig {
     minSdk = libs.versions.minSdk.get() as int

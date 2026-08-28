@@ -3,12 +3,12 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 plugins {
   id 'org.jetbrains.kotlin.multiplatform'
   id 'com.android.kotlin.multiplatform.library'
-  id 'app.cash.paparazzi'
+  id 'uk.co.fractalmotion.mugshot'
 }
 
 kotlin {
   android {
-    namespace = 'app.cash.paparazzi.plugin.test'
+    namespace = 'uk.co.fractalmotion.mugshot.plugin.test'
     compileSdk = libs.versions.compileSdk.get() as int
     minSdk = libs.versions.minSdk.get() as int
 
@@ -21,5 +21,5 @@ kotlin {
 }
 
 dependencies {
-  commonTestImplementation('app.cash.paparazzi:paparazzi:99.99.99')
+  commonTestImplementation('uk.co.fractalmotion.mugshot:mugshot:99.99.99')
 }

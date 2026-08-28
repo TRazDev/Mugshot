@@ -7,15 +7,15 @@ apply plugin: 'com.github.gmazzo.buildconfig'
 // - In build-logic project where we can use it for the test-schema and samples.
 //
 // We only want to publish when it's being built in the root project.
-if (rootProject.name == 'paparazzi-root') {
+if (rootProject.name == 'mugshot-root') {
   apply plugin: 'com.vanniktech.maven.publish'
 }
 
 gradlePlugin {
   plugins {
-    paparazzi {
-      id = 'app.cash.paparazzi'
-      implementationClass = 'app.cash.paparazzi.gradle.PaparazziPlugin'
+    mugshot {
+      id = 'uk.co.fractalmotion.mugshot'
+      implementationClass = 'uk.co.fractalmotion.mugshot.gradle.MugshotPlugin'
     }
   }
 }
@@ -57,7 +57,7 @@ buildConfig {
     topLevelConstants = true
   }
 
-  packageName('app.cash.paparazzi.gradle')
+  packageName('uk.co.fractalmotion.mugshot.gradle')
   buildConfigField("String", "VERSION", "\"${project.version}\"")
   buildConfigField("String", "NATIVE_LIB_VERSION", "\"${libs.versions.layoutlib.get()}\"")
 }
@@ -69,7 +69,7 @@ tasks.withType(Test).configureEach {
     .withPropertyName("libs.versions.toml")
   inputs.dir(rootProject.layout.buildDirectory.dir("localMaven"))
     .withPropertyName("localMaven")
-  dependsOn(':paparazzi:publishMavenPublicationToProjectLocalMavenRepository')
+  dependsOn(':mugshot:publishMavenPublicationToProjectLocalMavenRepository')
 }
 
 // When cleaning this project, we also want to clean the test projects.

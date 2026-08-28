@@ -13,45 +13,45 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.cash.paparazzi.sample
+package uk.co.fractalmotion.mugshot.sample
 
 import android.widget.LinearLayout
-import app.cash.paparazzi.DeviceConfig.Companion.NEXUS_5
-import app.cash.paparazzi.DeviceConfig.Companion.PIXEL_3
-import app.cash.paparazzi.Paparazzi
+import uk.co.fractalmotion.mugshot.DeviceConfig.Companion.NEXUS_5
+import uk.co.fractalmotion.mugshot.DeviceConfig.Companion.PIXEL_3
+import uk.co.fractalmotion.mugshot.Mugshot
 import com.android.resources.ScreenOrientation.LANDSCAPE
 import org.junit.Rule
 import org.junit.Test
 
 class LaunchViewTest {
   @get:Rule
-  val paparazzi = Paparazzi(deviceConfig = PIXEL_3)
+  val mugshot = Mugshot(deviceConfig = PIXEL_3)
 
   @Test
   fun pixel3() {
-    val launch = paparazzi.inflate<LinearLayout>(R.layout.launch)
-    paparazzi.snapshot(launch)
+    val launch = mugshot.inflate<LinearLayout>(R.layout.launch)
+    mugshot.snapshot(launch)
   }
 
   @Test
   fun pixel3_differentThemes() {
-    paparazzi.unsafeUpdateConfig(theme = "android:Theme.Material.Light")
-    var launch = paparazzi.inflate<LinearLayout>(R.layout.launch)
-    paparazzi.snapshot(view = launch, name = "light")
+    mugshot.unsafeUpdateConfig(theme = "android:Theme.Material.Light")
+    var launch = mugshot.inflate<LinearLayout>(R.layout.launch)
+    mugshot.snapshot(view = launch, name = "light")
 
-    paparazzi.unsafeUpdateConfig(theme = "android:Theme.Material.Light.NoActionBar")
-    launch = paparazzi.inflate(R.layout.launch)
-    paparazzi.snapshot(view = launch, name = "light no_action_bar")
+    mugshot.unsafeUpdateConfig(theme = "android:Theme.Material.Light.NoActionBar")
+    launch = mugshot.inflate(R.layout.launch)
+    mugshot.snapshot(view = launch, name = "light no_action_bar")
   }
 
   @Test
   fun nexus5_differentOrientations() {
-    paparazzi.unsafeUpdateConfig(deviceConfig = NEXUS_5)
-    var launch = paparazzi.inflate<LinearLayout>(R.layout.launch)
-    paparazzi.snapshot(launch, "portrait")
+    mugshot.unsafeUpdateConfig(deviceConfig = NEXUS_5)
+    var launch = mugshot.inflate<LinearLayout>(R.layout.launch)
+    mugshot.snapshot(launch, "portrait")
 
-    paparazzi.unsafeUpdateConfig(deviceConfig = NEXUS_5.copy(orientation = LANDSCAPE))
-    launch = paparazzi.inflate(R.layout.launch)
-    paparazzi.snapshot(launch, "landscape")
+    mugshot.unsafeUpdateConfig(deviceConfig = NEXUS_5.copy(orientation = LANDSCAPE))
+    launch = mugshot.inflate(R.layout.launch)
+    mugshot.snapshot(launch, "landscape")
   }
 }

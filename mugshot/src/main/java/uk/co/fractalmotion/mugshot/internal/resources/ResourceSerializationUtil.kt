@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.cash.paparazzi.internal.resources
+package uk.co.fractalmotion.mugshot.internal.resources
 
-import app.cash.paparazzi.internal.resources.base.BasicResourceItem
+import uk.co.fractalmotion.mugshot.internal.resources.base.BasicResourceItem
 import com.android.ide.common.resources.configuration.FolderConfiguration
 import com.android.utils.Base128InputStream
 import com.android.utils.Base128InputStream.StreamFormatException

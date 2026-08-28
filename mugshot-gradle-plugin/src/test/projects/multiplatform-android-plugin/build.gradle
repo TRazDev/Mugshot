@@ -1,12 +1,12 @@
 plugins {
   id 'org.jetbrains.kotlin.multiplatform'
   id 'com.android.kotlin.multiplatform.library'
-  id 'app.cash.paparazzi'
+  id 'uk.co.fractalmotion.mugshot'
 }
 
 kotlin {
   androidLibrary {
-    namespace = 'app.cash.paparazzi.plugin.test'
+    namespace = 'uk.co.fractalmotion.mugshot.plugin.test'
     compileSdk = libs.versions.compileSdk.get() as int
     minSdk = libs.versions.minSdk.get() as int
 

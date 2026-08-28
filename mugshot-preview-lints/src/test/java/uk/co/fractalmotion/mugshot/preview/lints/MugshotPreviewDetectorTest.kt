@@ -1,11 +1,11 @@
-package app.cash.paparazzi.preview.lints
+package uk.co.fractalmotion.mugshot.preview.lints
 
 import com.android.tools.lint.checks.infrastructure.TestFiles.kotlin
 import com.android.tools.lint.checks.infrastructure.TestLintTask.lint
 import com.android.tools.lint.checks.infrastructure.TestMode
 import org.junit.Test
 
-class PaparazziPreviewDetectorTest {
+class MugshotPreviewDetectorTest {
   @Test
   fun simplePreview() {
     lint()
@@ -16,18 +16,18 @@ class PaparazziPreviewDetectorTest {
 
           import androidx.compose.runtime.Composable
           import androidx.compose.ui.tooling.preview.Preview
-          import app.cash.paparazzi.annotations.Paparazzi
+          import uk.co.fractalmotion.mugshot.annotations.Mugshot
 
-          @Paparazzi
+          @Mugshot
           @Preview
           @Composable
           fun SamplePreview() {}
           """
         ).indented(),
         *COMPOSE_SOURCES.toTypedArray(),
-        PAPARAZZI_ANNOTATION
+        MUGSHOT_ANNOTATION
       )
-      .detector(PaparazziPreviewDetector())
+      .detector(MugshotPreviewDetector())
       .skipTestModes(TestMode.SUPPRESSIBLE)
       .run()
       .expectClean()
@@ -43,9 +43,9 @@ class PaparazziPreviewDetectorTest {
 
           import androidx.compose.runtime.Composable
           import androidx.compose.ui.tooling.preview.Preview
-          import app.cash.paparazzi.annotations.Paparazzi
+          import uk.co.fractalmotion.mugshot.annotations.Mugshot
 
-          @Paparazzi
+          @Mugshot
           @Preview
           @Preview(
              name = "Night Pixel 4",
@@ -57,9 +57,9 @@ class PaparazziPreviewDetectorTest {
           """
         ).indented(),
         *COMPOSE_SOURCES.toTypedArray(),
-        PAPARAZZI_ANNOTATION
+        MUGSHOT_ANNOTATION
       )
-      .detector(PaparazziPreviewDetector())
+      .detector(MugshotPreviewDetector())
       .skipTestModes(TestMode.SUPPRESSIBLE)
       .run()
       .expectClean()
@@ -74,23 +74,23 @@ class PaparazziPreviewDetectorTest {
           package test
 
           import androidx.compose.ui.tooling.preview.Preview
-          import app.cash.paparazzi.annotations.Paparazzi
+          import uk.co.fractalmotion.mugshot.annotations.Mugshot
 
-          @Paparazzi
+          @Mugshot
           @Preview
           fun SamplePreview() {}
           """
         ).indented(),
         *COMPOSE_SOURCES.toTypedArray(),
-        PAPARAZZI_ANNOTATION
+        MUGSHOT_ANNOTATION
       )
-      .issues(PaparazziPreviewDetector.COMPOSABLE_NOT_DETECTED)
+      .issues(MugshotPreviewDetector.COMPOSABLE_NOT_DETECTED)
       .skipTestModes(TestMode.SUPPRESSIBLE)
       .run()
       .expect(
         """
         src/test/test.kt:6: Error: SamplePreview is not annotated with @Composable. [ComposableAnnotationNotFound]
-        @Paparazzi
+        @Mugshot
         ~~~~~~~~~~
         1 errors, 0 warnings
         """.trimIndent()
@@ -106,23 +106,23 @@ class PaparazziPreviewDetectorTest {
           package test
 
           import androidx.compose.runtime.Composable
-          import app.cash.paparazzi.annotations.Paparazzi
+          import uk.co.fractalmotion.mugshot.annotations.Mugshot
 
-          @Paparazzi
+          @Mugshot
           @Composable
           fun SamplePreview() {}
           """
         ).indented(),
         *COMPOSE_SOURCES.toTypedArray(),
-        PAPARAZZI_ANNOTATION
+        MUGSHOT_ANNOTATION
       )
-      .issues(PaparazziPreviewDetector.PREVIEW_NOT_DETECTED)
+      .issues(MugshotPreviewDetector.PREVIEW_NOT_DETECTED)
       .skipTestModes(TestMode.SUPPRESSIBLE)
       .run()
       .expect(
         """
         src/test/test.kt:6: Error: SamplePreview is not annotated with @Preview. [PreviewAnnotationNotFound]
-        @Paparazzi
+        @Mugshot
         ~~~~~~~~~~
         1 errors, 0 warnings
         """.trimIndent()
@@ -139,24 +139,24 @@ class PaparazziPreviewDetectorTest {
 
           import androidx.compose.runtime.Composable
           import androidx.compose.ui.tooling.preview.Preview
-          import app.cash.paparazzi.annotations.Paparazzi
+          import uk.co.fractalmotion.mugshot.annotations.Mugshot
 
-          @Paparazzi
+          @Mugshot
           @Preview
           @Composable
           private fun SamplePreview() {}
           """
         ).indented(),
         *COMPOSE_SOURCES.toTypedArray(),
-        PAPARAZZI_ANNOTATION
+        MUGSHOT_ANNOTATION
       )
-      .issues(PaparazziPreviewDetector.PRIVATE_PREVIEW_DETECTED)
+      .issues(MugshotPreviewDetector.PRIVATE_PREVIEW_DETECTED)
       .skipTestModes(TestMode.SUPPRESSIBLE)
       .run()
       .expect(
         """
         src/test/test.kt:7: Error: SamplePreview is private. Make it internal or public to generate a snapshot. [PrivatePreviewDetected]
-        @Paparazzi
+        @Mugshot
         ~~~~~~~~~~
         1 errors, 0 warnings
         """.trimIndent()
@@ -175,9 +175,9 @@ class PaparazziPreviewDetectorTest {
           import androidx.compose.ui.tooling.preview.Preview
           import androidx.compose.ui.tooling.preview.PreviewParameter
           import androidx.compose.ui.tooling.preview.PreviewParameterProvider
-          import app.cash.paparazzi.annotations.Paparazzi
+          import uk.co.fractalmotion.mugshot.annotations.Mugshot
 
-          @Paparazzi
+          @Mugshot
           @Preview
           @Composable
           fun SamplePreview(
@@ -190,15 +190,15 @@ class PaparazziPreviewDetectorTest {
           """
         ).indented(),
         *COMPOSE_SOURCES.toTypedArray(),
-        PAPARAZZI_ANNOTATION
+        MUGSHOT_ANNOTATION
       )
-      .issues(PaparazziPreviewDetector.PREVIEW_PARAMETERS_NOT_SUPPORTED)
+      .issues(MugshotPreviewDetector.PREVIEW_PARAMETERS_NOT_SUPPORTED)
       .skipTestModes(TestMode.SUPPRESSIBLE)
       .run()
       .expect(
         """
         src/test/SamplePreviewParameter.kt:9: Error: @Preview of SamplePreview uses PreviewParameters which aren't currently supported. [PreviewParametersNotSupported]
-        @Paparazzi
+        @Mugshot
         ~~~~~~~~~~
         1 errors, 0 warnings
         """.trimIndent()
@@ -270,13 +270,13 @@ class PaparazziPreviewDetectorTest {
         ).indented()
       )
 
-    val PAPARAZZI_ANNOTATION = kotlin(
+    val MUGSHOT_ANNOTATION = kotlin(
       """
-      package app.cash.paparazzi.annotations
+      package uk.co.fractalmotion.mugshot.annotations
 
       @Target(AnnotationTarget.FUNCTION)
       @Retention(AnnotationRetention.BINARY)
-      annotation class Paparazzi
+      annotation class Mugshot
       """
     ).indented()
   }

@@ -1,4 +1,4 @@
-package app.cash.paparazzi.plugin.test
+package uk.co.fractalmotion.mugshot.plugin.test
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement.Absolute.spacedBy
@@ -20,19 +20,19 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.unit.dp
-import app.cash.paparazzi.Paparazzi
+import uk.co.fractalmotion.mugshot.Mugshot
 import org.junit.Rule
 import org.junit.Test
 
 class RecomposeTest {
   @get:Rule
-  val paparazzi = Paparazzi()
+  val mugshot = Mugshot()
 
   @Test fun recomposesOnStateChange() {
-    paparazzi.snapshot {
+    mugshot.snapshot {
       var text by remember { mutableStateOf("Hello") }
       LaunchedEffect(Unit) {
-        text = "Hello Paparazzi"
+        text = "Hello Mugshot"
       }
 
       Box(
@@ -49,7 +49,7 @@ class RecomposeTest {
   }
 
   @Test fun recomposesOnTextLayout() {
-    paparazzi.snapshot {
+    mugshot.snapshot {
       MaterialTheme {
         var lineCount by remember { mutableStateOf(0) }
 
@@ -70,7 +70,7 @@ class RecomposeTest {
   }
 
   @Test fun recomposesOnGlobalPositioning() {
-    paparazzi.snapshot {
+    mugshot.snapshot {
       MaterialTheme {
         var globalPosition by remember { mutableStateOf(Offset.Zero) }
         Column(Modifier.background(Color.White)) {

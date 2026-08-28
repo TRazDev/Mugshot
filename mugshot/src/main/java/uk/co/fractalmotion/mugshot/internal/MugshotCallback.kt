@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-package app.cash.paparazzi.internal
+package uk.co.fractalmotion.mugshot.internal
 
-import app.cash.paparazzi.internal.parsers.LayoutPullParser
-import app.cash.paparazzi.internal.parsers.TagSnapshot
+import uk.co.fractalmotion.mugshot.internal.parsers.LayoutPullParser
+import uk.co.fractalmotion.mugshot.internal.parsers.TagSnapshot
 import com.android.AndroidXConstants.CLASS_RECYCLER_VIEW_ADAPTER
 import com.android.ide.common.rendering.api.ActionBarCallback
 import com.android.ide.common.rendering.api.AdapterBinding
@@ -40,8 +40,8 @@ import java.io.FileNotFoundException
 import java.io.IOException
 import java.lang.reflect.Modifier
 
-internal class PaparazziCallback(
-  private val logger: PaparazziLogger,
+internal class MugshotCallback(
+  private val logger: MugshotLogger,
   private val packageName: String,
   private val resourcePackageNames: List<String>
 ) : LayoutlibCallback() {

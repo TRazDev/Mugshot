@@ -1,8 +1,8 @@
-package app.cash.paparazzi.internal.resources
+package uk.co.fractalmotion.mugshot.internal.resources
 
 import android.annotation.SuppressLint
-import app.cash.paparazzi.internal.resources.base.BasicResourceItem
-import app.cash.paparazzi.internal.resources.base.BasicValueResourceItemBase
+import uk.co.fractalmotion.mugshot.internal.resources.base.BasicResourceItem
+import uk.co.fractalmotion.mugshot.internal.resources.base.BasicValueResourceItemBase
 import com.android.SdkConstants.DOT_9PNG
 import com.android.SdkConstants.FD_RES_RAW
 import com.android.ide.common.rendering.api.ResourceNamespace

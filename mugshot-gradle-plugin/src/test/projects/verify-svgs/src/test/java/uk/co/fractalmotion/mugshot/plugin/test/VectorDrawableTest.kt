@@ -13,23 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.cash.paparazzi.plugin.test
+package uk.co.fractalmotion.mugshot.plugin.test
 
 import android.view.Gravity.CENTER
 import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
 import android.widget.FrameLayout.LayoutParams
 import androidx.appcompat.widget.AppCompatImageView
-import app.cash.paparazzi.Paparazzi
+import uk.co.fractalmotion.mugshot.Mugshot
 import org.junit.Rule
 import org.junit.Test
 
 class VectorDrawableTest {
   @get:Rule
-  val paparazzi = Paparazzi()
+  val mugshot = Mugshot()
 
   @Test
   fun vectorDrawable() {
-    val imageView = AppCompatImageView(paparazzi.context).apply {
+    val imageView = AppCompatImageView(mugshot.context).apply {
       layoutParams = LayoutParams(WRAP_CONTENT, WRAP_CONTENT)
         .apply {
           gravity = CENTER
@@ -38,6 +38,6 @@ class VectorDrawableTest {
         }
       setImageResource(R.drawable.arrow_up)
     }
-    paparazzi.snapshot(imageView, "arrow up")
+    mugshot.snapshot(imageView, "arrow up")
   }
 }

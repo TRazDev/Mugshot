@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package app.cash.paparazzi.internal
+package uk.co.fractalmotion.mugshot.internal
 
 import com.android.ide.common.rendering.api.AssetRepository
 import java.io.File
@@ -23,7 +23,7 @@ import java.io.FileNotFoundException
 import java.io.IOException
 import java.io.InputStream
 
-internal class PaparazziAssetRepository(
+internal class MugshotAssetRepository(
   private val assetDirs: List<String> = emptyList()
 ) : AssetRepository() {
   @Throws(FileNotFoundException::class)

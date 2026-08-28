@@ -1,4 +1,4 @@
-package app.cash.paparazzi.preview.processor
+package uk.co.fractalmotion.mugshot.preview.processor
 
 import com.google.devtools.ksp.processing.Dependencies
 import com.google.devtools.ksp.processing.KSPLogger
@@ -31,16 +31,16 @@ public class PreviewProcessor(
 
     val allFiles = resolver.getAllFiles().toList()
 
-    val namespace = environment.options["app.cash.paparazzi.preview.namespace"]!!
+    val namespace = environment.options["uk.co.fractalmotion.mugshot.preview.namespace"]!!
 
     val dependencies = Dependencies(true, *allFiles.toTypedArray())
     val isTestSourceSet = discoverVariant(namespace, dependencies).endsWith("UnitTest")
 
-    return resolver.getSymbolsWithAnnotation("app.cash.paparazzi.annotations.Paparazzi")
+    return resolver.getSymbolsWithAnnotation("uk.co.fractalmotion.mugshot.annotations.Mugshot")
       .filterIsInstance<KSFunctionDeclaration>()
       .also { functions ->
         logger.log("found ${functions.count()} function(s)")
-        PaparazziPoet(logger, namespace).buildFiles(functions, isTestSourceSet).forEach { file ->
+        MugshotPoet(logger, namespace).buildFiles(functions, isTestSourceSet).forEach { file ->
           logger.log("writing file: ${file.packageName}.${file.name}.kt")
           file.writeTo(environment.codeGenerator, dependencies)
         }
@@ -50,7 +50,7 @@ public class PreviewProcessor(
   }
 
   private fun discoverVariant(namespace: String, dependencies: Dependencies): String {
-    environment.codeGenerator.createNewFile(dependencies, namespace, "paparazziVariant", "txt")
+    environment.codeGenerator.createNewFile(dependencies, namespace, "mugshotVariant", "txt")
     val file = environment.codeGenerator.generatedFile.first()
     val fileSeparator = Regex.escape(File.separator)
     val variantNameRegex = Regex("ksp$fileSeparator(.+)${fileSeparator}resources")

@@ -1,4 +1,4 @@
-package app.cash.paparazzi.sample
+package uk.co.fractalmotion.mugshot.sample
 
 import android.content.Context
 import android.graphics.Color

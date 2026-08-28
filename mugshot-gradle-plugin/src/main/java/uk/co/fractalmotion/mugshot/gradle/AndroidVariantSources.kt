@@ -1,6 +1,6 @@
-package app.cash.paparazzi.gradle
+package uk.co.fractalmotion.mugshot.gradle
 
-import app.cash.paparazzi.gradle.utils.artifactsFor
+import uk.co.fractalmotion.mugshot.gradle.utils.artifactsFor
 import com.android.build.api.variant.Variant
 import com.android.build.gradle.internal.publishing.AndroidArtifacts
 import org.gradle.api.artifacts.component.ProjectComponentIdentifier

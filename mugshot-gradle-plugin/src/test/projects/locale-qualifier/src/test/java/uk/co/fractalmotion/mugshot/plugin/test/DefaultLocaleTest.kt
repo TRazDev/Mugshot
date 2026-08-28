@@ -1,6 +1,6 @@
-package app.cash.paparazzi.plugin.test
+package uk.co.fractalmotion.mugshot.plugin.test
 
-import app.cash.paparazzi.Paparazzi
+import uk.co.fractalmotion.mugshot.Mugshot
 import com.google.testing.junit.testparameterinjector.TestParameter
 import com.google.testing.junit.testparameterinjector.TestParameterInjector
 import org.junit.Rule
@@ -24,20 +24,20 @@ class DefaultLocaleTest(@TestParameter val locale: Locale) {
         override fun evaluate() {
           try {
             locale.tag?.let { localeTag ->
-              System.setProperty("app.cash.paparazzi.defaultLocale", localeTag)
+              System.setProperty("uk.co.fractalmotion.mugshot.defaultLocale", localeTag)
             }
             base.evaluate()
           } catch (_: Exception) {
-            System.clearProperty("app.cash.paparazzi.defaultLocale")
+            System.clearProperty("uk.co.fractalmotion.mugshot.defaultLocale")
           }
         }
       }
     }
-    .around(Paparazzi())
+    .around(Mugshot())
 
   @Test
   fun `verify system property sets default locale`() {
-    Paparazzi().apply {
+    Mugshot().apply {
       snapshot(view = inflate(R.layout.title_color))
     }
   }

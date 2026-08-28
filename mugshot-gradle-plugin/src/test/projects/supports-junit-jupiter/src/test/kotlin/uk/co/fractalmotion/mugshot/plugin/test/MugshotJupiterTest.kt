@@ -1,28 +1,28 @@
-package app.cash.paparazzi.plugin.test
+package uk.co.fractalmotion.mugshot.plugin.test
 
 import android.view.Gravity
 import android.widget.TextView
-import app.cash.paparazzi.Paparazzi
+import uk.co.fractalmotion.mugshot.Mugshot
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import org.junit.jupiter.api.extension.RegisterExtension
-import runner.PaparazziExtension
+import runner.MugshotExtension
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-class PaparazziJupiterTest {
+class MugshotJupiterTest {
 
   @RegisterExtension
-  val paparazziExtension = PaparazziExtension(Paparazzi())
+  val mugshotExtension = MugshotExtension(Mugshot())
 
   @Test
-  fun `verify paparazzi jupiter snapshot`() {
-    val textView = paparazziExtension.api.inflate<TextView>(android.R.layout.simple_list_item_1)
+  fun `verify mugshot jupiter snapshot`() {
+    val textView = mugshotExtension.api.inflate<TextView>(android.R.layout.simple_list_item_1)
     textView.apply {
-      text = "Paparazzi Jupiter test"
+      text = "Mugshot Jupiter test"
       textSize = 24f
       gravity = Gravity.CENTER
     }
 
-    paparazziExtension.api.snapshot(textView)
+    mugshotExtension.api.snapshot(textView)
   }
 }

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.cash.paparazzi
+package uk.co.fractalmotion.mugshot
 
 import android.animation.AnimationHandler
 import android.content.Context
@@ -43,17 +43,17 @@ import androidx.compose.ui.platform.createLifecycleAwareWindowRecomposer
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.setViewTreeLifecycleOwner
 import androidx.savedstate.setViewTreeSavedStateRegistryOwner
-import app.cash.paparazzi.agent.InterceptorRegistrar
-import app.cash.paparazzi.internal.ImageUtils
-import app.cash.paparazzi.internal.PaparazziCallback
-import app.cash.paparazzi.internal.PaparazziLifecycleOwner
-import app.cash.paparazzi.internal.PaparazziLogger
-import app.cash.paparazzi.internal.PaparazziOnBackPressedDispatcherOwner
-import app.cash.paparazzi.internal.PaparazziSavedStateRegistryOwner
-import app.cash.paparazzi.internal.Renderer
-import app.cash.paparazzi.internal.SessionParamsBuilder
-import app.cash.paparazzi.internal.interceptors.EditModeInterceptor
-import app.cash.paparazzi.internal.parsers.LayoutPullParser
+import uk.co.fractalmotion.mugshot.agent.InterceptorRegistrar
+import uk.co.fractalmotion.mugshot.internal.ImageUtils
+import uk.co.fractalmotion.mugshot.internal.MugshotCallback
+import uk.co.fractalmotion.mugshot.internal.MugshotLifecycleOwner
+import uk.co.fractalmotion.mugshot.internal.MugshotLogger
+import uk.co.fractalmotion.mugshot.internal.MugshotOnBackPressedDispatcherOwner
+import uk.co.fractalmotion.mugshot.internal.MugshotSavedStateRegistryOwner
+import uk.co.fractalmotion.mugshot.internal.Renderer
+import uk.co.fractalmotion.mugshot.internal.SessionParamsBuilder
+import uk.co.fractalmotion.mugshot.internal.interceptors.EditModeInterceptor
+import uk.co.fractalmotion.mugshot.internal.parsers.LayoutPullParser
 import com.android.ide.common.rendering.api.RenderSession
 import com.android.ide.common.rendering.api.Result
 import com.android.ide.common.rendering.api.Result.Status.ERROR_UNKNOWN
@@ -74,7 +74,7 @@ import java.util.concurrent.TimeUnit
 import kotlinx.coroutines.android.asCoroutineDispatcher
 
 @OptIn(ExperimentalComposeUiApi::class, InternalComposeUiApi::class)
-public class PaparazziSdk @JvmOverloads constructor(
+public class MugshotSdk @JvmOverloads constructor(
   private val environment: Environment = detectEnvironment(),
   private val deviceConfig: DeviceConfig = DeviceConfig.NEXUS_5,
   private val theme: String = "android:Theme.Material.NoActionBar.Fullscreen",
@@ -86,7 +86,7 @@ public class PaparazziSdk @JvmOverloads constructor(
   private val useDeviceResolution: Boolean = false,
   private val onNewFrame: (BufferedImage) -> Unit
 ) {
-  private val logger = PaparazziLogger()
+  private val logger = MugshotLogger()
   private lateinit var renderSession: RenderSessionImpl
   private lateinit var bridgeRenderSession: RenderSession
 
@@ -110,7 +110,7 @@ public class PaparazziSdk @JvmOverloads constructor(
 
   public fun prepare() {
     val layoutlibCallback =
-      PaparazziCallback(logger, environment.packageName, environment.resourcePackageNames)
+      MugshotCallback(logger, environment.packageName, environment.resourcePackageNames)
     layoutlibCallback.initResources()
 
     if (!isInitialized) {
@@ -228,7 +228,7 @@ public class PaparazziSdk @JvmOverloads constructor(
       previousUncaughtExceptionHandler?.uncaughtException(thread, throwable)
     }
 
-    lateinit var lifecycleOwner: PaparazziLifecycleOwner
+    lateinit var lifecycleOwner: MugshotLifecycleOwner
 
     try {
       withTime(0L) {
@@ -256,14 +256,14 @@ public class PaparazziSdk @JvmOverloads constructor(
       }
 
       if (hasLifecycleOwnerRuntime) {
-        lifecycleOwner = PaparazziLifecycleOwner()
+        lifecycleOwner = MugshotLifecycleOwner()
         modifiedView.setViewTreeLifecycleOwner(lifecycleOwner)
 
         if (hasSavedStateRegistryOwnerRuntime) {
-          modifiedView.setViewTreeSavedStateRegistryOwner(PaparazziSavedStateRegistryOwner(lifecycleOwner))
+          modifiedView.setViewTreeSavedStateRegistryOwner(MugshotSavedStateRegistryOwner(lifecycleOwner))
         }
         if (hasAndroidxActivityRuntime) {
-          modifiedView.setViewTreeOnBackPressedDispatcherOwner(PaparazziOnBackPressedDispatcherOwner(lifecycleOwner))
+          modifiedView.setViewTreeOnBackPressedDispatcherOwner(MugshotOnBackPressedDispatcherOwner(lifecycleOwner))
         }
         // Must be changed after the SavedStateRegistryOwner above has finished restoring its state.
         lifecycleOwner.registry.currentState = Lifecycle.State.RESUMED
@@ -402,7 +402,7 @@ public class PaparazziSdk @JvmOverloads constructor(
 
   private fun forcePlatformSdkVersion(compileSdkVersion: Int) {
     val buildVersionClass = try {
-      PaparazziSdk::class.java.classLoader.loadClass("android.os.Build\$VERSION")
+      MugshotSdk::class.java.classLoader.loadClass("android.os.Build\$VERSION")
     } catch (e: ClassNotFoundException) {
       // Project unit tests don't load Android platform code
       return
@@ -514,7 +514,7 @@ public class PaparazziSdk @JvmOverloads constructor(
     internal lateinit var sessionParamsBuilder: SessionParamsBuilder
 
     private val MAIN_DISPATCHER by lazy {
-      Handler.getMain().asCoroutineDispatcher("Paparazzi-Main")
+      Handler.getMain().asCoroutineDispatcher("Mugshot-Main")
     }
 
     private val hasComposeRuntime: Boolean = isPresentInClasspath(
@@ -534,7 +534,7 @@ public class PaparazziSdk @JvmOverloads constructor(
     private fun contentRoot(renderingMode: RenderingMode) =
       """
         |<?xml version="1.0" encoding="utf-8"?>
-        |<${if (hasComposeRuntime) "app.cash.paparazzi.internal.ComposeViewAdapter" else "FrameLayout"}
+        |<${if (hasComposeRuntime) "uk.co.fractalmotion.mugshot.internal.ComposeViewAdapter" else "FrameLayout"}
         |     xmlns:android="http://schemas.android.com/apk/res/android"
         |              android:layout_width="${if (renderingMode.horizAction == RenderingMode.SizeAction.SHRINK) "wrap_content" else "match_parent"}"
         |              android:layout_height="${if (renderingMode.vertAction == RenderingMode.SizeAction.SHRINK) "wrap_content" else "match_parent"}"/>

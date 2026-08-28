@@ -1,4 +1,4 @@
-package app.cash.paparazzi.plugin.test
+package uk.co.fractalmotion.mugshot.plugin.test
 
 import android.graphics.Insets
 import androidx.compose.animation.Animatable
@@ -36,8 +36,8 @@ import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Popup
-import app.cash.paparazzi.DeviceConfig
-import app.cash.paparazzi.Paparazzi
+import uk.co.fractalmotion.mugshot.DeviceConfig
+import uk.co.fractalmotion.mugshot.Mugshot
 import com.android.ide.common.rendering.api.SessionParams.RenderingMode.SHRINK
 import org.junit.Rule
 import org.junit.Test
@@ -46,18 +46,18 @@ import android.view.WindowInsets as ViewWindowInsets
 
 class ComposeTest {
   @get:Rule
-  val paparazzi = Paparazzi()
+  val mugshot = Mugshot()
 
   @Test
   fun compose() {
-    paparazzi.snapshot {
-      HelloPaparazzi()
+    mugshot.snapshot {
+      HelloMugshot()
     }
   }
 
   @Test
   fun composeDefaultLayoutParams() {
-    paparazzi.snapshot {
+    mugshot.snapshot {
       Box(
         modifier = Modifier
           .background(Color.Cyan)
@@ -71,9 +71,9 @@ class ComposeTest {
 
   @Test
   fun syntheticWindowInsets() {
-    paparazzi.unsafeUpdateConfig(deviceConfig = DeviceConfig.PIXEL_5)
+    mugshot.unsafeUpdateConfig(deviceConfig = DeviceConfig.PIXEL_5)
 
-    paparazzi.snapshot {
+    mugshot.snapshot {
       SyntheticSystemBarInsets {
         Box(Modifier.fillMaxSize()) {
           InsetAwareScreen()
@@ -86,9 +86,9 @@ class ComposeTest {
 
   @Test
   fun syntheticWindowInsetsWithPopupOverlay() {
-    paparazzi.unsafeUpdateConfig(deviceConfig = DeviceConfig.PIXEL_5)
+    mugshot.unsafeUpdateConfig(deviceConfig = DeviceConfig.PIXEL_5)
 
-    paparazzi.snapshot {
+    mugshot.snapshot {
       SyntheticSystemBarInsets {
         Box(Modifier.fillMaxSize()) {
           InsetAwareScreen()
@@ -107,9 +107,9 @@ class ComposeTest {
 
   @Test
   fun anchoredDraggableAnchorsFromSize() {
-    paparazzi.unsafeUpdateConfig(renderingMode = SHRINK)
+    mugshot.unsafeUpdateConfig(renderingMode = SHRINK)
 
-    paparazzi.snapshot {
+    mugshot.snapshot {
       val state = remember { AnchoredDraggableState(initialValue = 1) }
 
       Box(

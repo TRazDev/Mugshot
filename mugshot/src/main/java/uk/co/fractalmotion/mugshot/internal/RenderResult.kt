@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package app.cash.paparazzi.internal
+package uk.co.fractalmotion.mugshot.internal
 
 import com.android.ide.common.rendering.api.RenderSession
 import com.android.ide.common.rendering.api.Result

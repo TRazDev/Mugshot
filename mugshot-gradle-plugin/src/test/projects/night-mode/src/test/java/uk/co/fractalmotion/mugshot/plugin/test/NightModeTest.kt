@@ -1,7 +1,7 @@
-package app.cash.paparazzi.plugin.test
+package uk.co.fractalmotion.mugshot.plugin.test
 
-import app.cash.paparazzi.DeviceConfig
-import app.cash.paparazzi.Paparazzi
+import uk.co.fractalmotion.mugshot.DeviceConfig
+import uk.co.fractalmotion.mugshot.Mugshot
 import com.android.resources.NightMode
 import com.google.testing.junit.testparameterinjector.TestParameter
 import com.google.testing.junit.testparameterinjector.TestParameterInjector
@@ -14,17 +14,17 @@ class NightModeTest(
   @TestParameter nightMode: NightMode
 ) {
   @get:Rule
-  val paparazzi = Paparazzi(
+  val mugshot = Mugshot(
     deviceConfig = DeviceConfig.NEXUS_5.copy(nightMode = nightMode)
   )
 
   @Test
   fun xml() {
-    paparazzi.snapshot(paparazzi.inflate(R.layout.layout))
+    mugshot.snapshot(mugshot.inflate(R.layout.layout))
   }
 
   @Test
   fun compose() {
-    paparazzi.snapshot { LightDark() }
+    mugshot.snapshot { LightDark() }
   }
 }

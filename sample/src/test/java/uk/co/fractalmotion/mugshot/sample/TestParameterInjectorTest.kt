@@ -1,9 +1,9 @@
-package app.cash.paparazzi.sample
+package uk.co.fractalmotion.mugshot.sample
 
 import android.widget.LinearLayout
-import app.cash.paparazzi.DeviceConfig
-import app.cash.paparazzi.Paparazzi
-import app.cash.paparazzi.sample.databinding.KeypadBinding
+import uk.co.fractalmotion.mugshot.DeviceConfig
+import uk.co.fractalmotion.mugshot.Mugshot
+import uk.co.fractalmotion.mugshot.sample.databinding.KeypadBinding
 import com.android.resources.ScreenOrientation.LANDSCAPE
 import com.google.testing.junit.testparameterinjector.TestParameter
 import com.google.testing.junit.testparameterinjector.TestParameterInjector
@@ -34,25 +34,25 @@ class TestParameterInjectorTest(
   }
 
   @get:Rule
-  val paparazzi = Paparazzi(deviceConfig = config.deviceConfig)
+  val mugshot = Mugshot(deviceConfig = config.deviceConfig)
 
   @Test
   fun simple() {
-    val launch = paparazzi.inflate<LinearLayout>(R.layout.launch)
-    paparazzi.snapshot(launch)
+    val launch = mugshot.inflate<LinearLayout>(R.layout.launch)
+    mugshot.snapshot(launch)
   }
 
   @Test
   fun simpleWithTheme(@TestParameter theme: Theme) {
-    paparazzi.unsafeUpdateConfig(theme = theme.themeName)
-    val launch = paparazzi.inflate<LinearLayout>(R.layout.launch)
-    paparazzi.snapshot(launch)
+    mugshot.unsafeUpdateConfig(theme = theme.themeName)
+    val launch = mugshot.inflate<LinearLayout>(R.layout.launch)
+    mugshot.snapshot(launch)
   }
 
   @Test
   fun amountProviderTest(@TestParameter(valuesProvider = AmountProvider::class) amount: String) {
-    val binding = KeypadBinding.inflate(paparazzi.layoutInflater)
+    val binding = KeypadBinding.inflate(mugshot.layoutInflater)
     binding.amount.text = amount
-    paparazzi.snapshot(binding.root)
+    mugshot.snapshot(binding.root)
   }
 }

@@ -13,12 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.cash.paparazzi.plugin.test
+package uk.co.fractalmotion.mugshot.plugin.test
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.material.Text
 import androidx.compose.ui.graphics.Color
-import app.cash.paparazzi.Paparazzi
+import uk.co.fractalmotion.mugshot.Mugshot
 import com.google.testing.junit.testparameterinjector.TestParameter
 import com.google.testing.junit.testparameterinjector.TestParameterInjector
 import com.google.testing.junit.testparameterinjector.TestParameterValuesProvider
@@ -29,18 +29,18 @@ import org.junit.runner.RunWith
 @RunWith(TestParameterInjector::class)
 class InvalidCharsTest {
   @get:Rule
-  val paparazzi = Paparazzi()
+  val mugshot = Mugshot()
 
   @Test
   fun badSnapshotName() {
-    paparazzi.snapshot(name = "this is/my name") {
+    mugshot.snapshot(name = "this is/my name") {
       Box {}
     }
   }
 
   @Test
   fun badValues(@TestParameter(valuesProvider = MathOperatorProvider::class) char: Char) {
-    paparazzi.snapshot {
+    mugshot.snapshot {
       Text(
         text = char.toString(),
         color = Color.Black
@@ -50,7 +50,7 @@ class InvalidCharsTest {
 
   @Test
   fun goodValues(@TestParameter operation: MathOperation) {
-    paparazzi.snapshot {
+    mugshot.snapshot {
       Text(
         text = operation.operator.toString(),
         color = Color.Black

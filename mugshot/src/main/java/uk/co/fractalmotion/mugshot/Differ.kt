@@ -1,4 +1,4 @@
-package app.cash.paparazzi
+package uk.co.fractalmotion.mugshot
 
 import java.awt.image.BufferedImage
 

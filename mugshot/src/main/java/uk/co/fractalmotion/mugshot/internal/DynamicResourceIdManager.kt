@@ -1,4 +1,4 @@
-package app.cash.paparazzi.internal
+package uk.co.fractalmotion.mugshot.internal
 
 import com.android.ide.common.rendering.api.ResourceNamespace
 import com.android.ide.common.rendering.api.ResourceReference

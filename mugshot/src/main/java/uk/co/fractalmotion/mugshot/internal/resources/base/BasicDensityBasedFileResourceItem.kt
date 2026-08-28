@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.cash.paparazzi.internal.resources.base
+package uk.co.fractalmotion.mugshot.internal.resources.base
 
-import app.cash.paparazzi.internal.resources.RepositoryConfiguration
+import uk.co.fractalmotion.mugshot.internal.resources.RepositoryConfiguration
 import com.android.ide.common.rendering.api.DensityBasedResourceValue
 import com.android.resources.Density
 import com.android.resources.ResourceType

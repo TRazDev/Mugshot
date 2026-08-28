@@ -1,8 +1,8 @@
-package app.cash.paparazzi.internal.differs
+package uk.co.fractalmotion.mugshot.internal.differs
 
 import androidx.compose.ui.util.fastCoerceAtLeast
-import app.cash.paparazzi.Differ
-import app.cash.paparazzi.Differ.DiffResult
+import uk.co.fractalmotion.mugshot.Differ
+import uk.co.fractalmotion.mugshot.Differ.DiffResult
 import java.awt.Color
 import java.awt.image.BufferedImage
 import kotlin.math.exp

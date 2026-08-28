@@ -79,7 +79,7 @@ dependencies {
 
 dokka {
   dokkaPublications.html {
-    outputDirectory.set(rootProject.file("docs/2.x"))
+    outputDirectory.set(rootProject.file("docs/api"))
   }
 
   dokkaSourceSets.named("main").configure {
@@ -96,29 +96,29 @@ dokka {
 
     sourceLink {
       localDirectory.set(file("src/main/java"))
-      remoteUrl("https://github.com/cashapp/paparazzi/tree/master/paparazzi/src/main/java")
+      remoteUrl("https://github.com/TRazDev/Mugshot/tree/main/mugshot/src/main/java")
       remoteLineSuffix.set("#L")
     }
 
     perPackageOption {
-      matchingRegex = /app\.cash\.paparazzi\.internal(\..*)?/
+      matchingRegex = /app\.cash\.mugshot\.internal(\..*)?/
       suppress = true
     }
   }
 }
 
 def generateTestConfig = tasks.register("generateTestConfig") {
-  def resources = layout.buildDirectory.file('intermediates/paparazzi/resources.json')
+  def resources = layout.buildDirectory.file('intermediates/mugshot/resources.json')
   outputs.file(resources)
 
   doLast {
     File configFile = resources.get().asFile
     configFile.write("""{
-      "mainPackage": "app.cash.paparazzi",
+      "mainPackage": "uk.co.fractalmotion.mugshot",
       "mergeResourcesOutputDir": ".",
       "targetSdkVersion": "36",
       "mergeAssetsOutputDir": ".",
-      "resourcePackageNames": ["app.cash.paparazzi"],
+      "resourcePackageNames": ["uk.co.fractalmotion.mugshot"],
       "projectResourceDirs": [],
       "moduleResourceDirs": [],
       "aarExplodedDirs": [],
@@ -131,39 +131,39 @@ def generateTestConfig = tasks.register("generateTestConfig") {
 tasks.withType(Test).configureEach {
   dependsOn(generateTestConfig)
   systemProperty(
-    "paparazzi.test.resources",
+    "mugshot.test.resources",
     generateTestConfig.map { it.outputs.files.singleFile }.get().path
   )
   systemProperty(
-    "paparazzi.project.dir",
+    "mugshot.project.dir",
     project.layout.projectDirectory.toString()
   )
   systemProperty(
-    "paparazzi.build.dir",
+    "mugshot.build.dir",
     project.layout.buildDirectory.get().toString()
   )
   systemProperty(
-    "paparazzi.failures.dir",
-    project.layout.buildDirectory.dir("paparazzi/failures").get().toString()
+    "mugshot.failures.dir",
+    project.layout.buildDirectory.dir("mugshot/failures").get().toString()
   )
   systemProperty(
-    "paparazzi.report.dir",
-    project.extensions.getByType(ReportingExtension).baseDirectory.dir("paparazzi").get().toString()
+    "mugshot.report.dir",
+    project.extensions.getByType(ReportingExtension).baseDirectory.dir("mugshot").get().toString()
   )
   systemProperty(
-    "paparazzi.snapshot.dir",
+    "mugshot.snapshot.dir",
     project.layout.projectDirectory.dir("src/test/snapshots").toString()
   )
   systemProperty(
-    "paparazzi.artifacts.cache.dir",
+    "mugshot.artifacts.cache.dir",
     project.gradle.gradleUserHomeDir.path
   )
   systemProperty(
-    "paparazzi.layoutlib.runtime.root",
+    "mugshot.layoutlib.runtime.root",
     configurations.layoutlibRuntime.singleFile.absolutePath
   )
   systemProperty(
-    "paparazzi.layoutlib.resources.root",
+    "mugshot.layoutlib.resources.root",
     configurations.layoutlibResources.singleFile.absolutePath
   )
 }

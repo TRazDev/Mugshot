@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.cash.paparazzi
+package uk.co.fractalmotion.mugshot
 
 import java.awt.image.BufferedImage
 import java.io.Closeable
@@ -27,4 +27,4 @@ public interface SnapshotHandler : Closeable {
 }
 
 public fun detectMaxPercentDifferenceDefault(): Double =
-  System.getProperty("app.cash.paparazzi.maxPercentDifferenceDefault")?.toDoubleOrNull() ?: 0.01
+  System.getProperty("uk.co.fractalmotion.mugshot.maxPercentDifferenceDefault")?.toDoubleOrNull() ?: 0.01

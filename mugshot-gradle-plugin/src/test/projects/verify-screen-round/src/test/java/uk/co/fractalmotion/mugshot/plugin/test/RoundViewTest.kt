@@ -1,7 +1,7 @@
-package app.cash.paparazzi.plugin.test
+package uk.co.fractalmotion.mugshot.plugin.test
 
-import app.cash.paparazzi.DeviceConfig
-import app.cash.paparazzi.Paparazzi
+import uk.co.fractalmotion.mugshot.DeviceConfig
+import uk.co.fractalmotion.mugshot.Mugshot
 import com.android.resources.ScreenRound
 import com.google.testing.junit.testparameterinjector.TestParameter
 import com.google.testing.junit.testparameterinjector.TestParameterInjector
@@ -14,15 +14,15 @@ class RoundViewTest(
   @TestParameter val configuration: ScreenRoundTestConfiguration
 ) {
   @get:Rule
-  val paparazzi = Paparazzi(
+  val mugshot = Mugshot(
     deviceConfig = DeviceConfig.GALAXY_WATCH4_CLASSIC_LARGE.copy(screenRound = configuration.round),
     theme = "android:Theme.Material.Light.NoActionBar"
   )
 
   @Test
   fun test() {
-    paparazzi.snapshot(
-      view = paparazzi.inflate(R.layout.custom_view)
+    mugshot.snapshot(
+      view = mugshot.inflate(R.layout.custom_view)
     )
   }
 }

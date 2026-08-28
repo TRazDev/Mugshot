@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.cash.paparazzi.internal
+package uk.co.fractalmotion.mugshot.internal
 
 import com.luciad.imageio.webp.CompressionType
 import com.luciad.imageio.webp.WebPWriteParam
@@ -42,7 +42,7 @@ internal object WebpCodec {
    * Encodes [image] as a lossless WebP.
    *
    * [WebPWriteParam.exact] is required, not an optimization. Without it libwebp is free to rewrite
-   * the RGB channels of fully-transparent pixels for better compression, and every [app.cash.paparazzi.Differ]
+   * the RGB channels of fully-transparent pixels for better compression, and every [uk.co.fractalmotion.mugshot.Differ]
    * compares via [BufferedImage.getRGB], which reads those channels even where alpha is zero. A
    * golden and a fresh render of the same view would then differ on invisible pixels.
    */
@@ -85,7 +85,7 @@ internal object WebpCodec {
     val writers = ImageIO.getImageWritersByMIMEType(MIME_TYPE)
     if (writers.hasNext()) return writers.next()
 
-    // Paparazzi runs under layoutlib's class loaders, where ImageIO's initial service lookup may
+    // Mugshot runs under layoutlib's class loaders, where ImageIO's initial service lookup may
     // not have seen the WebP plugin.
     ImageIO.scanForPlugins()
     val rescanned = ImageIO.getImageWritersByMIMEType(MIME_TYPE)

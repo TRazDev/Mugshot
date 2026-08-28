@@ -1,4 +1,4 @@
-package app.cash.paparazzi.plugin.test
+package uk.co.fractalmotion.mugshot.plugin.test
 
 import android.content.Context
 import android.graphics.Color
@@ -12,8 +12,8 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.compose.foundation.layout.Box
 import androidx.compose.ui.viewinterop.AndroidView
-import app.cash.paparazzi.DeviceConfig
-import app.cash.paparazzi.Paparazzi
+import uk.co.fractalmotion.mugshot.DeviceConfig
+import uk.co.fractalmotion.mugshot.Mugshot
 import com.android.ide.common.rendering.api.SessionParams.RenderingMode
 import com.android.ide.common.rendering.api.SessionParams.RenderingMode.NORMAL
 import com.android.ide.common.rendering.api.SessionParams.RenderingMode.SHRINK
@@ -28,17 +28,17 @@ class RenderingModeTest(
   @TestParameter val mode: Mode
 ) {
   @get:Rule
-  val paparazzi = Paparazzi(
+  val mugshot = Mugshot(
     deviceConfig = DeviceConfig.PIXEL_3,
     renderingMode = mode.renderingMode,
     showSystemUi = mode.showSystemUi
   )
 
   @Test fun default() {
-    paparazzi.snapshot {
+    mugshot.snapshot {
       Box {
         AndroidView(
-          factory = { buildView(paparazzi.context) }
+          factory = { buildView(mugshot.context) }
         )
       }
     }

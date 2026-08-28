@@ -3,7 +3,7 @@ plugins {
 }
 
 android {
-  namespace = 'app.cash.paparazzi.plugin.test.producer1'
+  namespace = 'uk.co.fractalmotion.mugshot.plugin.test.producer1'
   compileSdk = libs.versions.compileSdk.get() as int
   defaultConfig {
     minSdk = libs.versions.minSdk.get() as int

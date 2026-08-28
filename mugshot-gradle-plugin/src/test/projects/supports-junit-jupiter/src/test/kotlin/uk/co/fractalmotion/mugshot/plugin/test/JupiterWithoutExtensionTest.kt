@@ -1,9 +1,9 @@
-package app.cash.paparazzi.plugin.test
+package uk.co.fractalmotion.mugshot.plugin.test
 
 import android.view.Gravity
 import android.widget.TextView
-import app.cash.paparazzi.Paparazzi
-import app.cash.paparazzi.TestName
+import uk.co.fractalmotion.mugshot.Mugshot
+import uk.co.fractalmotion.mugshot.TestName
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.TestInfo
@@ -14,7 +14,7 @@ import org.junit.jupiter.params.provider.ValueSource
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class JupiterWithoutExtensionTest {
 
-  lateinit var paparazzi: Paparazzi
+  lateinit var mugshot: Mugshot
 
   @BeforeEach
   fun setup(testInfo: TestInfo) {
@@ -23,25 +23,25 @@ class JupiterWithoutExtensionTest {
       className = testInfo.testClass.get().simpleName,
       methodName = testInfo.testMethod.get().name
     )
-    paparazzi = Paparazzi()
-    paparazzi.setup(testName = name)
+    mugshot = Mugshot()
+    mugshot.setup(testName = name)
   }
 
   @AfterEach
   fun tearDown() {
-    paparazzi.teardown()
+    mugshot.teardown()
   }
 
   @ParameterizedTest(name = "Jupiter param test: {0}")
   @ValueSource(strings = ["1", "2"])
   fun `verify parametrized snapshot`(param: String) {
-    val textView = paparazzi.inflate<TextView>(android.R.layout.simple_list_item_1)
+    val textView = mugshot.inflate<TextView>(android.R.layout.simple_list_item_1)
     textView.apply {
       text = "Jupiter test no extension $param"
       textSize = 24f
       gravity = Gravity.CENTER
     }
 
-    paparazzi.snapshot(view = textView, name = param)
+    mugshot.snapshot(view = textView, name = param)
   }
 }

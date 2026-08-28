@@ -1,4 +1,4 @@
-package app.cash.paparazzi.gradle.reporting
+package uk.co.fractalmotion.mugshot.gradle.reporting
 
 import org.gradle.internal.html.SimpleHtmlWriter
 import org.gradle.reporting.ReportRenderer

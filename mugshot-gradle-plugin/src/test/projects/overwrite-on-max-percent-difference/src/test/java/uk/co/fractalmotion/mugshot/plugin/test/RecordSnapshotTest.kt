@@ -1,4 +1,4 @@
-package app.cash.paparazzi.plugin.test
+package uk.co.fractalmotion.mugshot.plugin.test
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Spacer
@@ -7,21 +7,21 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import app.cash.paparazzi.Paparazzi
+import uk.co.fractalmotion.mugshot.Mugshot
 import com.android.ide.common.rendering.api.SessionParams
 import org.junit.Rule
 import org.junit.Test
 
 class RecordSnapshotTest {
   @get:Rule
-  val paparazzi = Paparazzi(
+  val mugshot = Mugshot(
     renderingMode = SessionParams.RenderingMode.SHRINK,
     maxPercentDifference = 20.0
   )
 
   @Test
   fun dontRecord() {
-    paparazzi.snapshot {
+    mugshot.snapshot {
       Spacer(
         modifier = Modifier
           .width(1.dp)
@@ -33,7 +33,7 @@ class RecordSnapshotTest {
 
   @Test
   fun record() {
-    paparazzi.snapshot {
+    mugshot.snapshot {
       Spacer(
         modifier = Modifier
           .width(40.dp)

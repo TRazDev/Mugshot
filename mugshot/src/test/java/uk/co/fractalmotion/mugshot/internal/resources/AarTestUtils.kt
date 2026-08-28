@@ -1,6 +1,6 @@
 @file:OptIn(ExperimentalPathApi::class)
 
-package app.cash.paparazzi.internal.resources
+package uk.co.fractalmotion.mugshot.internal.resources
 
 import com.android.SdkConstants.DOT_AAR
 import com.android.ide.common.util.toPathString

@@ -1,7 +1,7 @@
-package app.cash.paparazzi.plugin.test
+package uk.co.fractalmotion.mugshot.plugin.test
 
 import androidx.compose.runtime.Composable
-import app.cash.paparazzi.Paparazzi
+import uk.co.fractalmotion.mugshot.Mugshot
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.RuleChain
@@ -9,7 +9,7 @@ import org.junit.rules.TestRule
 import org.junit.runners.model.Statement
 
 class LoggerLeakTest {
-  private val paparazzi = Paparazzi()
+  private val mugshot = Mugshot()
   private val expectExceptionRule = TestRule { base, _ ->
     object : Statement() {
       override fun evaluate() {
@@ -24,16 +24,16 @@ class LoggerLeakTest {
     }
   }
 
-  @get:Rule val ignored: RuleChain = RuleChain.outerRule(expectExceptionRule).around(paparazzi)
+  @get:Rule val ignored: RuleChain = RuleChain.outerRule(expectExceptionRule).around(mugshot)
 
   @Test
   fun test1() {
-    paparazzi.snapshot { ComposeContent() }
+    mugshot.snapshot { ComposeContent() }
   }
 
   @Test
   fun test2() {
-    paparazzi.snapshot { ComposeContent() }
+    mugshot.snapshot { ComposeContent() }
   }
 
   @Composable

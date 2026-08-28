@@ -13,36 +13,36 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.cash.paparazzi.sample
+package uk.co.fractalmotion.mugshot.sample
 
-import app.cash.paparazzi.Paparazzi
-import app.cash.paparazzi.sample.databinding.KeypadBinding
+import uk.co.fractalmotion.mugshot.Mugshot
+import uk.co.fractalmotion.mugshot.sample.databinding.KeypadBinding
 import org.junit.Rule
 import org.junit.Test
 
 class KeypadViewTest {
   @get:Rule
-  val paparazzi = Paparazzi()
+  val mugshot = Mugshot()
 
   @Test
   fun testViews() {
-    val binding = KeypadBinding.inflate(paparazzi.layoutInflater)
+    val binding = KeypadBinding.inflate(mugshot.layoutInflater)
 
     with(binding) {
       amount.text = "$0"
-      paparazzi.snapshot(root, "zero dollars")
+      mugshot.snapshot(root, "zero dollars")
 
       amount.text = "$5.00"
-      paparazzi.snapshot(root, "five bucks")
+      mugshot.snapshot(root, "five bucks")
 
       root.setBackgroundResource(R.color.keypadDarkGrey)
-      val darkGrey = paparazzi.context.getColor(R.color.keypadDarkGrey)
+      val darkGrey = mugshot.context.getColor(R.color.keypadDarkGrey)
       root.setBackgroundColor(darkGrey)
       amount.text = "$1.00"
-      paparazzi.snapshot(root, "grey")
+      mugshot.snapshot(root, "grey")
 
       root.setBackgroundResource(R.color.keypadDarkGrey)
-      root.setBackgroundColor(paparazzi.context.getColor(R.color.bolt))
+      root.setBackgroundColor(mugshot.context.getColor(R.color.bolt))
       amount.setTextColor(darkGrey)
       amount123.setTextColor(darkGrey)
       amount456.setTextColor(darkGrey)
@@ -50,7 +50,7 @@ class KeypadViewTest {
       amount0.setTextColor(darkGrey)
       amount.text = ".01 BTC"
 
-      paparazzi.snapshot(root, "bolt")
+      mugshot.snapshot(root, "bolt")
     }
   }
 }

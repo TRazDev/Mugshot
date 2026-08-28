@@ -1,4 +1,4 @@
-package app.cash.paparazzi.plugin.test
+package uk.co.fractalmotion.mugshot.plugin.test
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -14,8 +14,8 @@ import androidx.compose.ui.unit.Dp
 import kotlin.math.sqrt
 
 @Composable
-fun HelloPaparazzi() {
-  val text = "Hello, Paparazzi"
+fun HelloMugshot() {
+  val text = "Hello, Mugshot"
 
   Box(
     modifier = Modifier

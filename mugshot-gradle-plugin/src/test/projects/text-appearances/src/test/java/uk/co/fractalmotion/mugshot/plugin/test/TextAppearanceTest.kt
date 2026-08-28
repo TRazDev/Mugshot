@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.cash.paparazzi.plugin.test
+package uk.co.fractalmotion.mugshot.plugin.test
 
 import android.content.Context
 import android.view.ContextThemeWrapper
@@ -22,17 +22,17 @@ import android.view.ViewGroup.LayoutParams.MATCH_PARENT
 import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
 import android.widget.LinearLayout
 import android.widget.TextView
-import app.cash.paparazzi.Paparazzi
+import uk.co.fractalmotion.mugshot.Mugshot
 import org.junit.Rule
 import org.junit.Test
 
 class TextAppearanceTest {
   @get:Rule
-  val paparazzi = Paparazzi()
+  val mugshot = Mugshot()
 
   @Test
   fun inCode() {
-    val context = paparazzi.context
+    val context = mugshot.context
     val view = LinearLayout(context).apply {
       orientation = LinearLayout.VERTICAL
       gravity = Gravity.CENTER
@@ -51,13 +51,13 @@ class TextAppearanceTest {
         }
       )
     }
-    paparazzi.snapshot(view)
+    mugshot.snapshot(view)
   }
 
   @Test
   fun inXml() {
-    val view = paparazzi.inflate<LinearLayout>(R.layout.text_appearance_test)
-    paparazzi.snapshot(view)
+    val view = mugshot.inflate<LinearLayout>(R.layout.text_appearance_test)
+    mugshot.snapshot(view)
   }
 
   private fun createTextView(context: Context) =

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.cash.paparazzi.internal.parsers
+package uk.co.fractalmotion.mugshot.internal.parsers
 
 /**
  * Copied from https://cs.android.com/android-studio/platform/tools/adt/idea/+/858f81bb7c350bc7a05daad36edefd21f74c8cef:android/src/com/android/tools/idea/rendering/parsers/AaptAttrParser.java

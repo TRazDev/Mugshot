@@ -13,14 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.cash.paparazzi.gradle
+package uk.co.fractalmotion.mugshot.gradle
 
-import app.cash.paparazzi.gradle.instrumentation.ResourcesCompatVisitorFactory
-import app.cash.paparazzi.gradle.reporting.DiffImage
-import app.cash.paparazzi.gradle.reporting.PaparazziTestReporter
-import app.cash.paparazzi.gradle.utils.artifactViewFor
-import app.cash.paparazzi.gradle.utils.capitalize
-import app.cash.paparazzi.gradle.utils.relativize
+import uk.co.fractalmotion.mugshot.gradle.instrumentation.ResourcesCompatVisitorFactory
+import uk.co.fractalmotion.mugshot.gradle.reporting.DiffImage
+import uk.co.fractalmotion.mugshot.gradle.reporting.MugshotTestReporter
+import uk.co.fractalmotion.mugshot.gradle.utils.artifactViewFor
+import uk.co.fractalmotion.mugshot.gradle.utils.capitalize
+import uk.co.fractalmotion.mugshot.gradle.utils.relativize
 import com.android.build.api.dsl.CommonExtension
 import com.android.build.api.dsl.KotlinMultiplatformAndroidHostTestCompilation
 import com.android.build.api.instrumentation.FramesComputationMode
@@ -65,7 +65,7 @@ import kotlin.io.encoding.Base64
 import kotlin.io.encoding.ExperimentalEncodingApi
 
 @Suppress("unused")
-public class PaparazziPlugin @Inject constructor(
+public class MugshotPlugin @Inject constructor(
   private val providerFactory: ProviderFactory,
   private val buildOperationRunner: BuildOperationRunner,
   private val buildOperationExecutor: BuildOperationExecutor
@@ -79,7 +79,7 @@ public class PaparazziPlugin @Inject constructor(
     )
     project.afterEvaluate {
       check(supportedPlugins.any { project.plugins.hasPlugin(it) }) {
-        "One of ${supportedPlugins.joinToString(", ")} must be applied for Paparazzi to work properly."
+        "One of ${supportedPlugins.joinToString(", ")} must be applied for Mugshot to work properly."
       }
     }
 
@@ -92,14 +92,14 @@ public class PaparazziPlugin @Inject constructor(
           is DynamicFeatureAndroidComponentsExtension,
           is KotlinMultiplatformAndroidComponentsExtension -> Unit
           // exhaustive to avoid potential breaking changes in future AGP releases
-          else -> error("${androidComponents.javaClass.name} from $plugin is not supported in Paparazzi")
+          else -> error("${androidComponents.javaClass.name} from $plugin is not supported in Mugshot")
         }
-        project.setupPaparazzi(androidComponents)
+        project.setupMugshot(androidComponents)
       }
     }
   }
 
-  private fun Project.setupPaparazzi(extension: AndroidComponentsExtension<*, *, *>) {
+  private fun Project.setupMugshot(extension: AndroidComponentsExtension<*, *, *>) {
     val isMultiplatformProject: Boolean = extension is KotlinMultiplatformAndroidComponentsExtension ||
       project.plugins.hasPlugin(KOTLIN_MULTIPLATFORM_PLUGIN)
     addTestDependency()
@@ -108,19 +108,19 @@ public class PaparazziPlugin @Inject constructor(
     val layoutlibResourcesFileCollection = project.setupLayoutlibResourcesDependency()
 
     // Create anchor tasks for all variants.
-    val verifyVariants = project.tasks.register("verifyPaparazzi") {
+    val verifyVariants = project.tasks.register("verifyMugshot") {
       it.group = VERIFICATION_GROUP
       it.description = "Run screenshot tests for all variants"
     }
-    val recordVariants = project.tasks.register("recordPaparazzi") {
+    val recordVariants = project.tasks.register("recordMugshot") {
       it.group = VERIFICATION_GROUP
       it.description = "Record golden images for all variants"
     }
-    val cleanRecordVariants = project.tasks.register("cleanRecordPaparazzi") {
+    val cleanRecordVariants = project.tasks.register("cleanRecordMugshot") {
       it.group = VERIFICATION_GROUP
       it.description = "Clean and record golden images for all variants"
     }
-    val deleteSnapshots = project.tasks.register("deletePaparazziSnapshots") {
+    val deleteSnapshots = project.tasks.register("deleteMugshotSnapshots") {
       it.group = VERIFICATION_GROUP
       it.description = "Delete all golden images"
     }
@@ -131,7 +131,7 @@ public class PaparazziPlugin @Inject constructor(
       val snapshotOutputDir = snapshotDir(testVariant)
 
       val deleteVariantSnapshot =
-        project.tasks.register("delete${variantSlug}PaparazziSnapshots", Delete::class.java) {
+        project.tasks.register("delete${variantSlug}MugshotSnapshots", Delete::class.java) {
           it.group = VERIFICATION_GROUP
           it.description = "Delete all golden images for variant '$variantSlug'"
           val files = project.fileTree(snapshotOutputDir) { tree ->
@@ -147,7 +147,7 @@ public class PaparazziPlugin @Inject constructor(
       val buildDirectory = project.layout.buildDirectory
       val gradleUserHomeDir = project.gradle.gradleUserHomeDir
       val reportOutputDir =
-        project.extensions.getByType(ReportingExtension::class.java).baseDirectory.dir("paparazzi/${variant.name}")
+        project.extensions.getByType(ReportingExtension::class.java).baseDirectory.dir("mugshot/${variant.name}")
 
       // AGP < 9 does not fully initialize ASM instrumentation for Android KMP variants, causing
       // `lateinit property visitorFactory has not been initialized` during configuration.
@@ -165,7 +165,7 @@ public class PaparazziPlugin @Inject constructor(
       val sources = AndroidVariantSources(variant)
 
       val writeResourcesTask = project.tasks.register(
-        "preparePaparazzi${variantSlug}Resources",
+        "prepareMugshot${variantSlug}Resources",
         PrepareResourcesTask::class.java
       ) { task ->
         val nonTransitiveRClassEnabled =
@@ -184,7 +184,7 @@ public class PaparazziPlugin @Inject constructor(
             .zip(sources.moduleAssetDirs.relativize(projectDirectory), List<String>::plus)
         )
         task.aarAssetDirs.set(sources.aarAssetDirs.relativize(gradleHomeDir))
-        task.paparazziResources.set(buildDirectory.file("intermediates/paparazzi/${variant.name}/resources.json"))
+        task.mugshotResources.set(buildDirectory.file("intermediates/mugshot/${variant.name}/resources.json"))
       }
 
       val testVariantSlug = testVariant.name.capitalize()
@@ -192,19 +192,19 @@ public class PaparazziPlugin @Inject constructor(
       val testTasks = project.tasks.named { it == "test$testVariantSlug" }
       testTasks.configureEach { it.dependsOn(writeResourcesTask) }
 
-      val recordTaskProvider = project.tasks.register("recordPaparazzi$variantSlug", PaparazziTask::class.java) {
+      val recordTaskProvider = project.tasks.register("recordMugshot$variantSlug", MugshotTask::class.java) {
         it.group = VERIFICATION_GROUP
         it.description = "Record golden images for variant '${variant.name}'"
         it.mustRunAfter(deleteSnapshots)
       }
       recordVariants.configure { it.dependsOn(recordTaskProvider) }
-      val cleanRecordTaskProvider = project.tasks.register("cleanRecordPaparazzi$variantSlug") {
+      val cleanRecordTaskProvider = project.tasks.register("cleanRecordMugshot$variantSlug") {
         it.group = VERIFICATION_GROUP
         it.description = "Clean and record golden images for variant '${variant.name}'"
         it.dependsOn(deleteSnapshots, recordTaskProvider)
       }
       cleanRecordVariants.configure { it.dependsOn(cleanRecordTaskProvider) }
-      val verifyTaskProvider = project.tasks.register("verifyPaparazzi$variantSlug", PaparazziTask::class.java) {
+      val verifyTaskProvider = project.tasks.register("verifyMugshot$variantSlug", MugshotTask::class.java) {
         it.group = VERIFICATION_GROUP
         it.description = "Run screenshot tests for variant '${variant.name}'"
       }
@@ -219,16 +219,16 @@ public class PaparazziPlugin @Inject constructor(
       }
 
       val overwriteOnMaxPercentDifferenceProvider = project.overwriteOnMaxPercentDifferenceProvider()
-      val paparazziGradlePropertiesProvider =
-        project.providers.gradlePropertiesPrefixedBy("app.cash.paparazzi")
-      val failureDir = buildDirectory.dir("paparazzi/failures/${variant.name}")
+      val mugshotGradlePropertiesProvider =
+        project.providers.gradlePropertiesPrefixedBy("uk.co.fractalmotion.mugshot")
+      val failureDir = buildDirectory.dir("mugshot/failures/${variant.name}")
       val testTaskProvider = testTasks.withType(Test::class.java)
       testTaskProvider.configureEach { test ->
         val localResourceDirs = sources.localResourceDirs ?: providerFactory.provider { emptyList() }
         val localAssetDirs = sources.localAssetDirs ?: providerFactory.provider { emptyList() }
 
         test.setTestReporter(
-          PaparazziTestReporter(
+          MugshotTestReporter(
             buildOperationRunner = buildOperationRunner,
             buildOperationExecutor = buildOperationExecutor,
             diffRegistryFactory = createDiffRegistryFactory(failureDir, isVerifyRun)
@@ -240,80 +240,80 @@ public class PaparazziPlugin @Inject constructor(
         // content is tracked separately via the path-sensitive file inputs below.
         val pathSystemProperties = project.objects.mapProperty(String::class.java, String::class.java)
         pathSystemProperties.put(
-          "paparazzi.test.resources",
-          writeResourcesTask.flatMap { it.paparazziResources.asFile }.map { it.path }
+          "mugshot.test.resources",
+          writeResourcesTask.flatMap { it.mugshotResources.asFile }.map { it.path }
         )
-        pathSystemProperties.put("paparazzi.project.dir", projectDirectory.toString())
-        pathSystemProperties.put("paparazzi.build.dir", buildDirectory.map { it.toString() })
-        pathSystemProperties.put("paparazzi.report.dir", reportOutputDir.map { it.toString() })
-        pathSystemProperties.put("paparazzi.artifacts.cache.dir", gradleUserHomeDir.path)
-        test.jvmArgumentProviders.add(PaparazziSystemPropertiesArgumentProvider(pathSystemProperties))
+        pathSystemProperties.put("mugshot.project.dir", projectDirectory.toString())
+        pathSystemProperties.put("mugshot.build.dir", buildDirectory.map { it.toString() })
+        pathSystemProperties.put("mugshot.report.dir", reportOutputDir.map { it.toString() })
+        pathSystemProperties.put("mugshot.artifacts.cache.dir", gradleUserHomeDir.path)
+        test.jvmArgumentProviders.add(MugshotSystemPropertiesArgumentProvider(pathSystemProperties))
 
-        test.inputs.property("paparazzi.test.record", isRecordRun)
-        test.inputs.property("paparazzi.test.verify", isVerifyRun)
-        test.inputs.property("paparazzi.gradleProperties", paparazziGradlePropertiesProvider)
-        test.inputs.property("paparazzi.layoutlib.version", NATIVE_LIB_VERSION)
+        test.inputs.property("mugshot.test.record", isRecordRun)
+        test.inputs.property("mugshot.test.verify", isVerifyRun)
+        test.inputs.property("mugshot.gradleProperties", mugshotGradlePropertiesProvider)
+        test.inputs.property("mugshot.layoutlib.version", NATIVE_LIB_VERSION)
 
         // Source dirs catch in-place content edits. PrepareResourcesTask tracks paths only and
         // its JSON output is byte-identical when contents change, so it can't invalidate the test.
         test.inputs.files(localResourceDirs)
-          .withPropertyName("paparazzi.localResourceDirs")
+          .withPropertyName("mugshot.localResourceDirs")
           .withPathSensitivity(PathSensitivity.RELATIVE)
         test.inputs.files(sources.moduleResourceDirs)
-          .withPropertyName("paparazzi.moduleResourceDirs")
+          .withPropertyName("mugshot.moduleResourceDirs")
           .withPathSensitivity(PathSensitivity.RELATIVE)
         test.inputs.files(sources.aarExplodedDirs)
-          .withPropertyName("paparazzi.aarResourceDirs")
+          .withPropertyName("mugshot.aarResourceDirs")
           .withPathSensitivity(PathSensitivity.RELATIVE)
         test.inputs.files(localAssetDirs)
-          .withPropertyName("paparazzi.localAssetDirs")
+          .withPropertyName("mugshot.localAssetDirs")
           .withPathSensitivity(PathSensitivity.RELATIVE)
         test.inputs.files(sources.moduleAssetDirs)
-          .withPropertyName("paparazzi.moduleAssetDirs")
+          .withPropertyName("mugshot.moduleAssetDirs")
           .withPathSensitivity(PathSensitivity.RELATIVE)
         test.inputs.files(sources.aarAssetDirs)
-          .withPropertyName("paparazzi.aarAssetDirs")
+          .withPropertyName("mugshot.aarAssetDirs")
           .withPathSensitivity(PathSensitivity.RELATIVE)
 
         // Declared so Test Distribution ships the file (#1790); also catches path-structure changes.
-        test.inputs.file(writeResourcesTask.flatMap { it.paparazziResources })
-          .withPropertyName("paparazzi.test.resources")
+        test.inputs.file(writeResourcesTask.flatMap { it.mugshotResources })
+          .withPropertyName("mugshot.test.resources")
           .withPathSensitivity(PathSensitivity.NONE)
 
         test.inputs.dir(snapshotOutputDir.presentWhen(isVerifyRun))
-          .withPropertyName("paparazzi.snapshot.input.dir")
+          .withPropertyName("mugshot.snapshot.input.dir")
           .withPathSensitivity(PathSensitivity.RELATIVE)
           .optional()
 
         test.outputs.dir(snapshotOutputDir.presentWhen(isRecordRun))
-          .withPropertyName("paparazzi.snapshots.output.dir")
+          .withPropertyName("mugshot.snapshots.output.dir")
           .optional()
 
-        test.outputs.dir(reportOutputDir).withPropertyName("paparazzi.report.dir")
+        test.outputs.dir(reportOutputDir).withPropertyName("mugshot.report.dir")
         test.outputs.dir(failureDir)
-          .withPropertyName("paparazzi.failures.dir")
+          .withPropertyName("mugshot.failures.dir")
           .optional()
 
         test.doFirst {
           if (isVerifyRun.get()) failureDir.get().asFile.deleteRecursively()
           // Note: these are lazy properties that are not resolvable in the Gradle configuration phase.
           // They need special handling, so they're added as inputs.property above, and systemProperty here.
-          test.systemProperties.putAll(paparazziGradlePropertiesProvider.get())
-          test.systemProperties["paparazzi.layoutlib.runtime.root"] =
+          test.systemProperties.putAll(mugshotGradlePropertiesProvider.get())
+          test.systemProperties["mugshot.layoutlib.runtime.root"] =
             layoutlibNativeRuntimeFileCollection.singleFile.absolutePath
-          test.systemProperties["paparazzi.layoutlib.resources.root"] =
+          test.systemProperties["mugshot.layoutlib.resources.root"] =
             layoutlibResourcesFileCollection.singleFile.absolutePath
-          test.systemProperties["paparazzi.test.record"] = isRecordRun.get()
-          test.systemProperties["paparazzi.test.record.overwriteOnMaxPercentDifference"] =
+          test.systemProperties["mugshot.test.record"] = isRecordRun.get()
+          test.systemProperties["mugshot.test.record.overwriteOnMaxPercentDifference"] =
             overwriteOnMaxPercentDifferenceProvider.orNull == "true"
-          test.systemProperties["paparazzi.test.verify"] = isVerifyRun.get()
-          test.systemProperties["paparazzi.snapshot.dir"] = snapshotOutputDir.get().asFile.absolutePath
-          test.systemProperties["paparazzi.failures.dir"] = failureDir.get().asFile.absolutePath
+          test.systemProperties["mugshot.test.verify"] = isVerifyRun.get()
+          test.systemProperties["mugshot.snapshot.dir"] = snapshotOutputDir.get().asFile.absolutePath
+          test.systemProperties["mugshot.failures.dir"] = failureDir.get().asFile.absolutePath
         }
 
         test.doLast {
           val uri = reportOutputDir.get().asFile.toPath().resolve("index.html").toUri()
-          test.logger.log(LIFECYCLE, "See the Paparazzi report at: $uri")
+          test.logger.log(LIFECYCLE, "See the Mugshot report at: $uri")
         }
       }
 
@@ -351,9 +351,9 @@ public class PaparazziPlugin @Inject constructor(
       }
     }
 
-  public abstract class PaparazziTask : DefaultTask() {
+  public abstract class MugshotTask : DefaultTask() {
     @Option(option = "tests", description = "Sets test class or method name to be included, '*' is supported.")
-    public open fun setTestNameIncludePatterns(testNamePattern: List<String>): PaparazziTask {
+    public open fun setTestNameIncludePatterns(testNamePattern: List<String>): MugshotTask {
       project.tasks.withType(Test::class.java).configureEach {
         it.setTestNameIncludePatterns(testNamePattern)
       }
@@ -412,9 +412,9 @@ public class PaparazziPlugin @Inject constructor(
 
   private fun Project.addTestDependency() {
     val dependency = if (isInternal()) {
-      dependencies.project(mapOf("path" to ":paparazzi"))
+      dependencies.project(mapOf("path" to ":mugshot"))
     } else {
-      dependencies.create("app.cash.paparazzi:paparazzi:$VERSION")
+      dependencies.create("uk.co.fractalmotion.mugshot:mugshot:$VERSION")
     }
 
     val allowedConfigs = mutableSetOf<String>()
@@ -456,11 +456,11 @@ public class PaparazziPlugin @Inject constructor(
         val configName = sourceSet.implementationConfigurationName
         if (configName in allowedConfigs) return@forEach
         val config = configurations.findByName(configName) ?: return@forEach
-        val hasPaparazzi = config.dependencies.any {
-          it.group == "app.cash.paparazzi" && it.name == "paparazzi"
+        val hasMugshot = config.dependencies.any {
+          it.group == "uk.co.fractalmotion.mugshot" && it.name == "mugshot"
         }
-        check(!hasPaparazzi) {
-          "Paparazzi must not be declared in '$configName', as it should only resolve on Android JVM tests."
+        check(!hasMugshot) {
+          "Mugshot must not be declared in '$configName', as it should only resolve on Android JVM tests."
         }
       }
     }
@@ -482,13 +482,13 @@ public class PaparazziPlugin @Inject constructor(
     }
   }
 
-  private fun Project.isInternal(): Boolean = providers.gradleProperty("app.cash.paparazzi.internal").orNull == "true"
+  private fun Project.isInternal(): Boolean = providers.gradleProperty("uk.co.fractalmotion.mugshot.internal").orNull == "true"
 
   private fun Project.overwriteOnMaxPercentDifferenceProvider(): Provider<String> =
-    providers.gradleProperty("app.cash.paparazzi.overwriteOnMaxPercentDifference")
+    providers.gradleProperty("uk.co.fractalmotion.mugshot.overwriteOnMaxPercentDifference")
 
   /**
-   * Resolves the `targetSdk` Paparazzi writes into the test manifest.
+   * Resolves the `targetSdk` Mugshot writes into the test manifest.
    *
    * Prefers `android.testOptions.targetSdk` if set, otherwise the project's `compileSdk`,
    * otherwise [DEFAULT_COMPILE_SDK_VERSION]. Mirrors AGP 9's planned default behavior
@@ -520,7 +520,7 @@ public class PaparazziPlugin @Inject constructor(
 }
 
 /** Passes absolute-path system properties as `-D` JVM args without adding them to the cache key (#1874). */
-internal class PaparazziSystemPropertiesArgumentProvider(
+internal class MugshotSystemPropertiesArgumentProvider(
   @get:Internal val systemProperties: Provider<Map<String, String>>
 ) : CommandLineArgumentProvider {
   override fun asArguments(): Iterable<String> =

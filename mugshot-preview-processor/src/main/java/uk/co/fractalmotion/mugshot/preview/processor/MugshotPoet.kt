@@ -1,4 +1,4 @@
-package app.cash.paparazzi.preview.processor
+package uk.co.fractalmotion.mugshot.preview.processor
 
 import com.google.devtools.ksp.getVisibility
 import com.google.devtools.ksp.processing.KSPLogger
@@ -10,7 +10,7 @@ import com.squareup.kotlinpoet.CodeBlock
 import com.squareup.kotlinpoet.FileSpec
 import com.squareup.kotlinpoet.buildCodeBlock
 
-internal class PaparazziPoet(
+internal class MugshotPoet(
   private val logger: KSPLogger,
   private val namespace: String
 ) {
@@ -19,13 +19,13 @@ internal class PaparazziPoet(
       emptyList()
     } else {
       if (functions.count() == 0) {
-        logger.info("No functions found with @Paparazzi annotation.")
+        logger.info("No functions found with @Mugshot annotation.")
         emptyList()
       } else {
         listOf(
           buildAnnotationsFile(
-            fileName = "PaparazziPreviews",
-            propertyName = "paparazziPreviews",
+            fileName = "MugshotPreviews",
+            propertyName = "mugshotPreviews",
             functions = functions
           )
         )
@@ -37,7 +37,7 @@ internal class PaparazziPoet(
     FileSpec.scriptBuilder(fileName, namespace)
       .addCode(
         buildCodeBlock {
-          addStatement("internal val %L = listOf<%L.PaparazziPreviewData>(", propertyName, PREVIEW_RUNTIME_PACKAGE_NAME)
+          addStatement("internal val %L = listOf<%L.MugshotPreviewData>(", propertyName, PREVIEW_RUNTIME_PACKAGE_NAME)
           indent()
 
           functions.process { func, previewParam ->
@@ -77,7 +77,7 @@ internal class PaparazziPoet(
     }
 
   private fun CodeBlock.Builder.addDefault(function: KSFunctionDeclaration, snapshotName: String) {
-    addStatement("%L.PaparazziPreviewData(", PREVIEW_RUNTIME_PACKAGE_NAME)
+    addStatement("%L.MugshotPreviewData(", PREVIEW_RUNTIME_PACKAGE_NAME)
     indent()
     addStatement("snapshotName = %S,", snapshotName)
     addStatement("composable = { %L() },", function.qualifiedName?.asString())
@@ -98,7 +98,7 @@ internal class PaparazziPoet(
     }.joinToString("_")
 }
 
-private const val PREVIEW_RUNTIME_PACKAGE_NAME = "app.cash.paparazzi.preview.runtime"
+private const val PREVIEW_RUNTIME_PACKAGE_NAME = "uk.co.fractalmotion.mugshot.preview.runtime"
 
 internal fun KSAnnotation.isPreview() = qualifiedName() == "androidx.compose.ui.tooling.preview.Preview"
 internal fun KSAnnotation.isPreviewParameter() =

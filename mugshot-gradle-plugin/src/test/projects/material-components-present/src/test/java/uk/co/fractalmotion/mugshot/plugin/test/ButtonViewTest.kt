@@ -13,20 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.cash.paparazzi.plugin.test
+package uk.co.fractalmotion.mugshot.plugin.test
 
 import android.widget.LinearLayout
-import app.cash.paparazzi.Paparazzi
+import uk.co.fractalmotion.mugshot.Mugshot
 import org.junit.Rule
 import org.junit.Test
 
 class ButtonViewTest {
   @get:Rule
-  val paparazzi = Paparazzi(theme = "Theme.MaterialComponents")
+  val mugshot = Mugshot(theme = "Theme.MaterialComponents")
 
   @Test
   fun testViews() {
-    val button = paparazzi.inflate<LinearLayout>(R.layout.button)
-    paparazzi.snapshot(button, "button")
+    val button = mugshot.inflate<LinearLayout>(R.layout.button)
+    mugshot.snapshot(button, "button")
   }
 }

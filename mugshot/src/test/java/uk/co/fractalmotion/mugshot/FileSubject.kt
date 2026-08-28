@@ -1,4 +1,4 @@
-package app.cash.paparazzi
+package uk.co.fractalmotion.mugshot
 
 import com.google.common.truth.FailureMetadata
 import com.google.common.truth.Subject

@@ -7,7 +7,7 @@ we got wrong on the way there. Written for whoever touches `WebpCodec` next.
 
 Three things, in this order:
 
-1. **Removed animated snapshots.** `Paparazzi#gif`, `PaparazziSdk#gif`, the `snapshots/videos`
+1. **Removed animated snapshots.** `Mugshot#gif`, `MugshotSdk#gif`, the `snapshots/videos`
    directory, and the whole `internal/apng` package (an APNG reader, writer, and a frame-aligning
    verifier — around 700 lines) serving six checked-in files. `SnapshotHandler#newFrameHandler`
    lost its `frameCount` and `fps` parameters. Breaking change.
@@ -29,7 +29,7 @@ looked at and dropped:
   transforms — nothing from the old PNG writer carries over. Thousands of lines.
 - **`Bitmap.compress(WEBP_LOSSLESS)` through layoutlib.** libwebp is statically linked into
   layoutlib's `libandroid_runtime`, so this needs no new dependency. But it only works inside a
-  live `Bridge.init` session, which rules out the `paparazzi` module's own unit tests and the
+  live `Bridge.init` session, which rules out the `mugshot` module's own unit tests and the
   Gradle plugin's `ImageSubject`.
 
 We use `com.github.usefulness:webp-imageio`. It registers an ImageIO SPI, so existing
@@ -91,7 +91,7 @@ Golden corpus, 145 files:
 Net against the old PNG encoder: **58% smaller, encode faster, decode 5.8× faster.**
 
 End to end, same tests and same renders, only the setting changed:
-`:sample:recordPaparazziDebug` went from 34.0s to 8.9s.
+`:sample:recordMugshotDebug` went from 34.0s to 8.9s.
 
 Checked-in PNGs went from 27 to 3.
 
@@ -99,7 +99,7 @@ Checked-in PNGs went from 27 to 3.
 
 Worth recording so nobody repeats them.
 
-- **A bogus 2× speedup.** The first end-to-end comparison showed `:sample:verifyPaparazziDebug` at
+- **A bogus 2× speedup.** The first end-to-end comparison showed `:sample:verifyMugshotDebug` at
   15.7s on master versus 8.0s on the branch. That has nothing to do with WebP: master's sample still
   had `LottieTest`, two 60fps × 5s gifs costing 7.3s on their own. The measurement was of deleting
   video, not of the codec. Real decode saving on a 44-golden verify is about 90ms — invisible.
@@ -107,7 +107,7 @@ Worth recording so nobody repeats them.
   so it went out with Lottie. It isn't — it drives view inflation, and dropping it shifted text
   rendering about 1% in three tests. Caught by running master in a scratch worktree instead of
   assuming the failures were pre-existing drift.
-- **Re-recording goldens instead of re-encoding them.** An actual `recordPaparazziDebug` rewrites
+- **Re-recording goldens instead of re-encoding them.** An actual `recordMugshotDebug` rewrites
   goldens with *this machine's* renders, which drift ~0.16% from the committed ones (font
   rendering, under the 1% threshold, so verify still passes). That would have quietly replaced the
   project's goldens with one developer's. Re-encoding instead — decode the existing golden, encode

@@ -17,7 +17,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:gravity="center"
-    android:text="paparazzi"
+    android:text="mugshot"
     android:textColor="#332F21"
     android:textFontWeight="100"
     android:textSize="70dp"

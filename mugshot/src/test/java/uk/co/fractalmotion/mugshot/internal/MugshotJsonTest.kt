@@ -13,18 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.cash.paparazzi.internal
+package uk.co.fractalmotion.mugshot.internal
 
-import app.cash.paparazzi.TestName
+import uk.co.fractalmotion.mugshot.TestName
 import com.google.common.truth.Truth.assertThat
 import org.junit.Test
 
-class PaparazziJsonTest {
+class MugshotJsonTest {
   @Test
   fun testName() {
-    val adapter = PaparazziJson.moshi.adapter(TestName::class.java)
-    val testName = TestName("app.cash.paparazzi", "CelebrityTest", "testSettings")
-    val json = "\"app.cash.paparazzi.CelebrityTest#testSettings\""
+    val adapter = MugshotJson.moshi.adapter(TestName::class.java)
+    val testName = TestName("uk.co.fractalmotion.mugshot", "CelebrityTest", "testSettings")
+    val json = "\"uk.co.fractalmotion.mugshot.CelebrityTest#testSettings\""
     assertThat(adapter.toJson(testName)).isEqualTo(json)
     assertThat(adapter.fromJson(json)).isEqualTo(testName)
   }

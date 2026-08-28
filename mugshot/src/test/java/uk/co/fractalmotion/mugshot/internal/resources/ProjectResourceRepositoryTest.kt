@@ -1,4 +1,4 @@
-package app.cash.paparazzi.internal.resources
+package uk.co.fractalmotion.mugshot.internal.resources
 
 import com.android.resources.ResourceType
 import com.google.common.truth.Truth.assertThat

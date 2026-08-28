@@ -1,6 +1,6 @@
-package app.cash.paparazzi.internal.differs
+package uk.co.fractalmotion.mugshot.internal.differs
 
-import app.cash.paparazzi.Differ.DiffResult
+import uk.co.fractalmotion.mugshot.Differ.DiffResult
 import com.google.common.truth.Truth.assertThat
 import org.junit.Test
 import javax.imageio.ImageIO

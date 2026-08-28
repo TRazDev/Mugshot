@@ -1,4 +1,4 @@
-package app.cash.paparazzi.plugin.test
+package uk.co.fractalmotion.mugshot.plugin.test
 
 import android.graphics.Color
 import android.util.TypedValue
@@ -8,24 +8,24 @@ import android.widget.LinearLayout
 import android.widget.LinearLayout.VERTICAL
 import android.widget.TextView
 import androidx.appcompat.content.res.AppCompatResources
-import app.cash.paparazzi.Paparazzi
+import uk.co.fractalmotion.mugshot.Mugshot
 import org.junit.Rule
 import org.junit.Test
 
 class NinePatchTest {
   @get:Rule
-  val paparazzi = Paparazzi(theme = "Theme.App")
+  val mugshot = Mugshot(theme = "Theme.App")
 
   @Test
   fun ninePatch() {
-    val launch = LinearLayout(paparazzi.context).apply {
+    val launch = LinearLayout(mugshot.context).apply {
       val outValue = TypedValue()
       context.theme.resolveAttribute(android.R.attr.listDivider, outValue, true)
       dividerDrawable = AppCompatResources.getDrawable(context, outValue.resourceId)
 
       finishSetup()
     }
-    paparazzi.snapshot(launch)
+    mugshot.snapshot(launch)
   }
 
   private fun LinearLayout.finishSetup() {
@@ -43,7 +43,7 @@ class NinePatchTest {
     )
     addView(
       TextView(context).apply {
-        text = "Paparazzi"
+        text = "Mugshot"
         setTextSize(TypedValue.COMPLEX_UNIT_DIP, 32f)
       },
       WRAP_CONTENT,

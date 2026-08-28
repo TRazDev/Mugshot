@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.cash.paparazzi.internal
+package uk.co.fractalmotion.mugshot.internal
 
-import app.cash.paparazzi.Paparazzi
+import uk.co.fractalmotion.mugshot.Mugshot
 import com.android.ide.common.rendering.api.ILayoutLog
 import com.android.utils.ILogger
 import java.io.PrintStream
@@ -27,8 +27,8 @@ import java.util.logging.Logger.getLogger
 /**
  * This logger delegates to java.util.Logging.
  */
-internal class PaparazziLogger : ILayoutLog, ILogger {
-  private val logger: Logger = getLogger(Paparazzi::class.java.name)
+internal class MugshotLogger : ILayoutLog, ILogger {
+  private val logger: Logger = getLogger(Mugshot::class.java.name)
   private val errors = mutableListOf<Throwable>()
 
   override fun error(throwable: Throwable?, format: String?, vararg args: Any) {

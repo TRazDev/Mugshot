@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-package app.cash.paparazzi.internal
+package uk.co.fractalmotion.mugshot.internal
 
-import app.cash.paparazzi.DeviceConfig
-import app.cash.paparazzi.internal.parsers.LayoutPullParser
-import app.cash.paparazzi.internal.resources.pseudolocalizeIfNeeded
+import uk.co.fractalmotion.mugshot.DeviceConfig
+import uk.co.fractalmotion.mugshot.internal.parsers.LayoutPullParser
+import uk.co.fractalmotion.mugshot.internal.resources.pseudolocalizeIfNeeded
 import com.android.SdkConstants
 import com.android.ide.common.rendering.api.AssetRepository
 import com.android.ide.common.rendering.api.ResourceNamespace
@@ -36,8 +36,8 @@ import com.android.resources.ResourceType
 
 /** Creates [SessionParams] objects. */
 internal data class SessionParamsBuilder(
-  private val layoutlibCallback: PaparazziCallback,
-  private val logger: PaparazziLogger,
+  private val layoutlibCallback: MugshotCallback,
+  private val logger: MugshotLogger,
   private val frameworkResources: ResourceRepository,
   private val assetRepository: AssetRepository,
   private val projectResources: ResourceRepository,

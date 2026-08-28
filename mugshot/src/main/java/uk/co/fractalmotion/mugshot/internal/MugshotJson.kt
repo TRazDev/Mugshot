@@ -13,10 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.cash.paparazzi.internal
+package uk.co.fractalmotion.mugshot.internal
 
-import app.cash.paparazzi.Snapshot
-import app.cash.paparazzi.TestName
+import uk.co.fractalmotion.mugshot.Snapshot
+import uk.co.fractalmotion.mugshot.TestName
 import com.squareup.moshi.FromJson
 import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.Moshi
@@ -26,7 +26,7 @@ import com.squareup.moshi.adapters.Rfc3339DateJsonAdapter
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import java.util.Date
 
-internal object PaparazziJson {
+internal object MugshotJson {
   val moshi = Moshi.Builder()
     .add(Date::class.java, Rfc3339DateJsonAdapter())
     .add(this)

@@ -1,21 +1,21 @@
-package cash.app.paparazzi.plugin.test
+package uk.co.fractalmotion.mugshot.plugin.test
 
 import android.widget.ImageView
 import android.widget.TextView
-import app.cash.paparazzi.Paparazzi
-import app.cash.paparazzi.plugin.test.R
+import uk.co.fractalmotion.mugshot.Mugshot
+import uk.co.fractalmotion.mugshot.plugin.test.R
 import org.junit.Rule
 import org.junit.Test
 
-class SamplePaparazziTest {
+class SampleMugshotTest {
   @get:Rule
-  val paparazzi = Paparazzi()
+  val mugshot = Mugshot()
 
   @Test
   fun text() {
-    paparazzi.snapshot(
-      TextView(paparazzi.context).apply {
-        text = "Hello Paparazzi from Android Multiplatform Library!"
+    mugshot.snapshot(
+      TextView(mugshot.context).apply {
+        text = "Hello Mugshot from Android Multiplatform Library!"
         textSize = 18f
       }
     )
@@ -23,8 +23,8 @@ class SamplePaparazziTest {
 
   @Test
   fun image() {
-    paparazzi.snapshot(
-      ImageView(paparazzi.context).apply {
+    mugshot.snapshot(
+      ImageView(mugshot.context).apply {
         setImageResource(R.drawable.camera)
       }
     )

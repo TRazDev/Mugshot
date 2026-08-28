@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.cash.paparazzi.internal.parsers
+package uk.co.fractalmotion.mugshot.internal.parsers
 
 import com.android.SdkConstants.AAPT_URI
 import com.android.SdkConstants.TAG_ATTR

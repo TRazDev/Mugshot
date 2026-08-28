@@ -1,4 +1,4 @@
-package app.cash.paparazzi.gradle.instrumentation
+package uk.co.fractalmotion.mugshot.gradle.instrumentation
 
 import com.android.build.api.instrumentation.AsmClassVisitorFactory
 import com.android.build.api.instrumentation.ClassContext

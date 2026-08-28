@@ -39,7 +39,7 @@ class Shot {
     circle.onmouseover = function (e) {
       this.img.src = file;
 
-      for (let shot of Object.values(paparazziRenderer.shots)) {
+      for (let shot of Object.values(mugshotRenderer.shots)) {
         let found = false;
         for (let run of shot.runs) {
           if (runId == run.id) {
@@ -114,7 +114,7 @@ class Shot {
   }
 }
 
-class PaparazziRenderer {
+class MugshotRenderer {
   constructor() {
     // Used for content comparison for we only re-render the updated ones.
     this.currentRuns = {};
@@ -195,10 +195,10 @@ class PaparazziRenderer {
   }
 }
 
-const paparazziRenderer = new PaparazziRenderer();
-console.log(paparazziRenderer);
+const mugshotRenderer = new MugshotRenderer();
+console.log(mugshotRenderer);
 
 function bootstrap() {
   document.rootContainer = document.getElementById('rootContainer');
-  paparazziRenderer.start();
+  mugshotRenderer.start();
 }

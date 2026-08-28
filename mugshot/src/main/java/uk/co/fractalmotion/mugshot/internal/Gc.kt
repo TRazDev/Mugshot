@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package app.cash.paparazzi.internal
+package uk.co.fractalmotion.mugshot.internal
 
 import java.lang.ref.WeakReference
 

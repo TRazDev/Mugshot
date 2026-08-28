@@ -1,4 +1,4 @@
-package app.cash.paparazzi.agent
+package uk.co.fractalmotion.mugshot.agent
 
 import net.bytebuddy.ByteBuddy
 import net.bytebuddy.dynamic.ClassFileLocator

@@ -1,12 +1,12 @@
 plugins {
   id 'com.android.library'
-  id 'app.cash.paparazzi'
+  id 'uk.co.fractalmotion.mugshot'
 }
 
 project.layout.buildDirectory = 'custom'
 
 android {
-  namespace = 'app.cash.paparazzi.plugin.test'
+  namespace = 'uk.co.fractalmotion.mugshot.plugin.test'
   compileSdk = libs.versions.compileSdk.get() as int
   defaultConfig {
     minSdk = libs.versions.minSdk.get() as int
