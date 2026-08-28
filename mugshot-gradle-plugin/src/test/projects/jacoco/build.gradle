@@ -1,0 +1,26 @@
+plugins {
+  id 'com.android.library'
+  id 'org.jetbrains.kotlin.plugin.compose'
+  id 'uk.co.fractalmotion.mugshot'
+  id 'jacoco'
+}
+
+android {
+  namespace = 'uk.co.fractalmotion.mugshot.plugin.test'
+  compileSdk = libs.versions.compileSdk.get() as int
+  defaultConfig {
+    minSdk = libs.versions.minSdk.get() as int
+  }
+  compileOptions {
+    sourceCompatibility = libs.versions.javaTarget.get()
+    targetCompatibility = libs.versions.javaTarget.get()
+  }
+  buildFeatures {
+    compose = true
+  }
+}
+
+dependencies {
+  implementation libs.composeUi.material
+}
+

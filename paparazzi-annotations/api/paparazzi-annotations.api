@@ -1,3 +1,0 @@
-public abstract interface annotation class app/cash/paparazzi/annotations/Paparazzi : java/lang/annotation/Annotation {
-}
-

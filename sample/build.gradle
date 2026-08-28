@@ -1,10 +1,10 @@
 apply plugin: 'com.android.library'
 apply plugin: 'org.jetbrains.kotlin.plugin.compose'
-apply plugin: 'app.cash.paparazzi'
+apply plugin: 'uk.co.fractalmotion.mugshot'
 apply plugin: 'jacoco'
 
 android {
-  namespace = 'app.cash.paparazzi.sample'
+  namespace = 'uk.co.fractalmotion.mugshot.sample'
 
   compileSdk = libs.versions.compileSdk.get() as int
   defaultConfig {
@@ -34,8 +34,8 @@ dependencies {
   implementation libs.androidx.appcompat
 
   // TODO: wire via plugin
-  implementation projects.paparazziAnnotations
-  lintChecks projects.paparazziPreviewLints
+  implementation projects.mugshotAnnotations
+  lintChecks projects.mugshotPreviewLints
 
   testImplementation libs.testParameterInjector
 }
@@ -47,5 +47,5 @@ tasks.withType(com.diffplug.gradle.spotless.SpotlessTask).configureEach {
 
 // Verify screenshots as part of the standard check process
 tasks.named("check").configure {
-  dependsOn("verifyPaparazzi")
+  dependsOn("verifyMugshot")
 }

@@ -1,0 +1,169 @@
+import com.android.build.gradle.internal.publishing.AndroidArtifacts
+import org.jetbrains.dokka.gradle.engine.parameters.KotlinPlatform
+import org.jetbrains.dokka.gradle.engine.parameters.VisibilityModifier
+
+apply plugin: 'org.jetbrains.kotlin.jvm'
+apply plugin: 'org.jetbrains.kotlin.plugin.compose'
+apply plugin: 'org.jetbrains.dokka'
+apply plugin: 'com.vanniktech.maven.publish'
+apply plugin: 'dev.drewhamilton.poko'
+apply plugin: 'aar2jar'
+
+configurations {
+  layoutlibRuntime {
+    canBeConsumed = false
+    attributes.attribute(AndroidArtifacts.ARTIFACT_TYPE, ArtifactTypeDefinition.DIRECTORY_TYPE)
+  }
+  layoutlibResources {
+    canBeConsumed = false
+    attributes.attribute(AndroidArtifacts.ARTIFACT_TYPE, ArtifactTypeDefinition.DIRECTORY_TYPE)
+  }
+}
+
+aar2jar.configureForConfiguration("compileOnly")
+aar2jar.configureForConfiguration("testImplementation")
+
+dependencies {
+  registerTransform(org.gradle.api.internal.artifacts.transform.UnzipTransform) {
+    from.attribute(AndroidArtifacts.ARTIFACT_TYPE, ArtifactTypeDefinition.JAR_TYPE)
+    to.attribute(AndroidArtifacts.ARTIFACT_TYPE, ArtifactTypeDefinition.DIRECTORY_TYPE)
+  }
+}
+
+dependencies {
+  testImplementationAarAsJar libs.androidx.compose.ui.android
+  compileOnlyAarAsJar libs.androidx.compose.ui.android
+  compileOnlyAarAsJar libs.androidx.activity
+  compileOnlyAarAsJar libs.androidx.lifecycle.runtime // Needed for setViewTreeLifecycleOwner
+  compileOnlyAarAsJar libs.androidx.savedstate // Needed for setViewTreeSavedStateRegistryOwner
+
+  implementation libs.bytebuddy.agent
+  implementation libs.bytebuddy.core
+  implementation libs.trove4j
+  api libs.tools.common
+  api libs.tools.layoutlib
+  api libs.tools.layoutlib.api
+  api libs.tools.ninepatch
+  api libs.tools.sdkCommon
+  api libs.kxml2
+  api libs.junit
+  api libs.androidx.annotations
+  api libs.guava
+  api libs.kotlinx.coroutines.android
+  api libs.okio
+  api platform(libs.kotlin.bom)
+  implementation libs.moshi.core
+  implementation libs.moshi.adapters
+  implementation libs.moshi.kotlinReflect
+  implementation libs.webp.imageio
+
+  def osName = System.getProperty("os.name").toLowerCase(Locale.US)
+  def osLabel
+  if (osName.startsWith("mac")) {
+    def osArch = System.getProperty("os.arch").toLowerCase(Locale.US)
+    if (osArch.startsWith("x86")) {
+      osLabel = 'mac'
+    } else {
+      osLabel = 'mac-arm'
+    }
+  } else if (osName.startsWith("windows")) {
+    osLabel = 'win'
+  } else {
+    osLabel = 'linux'
+  }
+  layoutlibRuntime variantOf(libs.tools.layoutlib.runtime) { classifier(osLabel) }
+  layoutlibResources libs.tools.layoutlib.resources
+
+  testImplementation libs.truth
+}
+
+dokka {
+  dokkaPublications.html {
+    outputDirectory.set(rootProject.file("docs/api"))
+  }
+
+  dokkaSourceSets.named("main").configure {
+    reportUndocumented = false
+    skipDeprecated = true
+    jdkVersion = libs.versions.javaTarget.get() as int
+    documentedVisibilities(VisibilityModifier.Public)
+    skipEmptyPackages = true
+    analysisPlatform = KotlinPlatform.JVM
+
+    externalDocumentationLinks.register("docs") {
+      url("https://developer.android.com/reference/")
+    }
+
+    sourceLink {
+      localDirectory.set(file("src/main/java"))
+      remoteUrl("https://github.com/TRazDev/Mugshot/tree/main/mugshot/src/main/java")
+      remoteLineSuffix.set("#L")
+    }
+
+    perPackageOption {
+      matchingRegex = /app\.cash\.mugshot\.internal(\..*)?/
+      suppress = true
+    }
+  }
+}
+
+def generateTestConfig = tasks.register("generateTestConfig") {
+  def resources = layout.buildDirectory.file('intermediates/mugshot/resources.json')
+  outputs.file(resources)
+
+  doLast {
+    File configFile = resources.get().asFile
+    configFile.write("""{
+      "mainPackage": "uk.co.fractalmotion.mugshot",
+      "mergeResourcesOutputDir": ".",
+      "targetSdkVersion": "36",
+      "mergeAssetsOutputDir": ".",
+      "resourcePackageNames": ["uk.co.fractalmotion.mugshot"],
+      "projectResourceDirs": [],
+      "moduleResourceDirs": [],
+      "aarExplodedDirs": [],
+      "projectAssetDirs": [],
+      "aarAssetDirs": []
+    }""")
+  }
+}
+
+tasks.withType(Test).configureEach {
+  dependsOn(generateTestConfig)
+  systemProperty(
+    "mugshot.test.resources",
+    generateTestConfig.map { it.outputs.files.singleFile }.get().path
+  )
+  systemProperty(
+    "mugshot.project.dir",
+    project.layout.projectDirectory.toString()
+  )
+  systemProperty(
+    "mugshot.build.dir",
+    project.layout.buildDirectory.get().toString()
+  )
+  systemProperty(
+    "mugshot.failures.dir",
+    project.layout.buildDirectory.dir("mugshot/failures").get().toString()
+  )
+  systemProperty(
+    "mugshot.report.dir",
+    project.extensions.getByType(ReportingExtension).baseDirectory.dir("mugshot").get().toString()
+  )
+  systemProperty(
+    "mugshot.snapshot.dir",
+    project.layout.projectDirectory.dir("src/test/snapshots").toString()
+  )
+  systemProperty(
+    "mugshot.artifacts.cache.dir",
+    project.gradle.gradleUserHomeDir.path
+  )
+  systemProperty(
+    "mugshot.layoutlib.runtime.root",
+    configurations.layoutlibRuntime.singleFile.absolutePath
+  )
+  systemProperty(
+    "mugshot.layoutlib.resources.root",
+    configurations.layoutlibResources.singleFile.absolutePath
+  )
+}

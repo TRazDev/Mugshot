@@ -1,0 +1,3 @@
+public abstract interface annotation class uk/co/fractalmotion/mugshot/annotations/Mugshot : java/lang/annotation/Annotation {
+}
+

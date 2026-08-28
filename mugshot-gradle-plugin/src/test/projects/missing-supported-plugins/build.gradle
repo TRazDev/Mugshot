@@ -1,0 +1,3 @@
+plugins {
+  id 'uk.co.fractalmotion.mugshot'
+}

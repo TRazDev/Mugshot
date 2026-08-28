@@ -1,0 +1,22 @@
+plugins {
+  id 'com.android.library'
+  id 'uk.co.fractalmotion.mugshot'
+}
+
+android {
+  namespace = 'uk.co.fractalmotion.mugshot.plugin.test'
+  compileSdk = libs.versions.compileSdk.get() as int
+  defaultConfig {
+    minSdk = libs.versions.minSdk.get() as int
+  }
+  compileOptions {
+    sourceCompatibility = libs.versions.javaTarget.get()
+    targetCompatibility = libs.versions.javaTarget.get()
+  }
+}
+
+androidComponents {
+  beforeVariants(selector().all()) {
+    enableUnitTest = buildType == "debug"
+  }
+}

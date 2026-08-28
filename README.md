@@ -7,7 +7,7 @@ An Android library to render your application screens without a physical device 
 ```kotlin
 class LaunchViewTest {
   @get:Rule
-  val paparazzi = Paparazzi(
+  val mugshot = Mugshot(
     deviceConfig = PIXEL_5,
     theme = "android:Theme.Material.Light.NoActionBar"
     // ...see docs for more options
@@ -15,34 +15,34 @@ class LaunchViewTest {
 
   @Test
   fun launchView() {
-    val view = paparazzi.inflate<LaunchView>(R.layout.launch)
+    val view = mugshot.inflate<LaunchView>(R.layout.launch)
     // or...
-    // val view = LaunchView(paparazzi.context)
+    // val view = LaunchView(mugshot.context)
 
-    view.setModel(LaunchModel(title = "paparazzi"))
-    paparazzi.snapshot(view)
+    view.setModel(LaunchModel(title = "mugshot"))
+    mugshot.snapshot(view)
   }
 
   @Test
   fun launchComposable() {
-    paparazzi.snapshot {
+    mugshot.snapshot {
       MyComposable()
     }
   }
 }
 ```
 
-See the [project website][paparazzi] for documentation and APIs.
+See the [project website][mugshot] for documentation and APIs.
 
 Using JUnit 5
 -------
 
 ```kotlin
-lateinit var paparazzi: Paparazzi
+lateinit var mugshot: Mugshot
 
 @BeforeEach
 fun setup(testInfo: TestInfo) {
-  paparazzi = Paparazzi().apply {
+  mugshot = Mugshot().apply {
     setup(
       testName = TestName(
         packageName = testInfo.testClass.get().`package`?.name.orEmpty(),
@@ -55,18 +55,18 @@ fun setup(testInfo: TestInfo) {
 
 @AfterEach
 fun tearDown() {
-  paparazzi.teardown()
+  mugshot.teardown()
 }
 
 @Test
 fun snapshot_example() {
-  val view = paparazzi.inflate<TextView>(android.R.layout.simple_list_item_1).apply {
-    text = "Hello Paparazzi"
+  val view = mugshot.inflate<TextView>(android.R.layout.simple_list_item_1).apply {
+    text = "Hello Mugshot"
     textSize = 24f
     gravity = Gravity.CENTER
   }
 
-  paparazzi.snapshot(view)
+  mugshot.snapshot(view)
 }
 ```
 
@@ -77,21 +77,21 @@ Tasks
 ./gradlew :sample:testDebug
 ```
 
-Runs tests and generates an HTML report at `sample/build/reports/paparazzi/` showing all
+Runs tests and generates an HTML report at `sample/build/reports/mugshot/` showing all
 test runs and snapshots.
 
 ```bash
-./gradlew :sample:recordPaparazziDebug
+./gradlew :sample:recordMugshotDebug
 ```
 
 Saves snapshots as golden values to a predefined source-controlled location
 (defaults to `src/test/snapshots`).
 
 ```bash
-./gradlew :sample:verifyPaparazziDebug
+./gradlew :sample:verifyMugshotDebug
 ```
 
-Runs tests and verifies against previously-recorded golden values. Failures generate diffs at `sample/build/paparazzi/failures`.
+Runs tests and verifies against previously-recorded golden values. Failures generate diffs at `sample/build/mugshot/failures`.
 
 For more examples, check out the [sample][sample] project.
 
@@ -146,7 +146,7 @@ android.jetifier.ignorelist=android-base-common,common
 Lottie
 --------
 
-When taking screenshots of Lottie animations, you need to force Lottie to not run on a background thread, otherwise Paparazzi can throw exceptions [#494](https://github.com/cashapp/paparazzi/issues/494), [#630](https://github.com/cashapp/paparazzi/issues/630).
+When taking screenshots of Lottie animations, you need to force Lottie to not run on a background thread, otherwise Mugshot can throw exceptions [#494](https://github.com/cashapp/paparazzi/issues/494), [#630](https://github.com/cashapp/paparazzi/issues/630).
 
 ```kotlin
 @Before
@@ -159,14 +159,14 @@ LocalInspectionMode
 --------
 Some Composables -- such as `GoogleMap()` -- check for `LocalInspectionMode` to short-circuit to a `@Preview`-safe Composable.
 
-However, Paparazzi does not set `LocalInspectionMode` globally to ensure that the snapshot represents the true production output, similar to how it overrides `View.isInEditMode` for legacy views.
+However, Mugshot does not set `LocalInspectionMode` globally to ensure that the snapshot represents the true production output, similar to how it overrides `View.isInEditMode` for legacy views.
 
 As a workaround, we recommend wrapping such a Composable in a custom Composable with a `CompositionLocalProvider` and setting `LocalInspectionMode` there.
 
 ```kotlin
  @Test
   fun inspectionModeView() {
-    paparazzi.snapshot(
+    mugshot.snapshot(
       CompositionLocalProvider(LocalInspectionMode provides true) {
         YourComposable()
       }
@@ -187,17 +187,17 @@ buildscript {
     google()
   }
   dependencies {
-    classpath 'app.cash.paparazzi:paparazzi-gradle-plugin:2.0.0-alpha05'
+    classpath 'uk.co.fractalmotion.mugshot:mugshot-gradle-plugin:0.1.0'
   }
 }
 
-apply plugin: 'app.cash.paparazzi'
+apply plugin: 'uk.co.fractalmotion.mugshot'
 ```
 
 Using the plugins DSL:
 ```groovy
 plugins {
-  id 'app.cash.paparazzi' version '2.0.0-alpha05'
+  id 'uk.co.fractalmotion.mugshot' version '0.1.0'
 }
 ```
 
@@ -212,11 +212,23 @@ repositories {
 }
 ```
 
+Credits
+-------
+
+Mugshot is a fork of [Paparazzi][upstream], created and maintained by Square, Inc.
+Essentially all of the hard engineering here — the layoutlib integration, the
+resource loading, the rendering pipeline — is their work. This fork exists to take
+the project in a direction that would have been too breaking to land upstream, and
+is not affiliated with, endorsed by, or sponsored by Square, Inc. or Cash App.
+
+See [NOTICE](NOTICE) for the full attribution and a summary of what has changed.
+
 License
 -------
 
 ```
 Copyright 2019 Square, Inc.
+Copyright 2026 Fractal Motion
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -231,8 +243,9 @@ See the License for the specific language governing permissions and
 limitations under the License.
 ```
 
- [paparazzi]: https://cashapp.github.io/paparazzi/
- [sample]: https://github.com/cashapp/paparazzi/tree/master/sample
+ [mugshot]: https://trazdev.github.io/Mugshot/
+ [sample]: https://github.com/TRazDev/Mugshot/tree/main/sample
  [lfs]: https://git-lfs.github.com/
- [changelog]: https://cashapp.github.io/paparazzi/changelog/
- [snap]: https://central.sonatype.com/service/rest/repository/browse/maven-snapshots/app/cash/paparazzi/
+ [upstream]: https://github.com/cashapp/paparazzi
+ [changelog]: https://trazdev.github.io/Mugshot/changelog/
+ [snap]: https://central.sonatype.com/service/rest/repository/browse/maven-snapshots/uk/co/fractalmotion/mugshot/

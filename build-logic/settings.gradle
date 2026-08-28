@@ -1,8 +1,8 @@
 rootProject.name = 'build-logic'
 
 include(':aar2jar')
-include(':paparazzi-gradle-plugin')
-project(':paparazzi-gradle-plugin').projectDir = new File('../paparazzi-gradle-plugin')
+include(':mugshot-gradle-plugin')
+project(':mugshot-gradle-plugin').projectDir = new File('../mugshot-gradle-plugin')
 
 dependencyResolutionManagement {
   versionCatalogs {

@@ -16,7 +16,7 @@ Provide a sample project, failing test, or steps to reproduce.
 A clear and concise description of what you expected to happen.
 
 **Additional information:**
-- Paparazzi Version:
+- Mugshot Version:
 - OS:
 - Compile SDK:
 - Gradle Version:
