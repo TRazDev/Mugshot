@@ -52,6 +52,7 @@ import org.gradle.internal.operations.BuildOperationRunner
 import org.gradle.internal.os.OperatingSystem
 import org.gradle.language.base.plugins.LifecycleBasePlugin.VERIFICATION_GROUP
 import org.gradle.process.CommandLineArgumentProvider
+import org.gradle.work.DisableCachingByDefault
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import uk.co.fractalmotion.mugshot.gradle.instrumentation.ResourcesCompatVisitorFactory
 import uk.co.fractalmotion.mugshot.gradle.reporting.DiffImage
@@ -351,6 +352,7 @@ public class MugshotPlugin @Inject constructor(
       }
     }
 
+  @DisableCachingByDefault(because = "Lifecycle task with no output; only forwards --tests")
   public abstract class MugshotTask : DefaultTask() {
     @Option(option = "tests", description = "Sets test class or method name to be included, '*' is supported.")
     public open fun setTestNameIncludePatterns(testNamePattern: List<String>): MugshotTask {
