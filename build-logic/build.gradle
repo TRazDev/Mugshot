@@ -31,3 +31,11 @@ subprojects {
     }
   }
 }
+
+// ':mugshot-gradle-plugin' points at ../mugshot-gradle-plugin -- the very same directory the
+// main build compiles. Without a separate output directory the two builds overwrite each
+// other's generated BuildConfig (VERSION is "unspecified" here vs. VERSION_NAME there), which
+// invalidated the configuration cache and forced a Kotlin recompile on every single run.
+project(':mugshot-gradle-plugin') {
+  layout.buildDirectory.set(new File(rootDir, 'build/mugshot-gradle-plugin'))
+}

@@ -22,6 +22,7 @@ import java.io.File
 @Suppress("ktlint:standard:max-line-length")
 class MugshotPluginTest {
   private val filesToDelete = mutableListOf<File>()
+  private val filesToRestore = mutableMapOf<File, ByteArray>()
 
   private lateinit var gradleRunner: GradleRunner
 
@@ -34,6 +35,7 @@ class MugshotPluginTest {
   @After
   fun tearDown() {
     filesToDelete.forEach(File::deleteRecursively)
+    filesToRestore.forEach { (file, contents) -> file.writeBytes(contents) }
   }
 
   @Test
@@ -475,12 +477,14 @@ class MugshotPluginTest {
 
   @Test
   fun rerunRecordOnResourceChange() {
-    val fixtureRoot = File("src/test/projects/rerun-resource-change")
+    val fixtureRoot = File("src/test/projects/rerun-resource-change").clearNestedBuildState()
 
     val snapshotsDir = File(fixtureRoot, "src/test/snapshots").registerForDeletionOnExit()
+    snapshotsDir.deleteRecursively()
     val snapshot = File(snapshotsDir, "images/uk.co.fractalmotion.mugshot.plugin.test_RecordTest_record.webp")
 
     val valuesDir = File(fixtureRoot, "src/main/res/values").registerForDeletionOnExit()
+    valuesDir.deleteRecursively()
     val destResourceFile = File(valuesDir, "colors.xml")
     val firstResourceFile = File(fixtureRoot, "src/test/resources/colors1.xml")
     val secondResourceFile = File(fixtureRoot, "src/test/resources/colors2.xml")
@@ -525,9 +529,9 @@ class MugshotPluginTest {
   fun rerunVerifyOnResourceChange() {
     val fixtureRoot = File("src/test/projects/rerun-resource-change")
 
-    val snapshotsDir = File(fixtureRoot, "src/test/snapshots")
+    val snapshotsDir = File(fixtureRoot, "src/test/snapshots").registerForDeletionOnExit()
     snapshotsDir.deleteRecursively()
-    val valuesDir = File(fixtureRoot, "src/main/res/values")
+    val valuesDir = File(fixtureRoot, "src/main/res/values").registerForDeletionOnExit()
     valuesDir.deleteRecursively()
 
     val destResourceFile = File(valuesDir, "colors.xml")
@@ -1717,13 +1721,15 @@ class MugshotPluginTest {
 
   @Test
   fun overwriteSnapshotOnMaxPercentDiff() {
-    val fixtureRoot = File("src/test/projects/overwrite-on-max-percent-difference")
+    val fixtureRoot = File("src/test/projects/overwrite-on-max-percent-difference").clearNestedBuildState()
 
     val dontRecordFile =
       File(fixtureRoot, "src/test/snapshots/images/uk.co.fractalmotion.mugshot.plugin.test_RecordSnapshotTest_dontRecord.webp")
+        .registerForRestoreOnExit()
     val dontRecordLastModified = dontRecordFile.lastModified()
     val recordFile =
       File(fixtureRoot, "src/test/snapshots/images/uk.co.fractalmotion.mugshot.plugin.test_RecordSnapshotTest_record.webp")
+        .registerForRestoreOnExit()
     val recordLastModified = recordFile.lastModified()
 
     gradleRunner
@@ -1767,6 +1773,19 @@ class MugshotPluginTest {
   }
 
   private fun File.registerForDeletionOnExit() = apply { filesToDelete += this }
+
+  // A tracked fixture file that a test overwrites. Restoring it in tearDown keeps a test run
+  // from leaving the working tree dirty.
+  private fun File.registerForRestoreOnExit() = apply { filesToRestore[this] = readBytes() }
+
+  // Fixture projects keep their own build/ and .gradle/ between runs, and git does not see them.
+  // A test asserting that a nested build re-ran has to clear that state first, otherwise the
+  // build is simply up-to-date and rewrites nothing.
+  private fun File.clearNestedBuildState() =
+    apply {
+      File(this, "build").deleteRecursively()
+      File(this, ".gradle").deleteRecursively()
+    }
 
   private fun File.listFilesSorted() = listFiles()?.sortedBy { it.lastModified() }
 
