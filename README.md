@@ -5,31 +5,38 @@ Mugshot
 An Android library to render your application screens without a physical device or emulator.
 
 ```kotlin
-class LaunchViewTest {
+class ProfileScreenTest {
   @get:Rule
   val mugshot = Mugshot(
-    deviceConfig = PIXEL_5,
+    deviceConfig = PIXEL_6,
     theme = "android:Theme.Material.Light.NoActionBar"
     // ...see docs for more options
   )
 
   @Test
-  fun launchView() {
-    val view = mugshot.inflate<LaunchView>(R.layout.launch)
-    // or...
-    // val view = LaunchView(mugshot.context)
-
-    view.setModel(LaunchModel(title = "mugshot"))
-    mugshot.snapshot(view)
+  fun profile() {
+    mugshot.snapshot {
+      MyTheme { ProfileScreen(state = sampleProfile) }
+    }
   }
 
   @Test
-  fun launchComposable() {
+  fun profileInDarkMode() {
+    mugshot.unsafeUpdateConfig(
+      deviceConfig = PIXEL_6.copy(nightMode = NightMode.NIGHT)
+    )
     mugshot.snapshot {
-      MyComposable()
+      MyTheme { ProfileScreen(state = sampleProfile) }
     }
   }
 }
+```
+
+Android Views work the same way:
+
+```kotlin
+val view = mugshot.inflate<LaunchView>(R.layout.launch)
+mugshot.snapshot(view)
 ```
 
 See the [project website][mugshot] for documentation and APIs.
@@ -67,6 +74,57 @@ fun snapshot_example() {
   }
 
   mugshot.snapshot(view)
+}
+```
+
+Snapshotting `@Preview` composables
+-------
+
+Annotate a `@Preview` composable in your main source set with `@Mugshot` and the
+preview processor generates a `mugshotPreviews` list your tests can iterate, so a
+screen's preview and its golden never drift apart:
+
+```kotlin
+@Mugshot
+@Preview
+@Composable
+internal fun ProfileScreenPreview() {
+  MyTheme { ProfileScreen(state = sampleProfile) }
+}
+```
+
+```kotlin
+class GeneratedPreviewTest {
+  @get:Rule val mugshot = Mugshot()
+
+  @Test
+  fun preview() {
+    mugshotPreviews.forEach { preview ->
+      mugshot.snapshot(name = preview.snapshotName) { preview.composable() }
+    }
+  }
+}
+```
+
+A `@PreviewParameter` is expanded at test runtime into one snapshot per value,
+named by position, so a single preview can cover a screen's loading, empty and
+populated states. The annotated function must be `@Composable`, must carry a
+literal `@Preview`, and must not be `private`.
+
+Wire the processor up alongside the Gradle plugin:
+
+```groovy
+apply plugin: 'com.google.devtools.ksp'
+
+ksp {
+  arg("uk.co.fractalmotion.mugshot.preview.namespace", "com.example.myapp")
+}
+
+dependencies {
+  implementation "uk.co.fractalmotion.mugshot:mugshot-annotations:$version"
+  implementation "uk.co.fractalmotion.mugshot:mugshot-preview-runtime:$version"
+  kspDebug "uk.co.fractalmotion.mugshot:mugshot-preview-processor:$version"
+  lintChecks "uk.co.fractalmotion.mugshot:mugshot-preview-lints:$version"
 }
 ```
 

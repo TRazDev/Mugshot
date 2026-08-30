@@ -1,12 +1,50 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
-  <plurals name="plural_name">
-    <!-- https://www.unicode.org/cldr/charts/43/supplemental/language_plural_rules.html#ar -->
-    <item quantity="zero">0 ولد حضر</item>
-    <item quantity="one">ولد واحد حضر</item>
-    <item quantity="two">ولدان حضرا</item>
-    <item quantity="few">3 أولاد حضروا</item>
-    <item quantity="many">11 ولدًا حضروا</item>
-    <item quantity="other">100 ولد حضروا</item>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+
+  <!--
+    Arabic is authored for the Profile screen and the shared actions only — the screen the
+    localization test renders. Half translating all seven screens would produce goldens that look
+    broken rather than instructive. Arabic also gives the plural test real teeth: it is one of the
+    few languages that uses all six CLDR plural categories.
+  -->
+
+  <!-- Shared -->
+  <string name="action_see_all">عرض الكل</string>
+  <string name="action_back">رجوع</string>
+  <string name="action_edit">تعديل</string>
+  <string name="action_share">مشاركة</string>
+
+  <!-- Profile -->
+  <string name="profile_title">الملف الشخصي</string>
+  <string name="profile_name">آدا ريفيرا</string>
+  <string name="profile_initials">آر</string>
+  <string name="profile_tagline">تتدرب للماراثون · بريستول</string>
+  <string name="profile_stat_followers">المتابعون</string>
+  <string name="profile_stat_following">تتابع</string>
+  <string name="profile_stat_streak">أيام متتالية</string>
+  <string name="profile_section_achievements">الإنجازات</string>
+  <string name="profile_section_settings">الإعدادات</string>
+  <string name="profile_achievement_early_bird">المستيقظ باكرًا</string>
+  <string name="profile_achievement_early_bird_detail">عشرون جلسة قبل السابعة صباحًا</string>
+  <string name="profile_achievement_century">نادي المئة</string>
+  <string name="profile_achievement_century_detail">مئة كيلومتر في شهر واحد</string>
+  <string name="profile_achievement_streak">بلا انقطاع</string>
+  <string name="profile_achievement_streak_detail">اثنا عشر أسبوعًا دون يوم راحة</string>
+  <string name="profile_setting_notifications">الإشعارات</string>
+  <string name="profile_setting_notifications_detail">تذكيرات التمارين وتنبيهات التتابع</string>
+  <string name="profile_setting_privacy">حساب خاص</string>
+  <string name="profile_setting_privacy_detail">المتابعون المعتمدون فقط يرون نشاطك</string>
+  <string name="profile_setting_units">الوحدات</string>
+  <string name="profile_setting_units_detail">النظام المتري</string>
+  <plurals name="profile_workouts_this_month">
+    <item quantity="zero">لا تمارين هذا الشهر</item>
+    <item quantity="one">تمرين واحد هذا الشهر</item>
+    <item quantity="two">تمرينان هذا الشهر</item>
+    <item quantity="few">%d تمارين هذا الشهر</item>
+    <item quantity="many">%d تمرينًا هذا الشهر</item>
+    <item quantity="other">%d تمرين هذا الشهر</item>
   </plurals>
+  <string name="profile_build_caption">إصدار <xliff:g id="build" example="Generated Test String">%1$s</xliff:g></string>
+
+  <string name="theme_mode_caption">المظهر الفاتح</string>
 </resources>

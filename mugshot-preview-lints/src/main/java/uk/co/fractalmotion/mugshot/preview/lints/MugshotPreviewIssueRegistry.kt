@@ -11,8 +11,7 @@ public class MugshotPreviewIssueRegistry : IssueRegistry() {
   override val issues: List<Issue> = listOf(
     MugshotPreviewDetector.COMPOSABLE_NOT_DETECTED,
     MugshotPreviewDetector.PREVIEW_NOT_DETECTED,
-    MugshotPreviewDetector.PRIVATE_PREVIEW_DETECTED,
-    MugshotPreviewDetector.PREVIEW_PARAMETERS_NOT_SUPPORTED
+    MugshotPreviewDetector.PRIVATE_PREVIEW_DETECTED
   )
 
   override val api: Int = CURRENT_API

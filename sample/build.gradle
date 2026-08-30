@@ -1,5 +1,6 @@
 apply plugin: 'com.android.library'
 apply plugin: 'org.jetbrains.kotlin.plugin.compose'
+apply plugin: 'com.google.devtools.ksp'
 apply plugin: 'uk.co.fractalmotion.mugshot'
 apply plugin: 'jacoco'
 
@@ -17,8 +18,14 @@ android {
   }
   buildFeatures {
     compose = true
-    viewBinding = true
     resValues = true
+  }
+
+  lint {
+    // The Arabic translation is deliberately partial: the Profile screen and the shared actions
+    // only, because Profile is the screen LocalizationSnapshotTest renders. Translating half of
+    // all seven screens would produce goldens that look broken rather than instructive.
+    disable += "MissingTranslation"
   }
 }
 
@@ -27,14 +34,24 @@ androidComponents {
   beforeVariants(selector().withBuildType("release")) { enable = false }
 }
 
+ksp {
+  arg("uk.co.fractalmotion.mugshot.preview.namespace", "uk.co.fractalmotion.mugshot.sample")
+}
+
 dependencies {
-  implementation libs.composeUi.material
+  implementation libs.androidx.compose.ui.android
+  implementation libs.composeUi.material3.android
   implementation libs.composeUi.material.icons
   implementation libs.composeUi.uiTooling
+  implementation libs.composeUi.uiToolingPreview
   implementation libs.androidx.appcompat
 
   // TODO: wire via plugin
   implementation projects.mugshotAnnotations
+  implementation projects.mugshotPreviewRuntime
+  // Scoped to the debug variant so the processor never runs for the unit test compilation, where it
+  // would generate a second MugshotPreviews.kt declaring the same top level val.
+  kspDebug projects.mugshotPreviewProcessor
   lintChecks projects.mugshotPreviewLints
 
   testImplementation libs.testParameterInjector

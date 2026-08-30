@@ -6,6 +6,23 @@ down, under "Upstream Paparazzi history".
 
 ## [Unreleased]
 
+### Added
+* `@Mugshot` previews may now take a `@PreviewParameter`. The processor cannot enumerate a
+  `PreviewParameterProvider` at compile time, so generated code defers to the new
+  `parameterizedPreviews` function in `mugshot-preview-runtime`, which expands the provider's
+  values when the test runs. Each value becomes its own entry in `mugshotPreviews`, named by its
+  position (`_0`, `_1`, ...) rather than by the value, so golden filenames stay deterministic. The
+  `PreviewParametersNotSupported` lint check is gone.
+
+### Fixed
+* A `@Mugshot` function carrying more than one `@Preview` generated one entry per `@Preview`, each
+  with an identical `snapshotName`. No `@Preview` argument is read, so those entries were
+  indistinguishable and their goldens collided. One entry is now generated per function.
+* The `PreviewAnnotationNotFound` lint check only looked at direct annotations while the processor
+  resolved `@Preview` recursively. A `@Mugshot` function reaching `@Preview` through a custom
+  multi-preview annotation generated correctly and then failed lint. The check now walks annotation
+  trees the same way the processor does.
+
 ### Changed
 * **Breaking:** the project is renamed from Paparazzi to Mugshot. There is no
   compatibility layer — every name below changes at once:
