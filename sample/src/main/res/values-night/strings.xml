@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <!--
+    The only -night override in the sample. It lets the dark mode golden prove two separate things
+    at once: that isSystemInDarkTheme() flipped the Compose theme, and that layoutlib resolved the
+    -night resource qualifier.
+  -->
+  <string name="theme_mode_caption">Dark theme</string>
+</resources>

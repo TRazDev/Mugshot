@@ -40,6 +40,14 @@ internal object MugshotGradients {
 
   @Composable
   @ReadOnlyComposable
+  fun fresh(): Brush =
+    Brush.linearGradient(
+      listOf(MaterialTheme.colorScheme.tertiary, MaterialTheme.colorScheme.secondary)
+    )
+
+  /** Reserved for placeholders — never used by [forIndex], which must stay colourful. */
+  @Composable
+  @ReadOnlyComposable
   fun muted(): Brush =
     Brush.linearGradient(
       listOf(

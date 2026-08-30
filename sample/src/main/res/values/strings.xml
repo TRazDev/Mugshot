@@ -1,20 +1,159 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
-  <plurals name="plural_name">
-    <item quantity="zero">No String</item>
-    <item quantity="one">One String</item>
-    <item quantity="two">Two Strings</item>
-    <item quantity="few">Few Strings</item>
-    <item quantity="many">Many Strings</item>
-    <item quantity="other">Other Strings</item>
+
+  <!--
+    Every user visible string on every screen lives here rather than as a Kotlin literal. The
+    en-rXA pseudolocale only transforms string *resources*, so a hardcoded literal would render
+    untransformed and make the localization goldens claim coverage they do not have.
+  -->
+
+  <!-- Shared -->
+  <string name="action_see_all">See all</string>
+  <string name="action_back">Back</string>
+  <string name="action_edit">Edit</string>
+  <string name="action_share">Share</string>
+  <string name="action_add_to_bag">Add to bag</string>
+  <string name="action_browse_shop">Browse the shop</string>
+  <string name="action_start_workout">Start workout</string>
+  <string name="action_try_again">Try again</string>
+
+  <!-- Profile -->
+  <string name="profile_title">Profile</string>
+  <string name="profile_name">Ada Rivera</string>
+  <string name="profile_initials">AR</string>
+  <string name="profile_handle">\@adarivera</string>
+  <string name="profile_tagline">Marathon in training · Bristol</string>
+  <string name="profile_stat_followers">Followers</string>
+  <string name="profile_stat_following">Following</string>
+  <string name="profile_stat_streak">Day streak</string>
+  <string name="profile_section_achievements">Achievements</string>
+  <string name="profile_section_settings">Settings</string>
+  <string name="profile_achievement_early_bird">Early bird</string>
+  <string name="profile_achievement_early_bird_detail">20 sessions before 7am</string>
+  <string name="profile_achievement_century">Century club</string>
+  <string name="profile_achievement_century_detail">100km in a single month</string>
+  <string name="profile_achievement_streak">Unbroken</string>
+  <string name="profile_achievement_streak_detail">12 weeks without a rest day</string>
+  <string name="profile_setting_notifications">Notifications</string>
+  <string name="profile_setting_notifications_detail">Workout reminders and streak alerts</string>
+  <string name="profile_setting_privacy">Private account</string>
+  <string name="profile_setting_privacy_detail">Only approved followers see your activity</string>
+  <string name="profile_setting_units">Units</string>
+  <string name="profile_setting_units_detail">Metric</string>
+  <plurals name="profile_workouts_this_month">
+    <item quantity="zero">No workouts this month</item>
+    <item quantity="one">%d workout this month</item>
+    <item quantity="two">%d workouts this month</item>
+    <item quantity="few">%d workouts this month</item>
+    <item quantity="many">%d workouts this month</item>
+    <item quantity="other">%d workouts this month</item>
   </plurals>
-  <string name="string_name" translatable="false">Test String</string>
-  <string name="string_escaped_chars" translatable="false">\"Test\nString \uD83D\uDE00\uD83D\uDC4C\"</string>
-  <string name="string_name_xliff" translatable="false">Test String <xliff:g id="number" example="9">{0}</xliff:g> with suffix</string>
-  <string name="string_name_html_escaped" translatable="false">This &lt;b>Test&lt;/b> String</string>
-  <string name="string_name_html_unescaped" translatable="false">This <b>Test</b> String</string>
-  <string-array name="string_array_name">
-    <item>First Test String</item>
-    <item>Second Test String</item>
-  </string-array>
+  <string name="profile_build_caption">Build <xliff:g id="build" example="Generated Test String">%1$s</xliff:g></string>
+
+  <!-- Storefront -->
+  <string name="storefront_title">Shop</string>
+  <string name="storefront_promo_headline">Spring resupply</string>
+  <string name="storefront_promo_detail">Up to <xliff:g id="percent" example="30">%1$d</xliff:g>%% off trail essentials until Sunday</string>
+  <string name="storefront_category_all">All</string>
+  <string name="storefront_category_shoes">Shoes</string>
+  <string name="storefront_category_audio">Audio</string>
+  <string name="storefront_category_wearables">Wearables</string>
+  <string name="storefront_section_featured">Featured</string>
+  <string name="storefront_empty_title">Nothing in this category yet</string>
+  <string name="storefront_empty_detail">Try another category, or check back after the next drop.</string>
+  <string name="storefront_status_in_stock">In stock</string>
+  <string name="storefront_status_low_stock">Low stock</string>
+  <string name="storefront_status_sold_out">Sold out</string>
+  <string name="storefront_product_runner">Trail Runner GTX</string>
+  <string name="storefront_product_runner_detail">Waterproof · Graphite</string>
+  <string name="storefront_product_headphones">Field Buds Pro</string>
+  <string name="storefront_product_headphones_detail">Active noise cancelling</string>
+  <string name="storefront_product_watch">Summit Watch 2</string>
+  <string name="storefront_product_watch_detail">Multi-band GPS</string>
+  <string name="storefront_product_pack">Ridgeline 28L</string>
+  <string name="storefront_product_pack_detail">Ventilated day pack</string>
+  <string name="storefront_detail_title">Product</string>
+  <string name="storefront_detail_description">Built for long days on wet ground. A recycled knit
+    upper, a waterproof membrane and a lugged outsole that keeps its bite on loose rock and
+    root.</string>
+  <string name="storefront_detail_free_delivery">Free delivery</string>
+  <string name="storefront_detail_warranty">2 year warranty</string>
+  <string name="storefront_detail_returns">60 day returns</string>
+  <string name="storefront_rating">
+    <xliff:g id="rating" example="4.8">%1$s</xliff:g> · <xliff:g id="reviews" example="312">%2$d</xliff:g> reviews
+  </string>
+
+  <!-- Smart home -->
+  <string name="smarthome_title">Home</string>
+  <string name="smarthome_greeting">Good evening, Ada</string>
+  <string name="smarthome_summary">Everything is locked up and the heating is on schedule.</string>
+  <string name="smarthome_temperature_label">Living room</string>
+  <string name="smarthome_room_living">Living room</string>
+  <string name="smarthome_room_kitchen">Kitchen</string>
+  <string name="smarthome_room_bedroom">Bedroom</string>
+  <string name="smarthome_section_devices">Devices</string>
+  <string name="smarthome_section_energy">Energy this week</string>
+  <string name="smarthome_device_thermostat">Thermostat</string>
+  <string name="smarthome_device_lamp">Hallway lamp</string>
+  <string name="smarthome_device_speaker">Kitchen speaker</string>
+  <string name="smarthome_device_on">On</string>
+  <string name="smarthome_device_off">Off</string>
+  <string name="smarthome_energy_total">18.4 kWh</string>
+  <string name="smarthome_energy_detail"><xliff:g id="percent" example="9">%1$d</xliff:g>%% less than last week</string>
+
+  <!-- Gym -->
+  <string name="gym_title">Training</string>
+  <string name="gym_plan_name">Base building · Week 6</string>
+  <string name="gym_streak_headline">6 week streak</string>
+  <string name="gym_streak_detail">Three sessions left to close out the block</string>
+  <string name="gym_section_volume">Weekly volume</string>
+  <string name="gym_section_upcoming">Upcoming sessions</string>
+  <string name="gym_workout_push">Push day</string>
+  <string name="gym_workout_push_detail">6 exercises · 52 min</string>
+  <string name="gym_workout_pull">Pull day</string>
+  <string name="gym_workout_pull_detail">5 exercises · 48 min</string>
+  <string name="gym_workout_legs">Legs and core</string>
+  <string name="gym_workout_legs_detail">7 exercises · 61 min</string>
+  <string name="gym_detail_title">Push day</string>
+  <string name="gym_detail_section_exercises">Exercises</string>
+  <string name="gym_exercise_bench">Barbell bench press</string>
+  <string name="gym_exercise_incline">Incline dumbbell press</string>
+  <string name="gym_exercise_dips">Weighted dips</string>
+  <string name="gym_exercise_lateral">Lateral raise</string>
+  <string name="gym_exercise_triceps">Cable triceps extension</string>
+  <string name="gym_sets_reps">
+    <xliff:g id="sets" example="4">%1$d</xliff:g> × <xliff:g id="reps" example="8">%2$d</xliff:g> · <xliff:g id="weight" example="60kg">%3$s</xliff:g>
+  </string>
+  <string name="gym_stat_volume">Volume</string>
+  <string name="gym_stat_duration">Duration</string>
+  <string name="gym_stat_sets">Working sets</string>
+
+  <!-- Health -->
+  <string name="health_title">Today</string>
+  <string name="health_ring_move">Move</string>
+  <string name="health_ring_exercise">Exercise</string>
+  <string name="health_ring_stand">Stand</string>
+  <string name="health_section_vitals">Vitals</string>
+  <string name="health_section_sleep">Last night</string>
+  <string name="health_section_trend">Resting heart rate</string>
+  <string name="health_metric_steps">Steps</string>
+  <string name="health_metric_steps_supporting"><xliff:g id="percent" example="12">%1$d</xliff:g>%% above your average</string>
+  <string name="health_metric_heart">Resting heart rate</string>
+  <string name="health_metric_heart_supporting">4 bpm below your average</string>
+  <string name="health_metric_water">Water</string>
+  <string name="health_metric_water_supporting">2 glasses to go</string>
+  <string name="health_metric_energy">Active energy</string>
+  <string name="health_metric_energy_supporting">On track for your goal</string>
+  <string name="health_sleep_deep">Deep</string>
+  <string name="health_sleep_core">Core</string>
+  <string name="health_sleep_rem">REM</string>
+  <string name="health_sleep_awake">Awake</string>
+  <string name="health_sleep_total">
+    <xliff:g id="hours" example="7">%1$d</xliff:g>h <xliff:g id="minutes" example="24">%2$d</xliff:g>m asleep
+  </string>
+  <string name="health_empty_title">No data yet today</string>
+  <string name="health_empty_detail">Wear your watch for a few hours and your rings will fill in.</string>
+
+  <!-- Theme caption, overridden in values-night to prove qualifier resolution -->
+  <string name="theme_mode_caption">Light theme</string>
 </resources>
