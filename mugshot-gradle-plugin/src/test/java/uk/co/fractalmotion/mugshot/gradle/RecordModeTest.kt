@@ -60,6 +60,22 @@ class RecordModeTest : MugshotPluginTestCase() {
   }
 
   @Test
+  fun recordModeTestsFilterMatchesMoreThanOne() {
+    val fixtureRoot = fixture("record-mode-multiple-tests")
+    val moduleRoot = File(fixtureRoot, "module")
+    val snapshotsDir = File(moduleRoot, "src/test/snapshots").registerForDeletionOnExit()
+
+    // A glob that is not just a suffix, and that matches both tests in the fixture.
+    fixtureRoot.runBuild("module:recordMugshotDebug", "--tests=*RecordTest.record*")
+
+    val first = File(snapshotsDir, "images/uk.co.fractalmotion.mugshot.plugin.test_RecordTest_recordFirst.webp")
+    val second =
+      File(snapshotsDir, "images/uk.co.fractalmotion.mugshot.plugin.test_RecordTest_recordSecond_label.webp")
+    assertThat(first.exists()).isTrue()
+    assertThat(second.exists()).isTrue()
+  }
+
+  @Test
   fun recordModeSingleTestOfMany() {
     val fixtureRoot = fixture("record-mode-multiple-tests")
     val moduleRoot = File(fixtureRoot, "module")
@@ -104,6 +120,36 @@ class RecordModeTest : MugshotPluginTestCase() {
 
     assertThat(snapshotToBeDeleted.exists()).isFalse()
     assertThat(snapshotToBeKept.exists()).isTrue()
+  }
+
+  @Test
+  fun cleanRecordAllVariants() {
+    // record-mode rather than clean-record: it sets
+    // android.onlyEnableUnitTestForTheTestedBuildType=false, so AGP creates a unit test -- and
+    // therefore Mugshot tasks -- for release as well as debug.
+    val fixtureRoot = fixture("record-mode")
+    File(fixtureRoot, "src/test/snapshots").registerForDeletionOnExit()
+
+    val result = fixtureRoot.runBuild("cleanRecordMugshot")
+
+    assertThat(result.task(":cleanRecordMugshotDebug")).isNotNull()
+    assertThat(result.task(":cleanRecordMugshotRelease")).isNotNull()
+  }
+
+  @Test
+  fun deleteSnapshotsForSingleVariant() {
+    val fixtureRoot = fixture("delete-snapshots")
+    val snapshotsDir = File(fixtureRoot, "src/test/snapshots").registerForDeletionOnExit()
+
+    val snapshotName = "uk.co.fractalmotion.mugshot.plugin.test_DeleteTest_delete.webp"
+    val snapshot = File(snapshotsDir, "images/$snapshotName")
+    File(fixtureRoot, "src/test/resources/$snapshotName").copyTo(snapshot, overwrite = false)
+    assertThat(snapshot.exists()).isTrue()
+
+    val result = fixtureRoot.runBuild("deleteDebugMugshotSnapshots")
+
+    result.assertTaskSucceeded(":deleteDebugMugshotSnapshots")
+    assertThat(snapshot.exists()).isFalse()
   }
 
   @Test

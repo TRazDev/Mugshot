@@ -24,6 +24,14 @@ class VerifyModeTest : MugshotPluginTestCase() {
   }
 
   @Test
+  fun verifyAcceptsTestsFilter() {
+    val result = fixture("verify-mode-success")
+      .runBuild("verifyMugshotDebug", "--tests=*VerifyTest.verify")
+
+    result.assertTaskSucceeded(":testDebugUnitTest")
+  }
+
+  @Test
   fun verifyAllVariants() {
     val fixtureRoot = fixture("verify-mode-success")
 

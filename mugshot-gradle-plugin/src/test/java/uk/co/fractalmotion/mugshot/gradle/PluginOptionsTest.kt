@@ -104,6 +104,17 @@ class PluginOptionsTest : MugshotPluginTestCase() {
   fun configIsUpdatable() = fixture("update-mugshot-config").verifyDebug()
 
   @Test
+  fun differPropertyIsForwardedToTheTestJvm() {
+    val fixtureRoot = fixture("differ-property")
+    fixtureRoot.resolve("build").registerForDeletionOnExit()
+
+    // The fixture's own unit test asserts the system property arrived.
+    val result = fixtureRoot.runBuild("testDebug")
+
+    result.assertTaskSucceeded(":testDebugUnitTest")
+  }
+
+  @Test
   fun maxPercentDifferenceDefaultSet() {
     val fixtureRoot = fixture("max-percent-difference-default-set")
     // this is only a warning message, so subsequent runs would otherwise be UP-TO-DATE

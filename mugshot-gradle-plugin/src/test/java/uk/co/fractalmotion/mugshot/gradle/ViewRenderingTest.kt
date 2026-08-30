@@ -1,7 +1,6 @@
 package uk.co.fractalmotion.mugshot.gradle
 
 import com.google.common.truth.Truth.assertThat
-import org.junit.Ignore
 import org.junit.Test
 import java.io.File
 
@@ -48,10 +47,6 @@ class ViewRenderingTest : MugshotPluginTestCase() {
 
   @Test
   fun withAppCompat() = fixture("appcompat-present").verifyDebug()
-
-  @Test
-  @Ignore
-  fun withMaterialComponents() = fixture("material-components-present").verifyDebug()
 
   @Test
   fun interceptViewEditMode() = fixture("edit-mode-intercept").buildSucceeds("testDebug")
