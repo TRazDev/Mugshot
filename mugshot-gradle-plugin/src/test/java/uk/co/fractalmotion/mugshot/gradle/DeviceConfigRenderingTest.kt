@@ -1,7 +1,6 @@
 package uk.co.fractalmotion.mugshot.gradle
 
 import org.junit.Test
-import java.io.File
 
 /**
  * Rendering under device configuration: locale, layout direction, night mode, orientation.

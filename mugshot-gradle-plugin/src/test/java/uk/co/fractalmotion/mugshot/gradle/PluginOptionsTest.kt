@@ -1,7 +1,6 @@
 package uk.co.fractalmotion.mugshot.gradle
 
 import com.google.common.truth.Truth.assertThat
-import org.gradle.testkit.runner.TaskOutcome.SUCCESS
 import org.junit.Test
 import java.io.File
 

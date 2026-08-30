@@ -63,6 +63,11 @@ buildConfig {
 }
 
 tasks.withType(Test).configureEach {
+  // The TestKit suites are split across several classes so they can run in parallel; Gradle
+  // distributes tests by class. Each fork drives its own nested Gradle build (0.5-1.5 GB a piece),
+  // so this is deliberately well below the core count -- raise it only with memory measured.
+  maxParallelForks = 4
+
   // These are referenced with relative paths in src/test/projects/test.settings.gradle.
   // They need to be declared on the Test task to make sure it runs with the new files.
   inputs.file(rootProject.layout.projectDirectory.file("gradle/libs.versions.toml"))
