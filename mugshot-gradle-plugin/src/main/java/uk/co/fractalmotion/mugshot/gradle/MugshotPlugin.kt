@@ -26,7 +26,6 @@ import com.android.build.api.variant.HasUnitTest
 import com.android.build.api.variant.KotlinMultiplatformAndroidComponentsExtension
 import com.android.build.api.variant.LibraryAndroidComponentsExtension
 import com.android.build.api.variant.UnitTest
-import com.android.builder.model.Version.ANDROID_GRADLE_PLUGIN_VERSION
 import org.gradle.api.DefaultTask
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -513,13 +512,6 @@ public class MugshotPlugin @Inject constructor(
   private fun Provider<List<Directory>>?.relativize(directory: Directory): Provider<List<String>> =
     this?.map { dirs -> dirs.map { directory.relativize(it.asFile) } }
       ?: providerFactory.provider { emptyList() }
-
-  private fun isAgpAtLeast(major: Int): Boolean {
-    val agpMajor = ANDROID_GRADLE_PLUGIN_VERSION
-      .substringBefore('.')
-      .toIntOrNull()
-    return agpMajor != null && agpMajor >= major
-  }
 }
 
 /** Passes absolute-path system properties as `-D` JVM args without adding them to the cache key (#1874). */

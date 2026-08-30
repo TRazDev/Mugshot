@@ -37,8 +37,6 @@ includeBuild('build-logic') {
 
 // Some of the test projects are intentionally supposed to fail. Don't import these into the main project.
 def brokenProjects = [
-  "invalid-application-plugin", // intentionally does not import
-  "missing-library-plugin", // intentionally does not import
   "missing-supported-plugins", // intentionally does not import
   "multiplatform-mugshot-in-commontest", // intentionally throws on invalid configuration
 ]
