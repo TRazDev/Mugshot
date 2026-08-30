@@ -1,43 +1,16 @@
 package uk.co.fractalmotion.mugshot.gradle
 
-import com.google.common.truth.Correspondence
 import com.google.common.truth.Truth.assertThat
-import com.squareup.moshi.Moshi
-import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
-import okio.buffer
-import okio.source
-import org.gradle.testkit.runner.BuildResult
-import org.gradle.testkit.runner.GradleRunner
 import org.gradle.testkit.runner.TaskOutcome
 import org.gradle.testkit.runner.TaskOutcome.FROM_CACHE
 import org.gradle.testkit.runner.TaskOutcome.SUCCESS
-import org.junit.After
-import org.junit.Before
 import org.junit.Ignore
 import org.junit.Test
 import uk.co.fractalmotion.mugshot.gradle.ImageSubject.Companion.assertThat
-import uk.co.fractalmotion.mugshot.gradle.PrepareResourcesTask.Config
 import java.io.File
 
 @Suppress("ktlint:standard:max-line-length")
-class MugshotPluginTest {
-  private val filesToDelete = mutableListOf<File>()
-  private val filesToRestore = mutableMapOf<File, ByteArray>()
-
-  private lateinit var gradleRunner: GradleRunner
-
-  @Before
-  fun setUp() {
-    gradleRunner = GradleRunner.create()
-      .withPluginClasspath()
-  }
-
-  @After
-  fun tearDown() {
-    filesToDelete.forEach(File::deleteRecursively)
-    filesToRestore.forEach { (file, contents) -> file.writeBytes(contents) }
-  }
-
+class MugshotPluginTest : MugshotPluginTestCase() {
   @Test
   fun androidApplicationPlugin() {
     val fixtureRoot = File("src/test/projects/supports-application-modules")
@@ -1738,64 +1711,5 @@ class MugshotPluginTest {
 
     assertThat(dontRecordLastModified).isEqualTo(dontRecordFile.lastModified())
     assertThat(recordLastModified).isNotEqualTo(recordFile.lastModified())
-  }
-
-  private fun File.loadConfig() = source().buffer().use { CONFIG_ADAPTER.fromJson(it)!! }
-
-  private fun GradleRunner.runFixture(projectRoot: File, action: GradleRunner.() -> BuildResult): BuildResult {
-    val settings = File(projectRoot, "settings.gradle")
-    val gradleProperties = File(projectRoot, "gradle.properties")
-    var generatedSettings = false
-    var generatedGradleProperties = false
-
-    return try {
-      if (!settings.exists()) {
-        settings.createNewFile()
-        settings.writeText("apply from: \"../test.settings.gradle\"")
-        generatedSettings = true
-      }
-
-      if (!gradleProperties.exists()) {
-        gradleProperties.createNewFile()
-        gradleProperties.writeText(
-          """
-            |android.dependencyResolutionAtConfigurationTime.disallow=true
-          """.trimMargin()
-        )
-        generatedGradleProperties = true
-      }
-
-      withProjectDir(projectRoot).action()
-    } finally {
-      if (generatedSettings) settings.delete()
-      if (generatedGradleProperties) gradleProperties.delete()
-    }
-  }
-
-  private fun File.registerForDeletionOnExit() = apply { filesToDelete += this }
-
-  // A tracked fixture file that a test overwrites. Restoring it in tearDown keeps a test run
-  // from leaving the working tree dirty.
-  private fun File.registerForRestoreOnExit() = apply { filesToRestore[this] = readBytes() }
-
-  // Fixture projects keep their own build/ and .gradle/ between runs, and git does not see them.
-  // A test asserting that a nested build re-ran has to clear that state first, otherwise the
-  // build is simply up-to-date and rewrites nothing.
-  private fun File.clearNestedBuildState() =
-    apply {
-      File(this, "build").deleteRecursively()
-      File(this, ".gradle").deleteRecursively()
-    }
-
-  private fun File.listFilesSorted() = listFiles()?.sortedBy { it.lastModified() }
-
-  companion object {
-    private const val GRADLE_CACHE_TRANSFORMS_PATH_REGEX = "^caches/[0-9]{1,2}.[0-9]{1,2}(.[0-9])?(-rc-[0-9]{1,2})?/transforms/[0-9a-f]{32}/(workspace/)?transformed"
-
-    private val CONFIG_ADAPTER =
-      Moshi.Builder().addLast(KotlinJsonAdapterFactory()).build()!!.adapter(Config::class.java)
-    private val MATCHES_PATTERN = Correspondence.from<String, String>(
-      { actual, expected -> actual.matches(expected.toRegex()) }, "matches"
-    )
   }
 }
