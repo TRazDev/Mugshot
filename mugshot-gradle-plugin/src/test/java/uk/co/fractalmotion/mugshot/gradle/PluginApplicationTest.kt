@@ -13,11 +13,9 @@ import java.io.File
 class PluginApplicationTest : MugshotPluginTestCase() {
   @Test
   fun androidApplicationPlugin() {
-    val fixtureRoot = File("src/test/projects/supports-application-modules")
+    val fixtureRoot = fixture("supports-application-modules")
 
-    val result = gradleRunner
-      .withArguments("verifyMugshotDebug", "--stacktrace")
-      .runFixture(fixtureRoot) { build() }
+    val result = fixtureRoot.runBuild("verifyMugshotDebug")
 
     assertThat(result.task(":prepareMugshotDebugResources")).isNotNull()
     assertThat(result.task(":testDebugUnitTest")).isNotNull()
@@ -25,11 +23,9 @@ class PluginApplicationTest : MugshotPluginTestCase() {
 
   @Test
   fun androidDynamicFeaturePlugin() {
-    val fixtureRoot = File("src/test/projects/supports-dynamic-feature-modules")
+    val fixtureRoot = fixture("supports-dynamic-feature-modules")
 
-    val result = gradleRunner
-      .withArguments(":dynamic_feature:verifyMugshotDebug", "--stacktrace")
-      .runFixture(fixtureRoot) { build() }
+    val result = fixtureRoot.runBuild(":dynamic_feature:verifyMugshotDebug")
 
     assertThat(result.task(":dynamic_feature:prepareMugshotDebugResources")).isNotNull()
     assertThat(result.task(":dynamic_feature:testDebugUnitTest")).isNotNull()
@@ -37,19 +33,16 @@ class PluginApplicationTest : MugshotPluginTestCase() {
 
   @Test
   fun supportsJunitJupiterLibrary() {
-    val fixtureRoot = File("src/test/projects/supports-junit-jupiter")
+    val fixtureRoot = fixture("supports-junit-jupiter")
 
-    gradleRunner.withArguments("verifyMugshotDebug", "--stacktrace")
-      .runFixture(fixtureRoot) { build() }
+    fixtureRoot.runBuild("verifyMugshotDebug")
   }
 
   @Test
   fun missingSupportedPlugins() {
-    val fixtureRoot = File("src/test/projects/missing-supported-plugins")
+    val fixtureRoot = fixture("missing-supported-plugins")
 
-    val result = gradleRunner
-      .withArguments("prepareMugshotDebugResources", "--stacktrace")
-      .runFixture(fixtureRoot) { buildAndFail() }
+    val result = fixtureRoot.runBuildAndFail("prepareMugshotDebugResources")
 
     assertThat(result.task(":prepareMugshotDebugResources")).isNull()
     assertThat(result.output).contains(
@@ -59,33 +52,27 @@ class PluginApplicationTest : MugshotPluginTestCase() {
 
   @Test
   fun declareAndroidPluginAfter() {
-    val fixtureRoot = File("src/test/projects/declare-android-plugin-after")
+    val fixtureRoot = fixture("declare-android-plugin-after")
 
-    val result = gradleRunner
-      .withArguments("prepareMugshotDebugResources", "--stacktrace")
-      .runFixture(fixtureRoot) { build() }
+    val result = fixtureRoot.runBuild("prepareMugshotDebugResources")
 
     assertThat(result.task(":prepareMugshotDebugResources")).isNotNull()
   }
 
   @Test
   fun kotlinMultiplatformPluginWithNewAndroidLibraryPlugin() {
-    val fixtureRoot = File("src/test/projects/multiplatform-android-plugin")
+    val fixtureRoot = fixture("multiplatform-android-plugin")
 
-    val result = gradleRunner
-      .withArguments("verifyMugshotAndroidMain", "--stacktrace")
-      .runFixture(fixtureRoot) { build() }
+    val result = fixtureRoot.runBuild("verifyMugshotAndroidMain")
 
     assertThat(result.task(":prepareMugshotAndroidMainResources")).isNotNull()
   }
 
   @Test
   fun erroneouslyConfiguredInCommonTest() {
-    val fixtureRoot = File("src/test/projects/multiplatform-mugshot-in-commontest")
+    val fixtureRoot = fixture("multiplatform-mugshot-in-commontest")
 
-    val result = gradleRunner
-      .withArguments("prepareMugshotDebugResources", "--stacktrace")
-      .runFixture(fixtureRoot) { buildAndFail() }
+    val result = fixtureRoot.runBuildAndFail("prepareMugshotDebugResources")
 
     assertThat(result.output).contains(
       "Mugshot must not be declared in 'commonTestImplementation', as it should only resolve on Android JVM tests."
@@ -94,29 +81,19 @@ class PluginApplicationTest : MugshotPluginTestCase() {
 
   @Test
   fun excludeAndroidTestSourceSets() {
-    val fixtureRoot = File("src/test/projects/exclude-androidtest")
+    val fixtureRoot = fixture("exclude-androidtest")
 
-    val result = gradleRunner
-      .withArguments("prepareMugshotDebugResources", "--stacktrace")
-      .runFixture(fixtureRoot) { build() }
+    val result = fixtureRoot.runBuild("prepareMugshotDebugResources")
 
     assertThat(result.task(":prepareMugshotDebugResources")).isNotNull()
   }
 
   @Test
   fun disabledUnitTestVariant() {
-    val fixtureRoot = File("src/test/projects/disabled-unit-test-variant")
-    gradleRunner
-      .withArguments("testDebug")
-      .runFixture(fixtureRoot) { build() }
+    val fixtureRoot = fixture("disabled-unit-test-variant")
+    fixtureRoot.runBuild("testDebug")
   }
 
   @Test
-  fun robolectric() {
-    val fixtureRoot = File("src/test/projects/robolectric")
-
-    gradleRunner
-      .withArguments("testDebug", "--stacktrace")
-      .runFixture(fixtureRoot) { build() }
-  }
+  fun robolectric() = fixture("robolectric").buildSucceeds("testDebug")
 }

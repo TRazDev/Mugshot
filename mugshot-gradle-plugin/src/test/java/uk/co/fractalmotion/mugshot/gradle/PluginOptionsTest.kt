@@ -14,13 +14,10 @@ import java.io.File
 class PluginOptionsTest : MugshotPluginTestCase() {
   @Test
   fun customBuildDir() {
-    val fixtureRoot = File("src/test/projects/custom-build-dir")
+    val fixtureRoot = fixture("custom-build-dir")
     fixtureRoot.resolve("custom").registerForDeletionOnExit()
 
-    val result = gradleRunner
-      .withArguments("testDebug", "--stacktrace")
-      .forwardOutput()
-      .runFixture(fixtureRoot) { build() }
+    val result = fixtureRoot.runBuild("testDebug") { forwardOutput() }
 
     assertThat(result.task(":prepareMugshotDebugResources")).isNotNull()
 
@@ -33,13 +30,10 @@ class PluginOptionsTest : MugshotPluginTestCase() {
 
   @Test
   fun customReportDir() {
-    val fixtureRoot = File("src/test/projects/custom-report-dir")
+    val fixtureRoot = fixture("custom-report-dir")
     fixtureRoot.resolve("custom").registerForDeletionOnExit()
 
-    val result = gradleRunner
-      .withArguments("testDebug", "--stacktrace")
-      .forwardOutput()
-      .runFixture(fixtureRoot) { build() }
+    val result = fixtureRoot.runBuild("testDebug") { forwardOutput() }
 
     assertThat(result.task(":prepareMugshotDebugResources")).isNotNull()
 
@@ -52,11 +46,9 @@ class PluginOptionsTest : MugshotPluginTestCase() {
 
   @Test
   fun invalidChars() {
-    val fixtureRoot = File("src/test/projects/invalid-chars")
+    val fixtureRoot = fixture("invalid-chars")
 
-    val result = gradleRunner
-      .withArguments("testDebug", "--stacktrace")
-      .runFixture(fixtureRoot) { buildAndFail() }
+    val result = fixtureRoot.runBuildAndFail("testDebug")
 
     assertThat(result.output).doesNotContain("InvalidCharsTest > goodValues[ADDITION] FAILED")
     assertThat(result.output).doesNotContain("InvalidCharsTest > goodValues[SUBTRACTION] FAILED")
@@ -71,11 +63,9 @@ class PluginOptionsTest : MugshotPluginTestCase() {
 
   @Test
   fun buildClassAccess() {
-    val fixtureRoot = File("src/test/projects/build-class")
+    val fixtureRoot = fixture("build-class")
 
-    gradleRunner
-      .withArguments("testDebug", "--stacktrace")
-      .runFixture(fixtureRoot) { build() }
+    fixtureRoot.runBuild("testDebug")
 
     val snapshotsDir = File(fixtureRoot, "custom/reports/mugshot/debug/images")
     assertThat(snapshotsDir.exists()).isFalse()
@@ -83,62 +73,45 @@ class PluginOptionsTest : MugshotPluginTestCase() {
 
   @Test
   fun flagDebugLinkedObjectsIsOff() {
-    val fixtureRoot = File("src/test/projects/flag-debug-linked-objects-off")
+    val fixtureRoot = fixture("flag-debug-linked-objects-off")
 
-    val result = gradleRunner
-      .withArguments("testDebug", "--stacktrace")
-      .runFixture(fixtureRoot) { build() }
+    val result = fixtureRoot.runBuild("testDebug")
 
     assertThat(result.output).doesNotContain("Objects still linked from the DelegateManager:")
   }
 
   @Test
   fun flagDebugLinkedObjectsIsOn() {
-    val fixtureRoot = File("src/test/projects/flag-debug-linked-objects-on")
+    val fixtureRoot = fixture("flag-debug-linked-objects-on")
     // this is only a warning message, so subsequent runs would otherwise be UP-TO-DATE
     fixtureRoot.resolve("build").registerForDeletionOnExit()
 
-    val result = gradleRunner
-      .withArguments("testDebug", "--stacktrace")
-      .runFixture(fixtureRoot) { build() }
+    val result = fixtureRoot.runBuild("testDebug")
 
     assertThat(result.output).contains("Objects still linked from the DelegateManager:")
   }
 
   @Test
   fun jacoco() {
-    val fixtureRoot = File("src/test/projects/jacoco")
+    val fixtureRoot = fixture("jacoco")
 
-    gradleRunner
-      .withArguments("testDebug", "--stacktrace")
-      .runFixture(fixtureRoot) { build() }
+    fixtureRoot.runBuild("testDebug")
 
     val jacocoExecutionData = File(fixtureRoot, "build/jacoco/testDebugUnitTest.exec")
     assertThat(jacocoExecutionData.exists()).isTrue()
   }
 
   @Test
-  fun configIsUpdatable() {
-    val fixtureRoot = File("src/test/projects/update-mugshot-config")
-
-    gradleRunner
-      .withArguments("verifyMugshotDebug", "--stacktrace")
-      .runFixture(fixtureRoot) { build() }
-  }
+  fun configIsUpdatable() = fixture("update-mugshot-config").verifyDebug()
 
   @Test
   fun maxPercentDifferenceDefaultSet() {
-    val fixtureRoot = File("src/test/projects/max-percent-difference-default-set")
+    val fixtureRoot = fixture("max-percent-difference-default-set")
     // this is only a warning message, so subsequent runs would otherwise be UP-TO-DATE
     fixtureRoot.resolve("build").registerForDeletionOnExit()
 
-    val result = gradleRunner
-      .withArguments("verifyMugshotDebug", "--stacktrace")
-      .runFixture(fixtureRoot) { build() }
+    val result = fixtureRoot.runBuild("verifyMugshotDebug")
 
-    with(result.task(":testDebugUnitTest")) {
-      assertThat(this).isNotNull()
-      assertThat(this!!.outcome).isEqualTo(SUCCESS)
-    }
+    result.assertTaskSucceeded(":testDebugUnitTest")
   }
 }

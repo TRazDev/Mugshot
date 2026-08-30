@@ -11,65 +11,23 @@ import java.io.File
 @Suppress("ktlint:standard:max-line-length")
 class DeviceConfigRenderingTest : MugshotPluginTestCase() {
   @Test
-  fun localeQualifier() {
-    val fixtureRoot = File("src/test/projects/locale-qualifier")
-
-    gradleRunner
-      .withArguments("verifyMugshotDebug", "--stacktrace")
-      .runFixture(fixtureRoot) { build() }
-  }
+  fun localeQualifier() = fixture("locale-qualifier").verifyDebug()
 
   @Test
-  fun layoutDirection() {
-    val fixtureRoot = File("src/test/projects/layout-direction")
-
-    gradleRunner
-      .withArguments("verifyMugshotDebug", "--stacktrace")
-      .runFixture(fixtureRoot) { build() }
-  }
+  fun layoutDirection() = fixture("layout-direction").verifyDebug()
 
   @Test
-  fun nightMode() {
-    val fixtureRoot = File("src/test/projects/night-mode")
-
-    gradleRunner
-      .withArguments("verifyMugshotDebug", "--stacktrace")
-      .runFixture(fixtureRoot) { build() }
-  }
+  fun nightMode() = fixture("night-mode").verifyDebug()
 
   @Test
-  fun screenOrientation() {
-    val fixtureRoot = File("src/test/projects/verify-orientation")
-
-    gradleRunner
-      .withArguments("verifyMugshotDebug", "--stacktrace")
-      .runFixture(fixtureRoot) { build() }
-  }
+  fun screenOrientation() = fixture("verify-orientation").verifyDebug()
 
   @Test
-  fun screenRound() {
-    val fixtureRoot = File("src/test/projects/verify-screen-round")
-
-    gradleRunner
-      .withArguments("verifyMugshotDebug", "--stacktrace")
-      .runFixture(fixtureRoot) { build() }
-  }
+  fun screenRound() = fixture("verify-screen-round").verifyDebug()
 
   @Test
-  fun scaledVersusFullDeviceResolution() {
-    val fixtureRoot = File("src/test/projects/device-resolution")
-
-    gradleRunner
-      .withArguments("verifyMugshotDebug", "--stacktrace")
-      .runFixture(fixtureRoot) { build() }
-  }
+  fun scaledVersusFullDeviceResolution() = fixture("device-resolution").verifyDebug()
 
   @Test
-  fun verifyRenderingModes() {
-    val fixtureRoot = File("src/test/projects/verify-rendering-modes")
-
-    gradleRunner
-      .withArguments("verifyMugshotDebug", "--stacktrace")
-      .runFixture(fixtureRoot) { build() }
-  }
+  fun verifyRenderingModes() = fixture("verify-rendering-modes").verifyDebug()
 }

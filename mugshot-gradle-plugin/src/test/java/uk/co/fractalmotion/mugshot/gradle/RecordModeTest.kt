@@ -13,11 +13,9 @@ import java.io.File
 class RecordModeTest : MugshotPluginTestCase() {
   @Test
   fun record() {
-    val fixtureRoot = File("src/test/projects/record-mode")
+    val fixtureRoot = fixture("record-mode")
 
-    val result = gradleRunner
-      .withArguments("recordMugshotDebug", "--stacktrace")
-      .runFixture(fixtureRoot) { build() }
+    val result = fixtureRoot.runBuild("recordMugshotDebug")
 
     assertThat(result.task(":testDebugUnitTest")).isNotNull()
 
@@ -33,12 +31,10 @@ class RecordModeTest : MugshotPluginTestCase() {
 
   @Test
   fun recordAllVariants() {
-    val fixtureRoot = File("src/test/projects/record-mode")
+    val fixtureRoot = fixture("record-mode")
     File(fixtureRoot, "src/test/snapshots").registerForDeletionOnExit()
 
-    val result = gradleRunner
-      .withArguments("recordMugshot", "--stacktrace")
-      .runFixture(fixtureRoot) { build() }
+    val result = fixtureRoot.runBuild("recordMugshot")
 
     assertThat(result.task(":recordMugshotDebug")).isNotNull()
     assertThat(result.task(":recordMugshotRelease")).isNotNull()
@@ -46,12 +42,10 @@ class RecordModeTest : MugshotPluginTestCase() {
 
   @Test
   fun recordMultiModuleProject() {
-    val fixtureRoot = File("src/test/projects/record-mode-multiple-modules")
+    val fixtureRoot = fixture("record-mode-multiple-modules")
     val moduleRoot = File(fixtureRoot, "module")
 
-    val result = gradleRunner
-      .withArguments("module:recordMugshotDebug", "--stacktrace")
-      .runFixture(fixtureRoot) { build() }
+    val result = fixtureRoot.runBuild("module:recordMugshotDebug")
 
     assertThat(result.task(":module:testDebugUnitTest")).isNotNull()
 
@@ -67,12 +61,10 @@ class RecordModeTest : MugshotPluginTestCase() {
 
   @Test
   fun recordModeSingleTestOfMany() {
-    val fixtureRoot = File("src/test/projects/record-mode-multiple-tests")
+    val fixtureRoot = fixture("record-mode-multiple-tests")
     val moduleRoot = File(fixtureRoot, "module")
 
-    val result = gradleRunner
-      .withArguments("module:recordMugshotDebug", "--tests=*recordSecond", "--stacktrace")
-      .runFixture(fixtureRoot) { build() }
+    val result = fixtureRoot.runBuild("module:recordMugshotDebug", "--tests=*recordSecond")
 
     assertThat(result.task(":module:testDebugUnitTest")).isNotNull()
 
@@ -88,7 +80,7 @@ class RecordModeTest : MugshotPluginTestCase() {
 
   @Test
   fun cleanRecord() {
-    val fixtureRoot = File("src/test/projects/clean-record")
+    val fixtureRoot = fixture("clean-record")
     val snapshotsDir = File(fixtureRoot, "src/test/snapshots").registerForDeletionOnExit()
 
     val snapshotName1 = "uk.co.fractalmotion.mugshot.plugin.test_CleanRecordTest_clean.webp"
@@ -105,9 +97,7 @@ class RecordModeTest : MugshotPluginTestCase() {
     assertThat(snapshotToBeDeleted.exists()).isTrue()
     assertThat(snapshotToBeKept.exists()).isTrue()
 
-    val result = gradleRunner
-      .withArguments("cleanRecordMugshotDebug", "--stacktrace")
-      .runFixture(fixtureRoot) { build() }
+    val result = fixtureRoot.runBuild("cleanRecordMugshotDebug")
 
     assertThat(result.task(":deleteMugshotSnapshots")).isNotNull()
     assertThat(result.task(":recordMugshotDebug")).isNotNull()
@@ -118,7 +108,7 @@ class RecordModeTest : MugshotPluginTestCase() {
 
   @Test
   fun deleteSnapshots() {
-    val fixtureRoot = File("src/test/projects/delete-snapshots")
+    val fixtureRoot = fixture("delete-snapshots")
     val snapshotsDir = File(fixtureRoot, "src/test/snapshots").registerForDeletionOnExit()
 
     val snapshotName1 = "uk.co.fractalmotion.mugshot.plugin.test_DeleteTest_delete.webp"
@@ -135,9 +125,7 @@ class RecordModeTest : MugshotPluginTestCase() {
     assertThat(snapshot.exists()).isTrue()
     assertThat(snapshotWithLabel.exists()).isTrue()
 
-    gradleRunner
-      .withArguments("deleteMugshotSnapshots", "--stacktrace")
-      .runFixture(fixtureRoot) { build() }
+    fixtureRoot.runBuild("deleteMugshotSnapshots")
 
     assertThat(snapshot.exists()).isFalse()
     assertThat(snapshotWithLabel.exists()).isFalse()
@@ -145,7 +133,7 @@ class RecordModeTest : MugshotPluginTestCase() {
 
   @Test
   fun overwriteSnapshotOnMaxPercentDiff() {
-    val fixtureRoot = File("src/test/projects/overwrite-on-max-percent-difference").clearNestedBuildState()
+    val fixtureRoot = fixture("overwrite-on-max-percent-difference").clearNestedBuildState()
 
     val dontRecordFile =
       File(fixtureRoot, "src/test/snapshots/images/uk.co.fractalmotion.mugshot.plugin.test_RecordSnapshotTest_dontRecord.webp")
@@ -156,9 +144,7 @@ class RecordModeTest : MugshotPluginTestCase() {
         .registerForRestoreOnExit()
     val recordLastModified = recordFile.lastModified()
 
-    gradleRunner
-      .withArguments("recordMugshotDebug", "--stacktrace")
-      .runFixture(fixtureRoot) { build() }
+    fixtureRoot.runBuild("recordMugshotDebug")
 
     assertThat(dontRecordLastModified).isEqualTo(dontRecordFile.lastModified())
     assertThat(recordLastModified).isNotEqualTo(recordFile.lastModified())
@@ -166,11 +152,9 @@ class RecordModeTest : MugshotPluginTestCase() {
 
   @Test
   fun similarImagesProduceUniqueSnapshots() {
-    val fixtureRoot = File("src/test/projects/similar-images")
+    val fixtureRoot = fixture("similar-images")
 
-    gradleRunner
-      .withArguments("recordMugshotDebug", "--stacktrace")
-      .runFixture(fixtureRoot) { build() }
+    fixtureRoot.runBuild("recordMugshotDebug")
 
     val reportsDir = File(fixtureRoot, "build/reports/mugshot/debug/images")
     assertThat(reportsDir.listFiles()!!).hasLength(3)

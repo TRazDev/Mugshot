@@ -13,124 +13,54 @@ import java.io.File
 @Suppress("ktlint:standard:max-line-length")
 class ViewRenderingTest : MugshotPluginTestCase() {
   @Test
-  fun widgets() {
-    val fixtureRoot = File("src/test/projects/widgets")
-
-    gradleRunner
-      .withArguments("verifyMugshotDebug", "--stacktrace")
-      .runFixture(fixtureRoot) { build() }
-  }
+  fun widgets() = fixture("widgets").verifyDebug()
 
   @Test
-  fun ninePatch() {
-    val fixtureRoot = File("src/test/projects/nine-patch")
-
-    gradleRunner
-      .withArguments("verifyMugshotDebug", "--stacktrace")
-      .runFixture(fixtureRoot) { build() }
-  }
+  fun ninePatch() = fixture("nine-patch").verifyDebug()
 
   @Test
-  fun customFonts() {
-    val fixtureRoot = File("src/test/projects/custom-fonts")
-
-    gradleRunner
-      .withArguments("verifyMugshotDebug", "--stacktrace")
-      .runFixture(fixtureRoot) { build() }
-  }
+  fun customFonts() = fixture("custom-fonts").verifyDebug()
 
   @Test
-  fun textAppearances() {
-    val fixtureRoot = File("src/test/projects/text-appearances")
-
-    gradleRunner
-      .withArguments("verifyMugshotDebug", "--stacktrace")
-      .runFixture(fixtureRoot) { build() }
-  }
+  fun textAppearances() = fixture("text-appearances").verifyDebug()
 
   @Test
-  fun verifyVectorDrawables() {
-    val fixtureRoot = File("src/test/projects/verify-svgs")
-
-    gradleRunner
-      .withArguments("verifyMugshotDebug", "--stacktrace")
-      .runFixture(fixtureRoot) { build() }
-  }
+  fun verifyVectorDrawables() = fixture("verify-svgs").verifyDebug()
 
   @Test
-  fun verifyRecyclerView() {
-    val fixtureRoot = File("src/test/projects/verify-recyclerview")
-
-    gradleRunner
-      .withArguments("verifyMugshotDebug", "--stacktrace")
-      .runFixture(fixtureRoot) { build() }
-  }
+  fun verifyRecyclerView() = fixture("verify-recyclerview").verifyDebug()
 
   @Test
-  fun verifyAaptAttrResourceParsing() {
-    val fixtureRoot = File("src/test/projects/verify-aapt")
-
-    gradleRunner
-      .withArguments("verifyMugshotDebug", "--stacktrace")
-      .runFixture(fixtureRoot) { build() }
-  }
+  fun verifyAaptAttrResourceParsing() = fixture("verify-aapt").verifyDebug()
 
   @Test
   fun verifySnapshot() {
-    val fixtureRoot = File("src/test/projects/verify-snapshot")
+    val fixtureRoot = fixture("verify-snapshot")
 
-    val result = gradleRunner
-      .withArguments("verifyMugshotDebug", "--stacktrace")
-      .runFixture(fixtureRoot) { build() }
+    val result = fixtureRoot.runBuild("verifyMugshotDebug")
 
     assertThat(result.task(":prepareMugshotDebugResources")).isNotNull()
     assertThat(result.task(":testDebugUnitTest")).isNotNull()
   }
 
   @Test
-  fun withoutAppCompat() {
-    val fixtureRoot = File("src/test/projects/appcompat-missing")
-
-    gradleRunner
-      .withArguments("verifyMugshotDebug", "--stacktrace")
-      .runFixture(fixtureRoot) { build() }
-  }
+  fun withoutAppCompat() = fixture("appcompat-missing").verifyDebug()
 
   @Test
-  fun withAppCompat() {
-    val fixtureRoot = File("src/test/projects/appcompat-present")
-
-    gradleRunner
-      .withArguments("verifyMugshotDebug", "--stacktrace")
-      .runFixture(fixtureRoot) { build() }
-  }
+  fun withAppCompat() = fixture("appcompat-present").verifyDebug()
 
   @Test
   @Ignore
-  fun withMaterialComponents() {
-    val fixtureRoot = File("src/test/projects/material-components-present")
-
-    gradleRunner
-      .withArguments("verifyMugshotDebug", "--stacktrace")
-      .runFixture(fixtureRoot) { build() }
-  }
+  fun withMaterialComponents() = fixture("material-components-present").verifyDebug()
 
   @Test
-  fun interceptViewEditMode() {
-    val fixtureRoot = File("src/test/projects/edit-mode-intercept")
-
-    gradleRunner
-      .withArguments("testDebug", "--stacktrace")
-      .runFixture(fixtureRoot) { build() }
-  }
+  fun interceptViewEditMode() = fixture("edit-mode-intercept").buildSucceeds("testDebug")
 
   @Test
   fun lifecycleOwnerUsages() {
-    val fixtureRoot = File("src/test/projects/lifecycle-usages")
+    val fixtureRoot = fixture("lifecycle-usages")
 
-    gradleRunner
-      .withArguments("testDebug", "--stacktrace")
-      .runFixture(fixtureRoot) { build() }
+    fixtureRoot.runBuild("testDebug")
 
     val snapshotsDir = File(fixtureRoot, "build/reports/mugshot/debug/images")
     val snapshots = snapshotsDir.listFilesSorted()

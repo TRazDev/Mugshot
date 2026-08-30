@@ -16,23 +16,15 @@ import java.io.File
 class IncrementalBuildTest : MugshotPluginTestCase() {
   @Test
   fun prepareResourcesCaching() {
-    val fixtureRoot = File("src/test/projects/prepare-resources-task-caching")
+    val fixtureRoot = fixture("prepare-resources-task-caching")
     val buildDir = fixtureRoot.resolve("build").registerForDeletionOnExit()
     fixtureRoot.resolve("build-cache").registerForDeletionOnExit()
 
-    val firstRun = gradleRunner
-      .withArguments("testRelease", "testDebug", "--build-cache", "--stacktrace")
-      .runFixture(fixtureRoot) { build() }
+    val firstRun = fixtureRoot.runBuild("testRelease", "testDebug", "--build-cache")
 
-    with(firstRun.task(":prepareMugshotDebugResources")) {
-      assertThat(this).isNotNull()
-      assertThat(this!!.outcome).isNotEqualTo(FROM_CACHE)
-    }
+    firstRun.assertTaskOutcomeIsNot(":prepareMugshotDebugResources", FROM_CACHE)
 
-    with(firstRun.task(":prepareMugshotReleaseResources")) {
-      assertThat(this).isNotNull()
-      assertThat(this!!.outcome).isNotEqualTo(FROM_CACHE)
-    }
+    firstRun.assertTaskOutcomeIsNot(":prepareMugshotReleaseResources", FROM_CACHE)
 
     var resourcesFile = File(fixtureRoot, "build/intermediates/mugshot/debug/resources.json")
     assertThat(resourcesFile.exists()).isTrue()
@@ -47,14 +39,9 @@ class IncrementalBuildTest : MugshotPluginTestCase() {
     // delete now (regardless of future cleanup)
     buildDir.deleteRecursively()
 
-    val secondRun = gradleRunner
-      .withArguments("testDebug", "--build-cache", "--stacktrace")
-      .runFixture(fixtureRoot) { build() }
+    val secondRun = fixtureRoot.runBuild("testDebug", "--build-cache")
 
-    with(secondRun.task(":prepareMugshotDebugResources")) {
-      assertThat(this).isNotNull()
-      assertThat(this!!.outcome).isEqualTo(FROM_CACHE)
-    }
+    secondRun.assertTaskOutcome(":prepareMugshotDebugResources", FROM_CACHE)
 
     resourcesFile = File(fixtureRoot, "build/intermediates/mugshot/debug/resources.json")
     assertThat(resourcesFile.exists()).isTrue()
@@ -64,49 +51,31 @@ class IncrementalBuildTest : MugshotPluginTestCase() {
 
   @Test
   fun cacheable() {
-    val fixtureRoot = File("src/test/projects/cacheable")
+    val fixtureRoot = fixture("cacheable")
     val buildDir = fixtureRoot.resolve("build").registerForDeletionOnExit()
     fixtureRoot.resolve("build-cache").registerForDeletionOnExit()
 
-    val firstRun = gradleRunner
-      .withArguments("testDebug", "--build-cache", "--stacktrace")
-      .runFixture(fixtureRoot) { build() }
+    val firstRun = fixtureRoot.runBuild("testDebug", "--build-cache")
 
-    with(firstRun.task(":prepareMugshotDebugResources")) {
-      assertThat(this).isNotNull()
-      assertThat(this!!.outcome).isNotEqualTo(FROM_CACHE)
-    }
+    firstRun.assertTaskOutcomeIsNot(":prepareMugshotDebugResources", FROM_CACHE)
 
     buildDir.deleteRecursively()
 
-    val secondRun = gradleRunner
-      .withArguments("testDebug", "--build-cache", "--stacktrace")
-      .runFixture(fixtureRoot) { build() }
+    val secondRun = fixtureRoot.runBuild("testDebug", "--build-cache")
 
-    with(secondRun.task(":prepareMugshotDebugResources")) {
-      assertThat(this).isNotNull()
-      assertThat(this!!.outcome).isEqualTo(FROM_CACHE)
-    }
+    secondRun.assertTaskOutcome(":prepareMugshotDebugResources", FROM_CACHE)
   }
 
   @Test
   fun cacheableRelocatable() {
-    val fixtureRoot = File("src/test/projects/cacheable")
+    val fixtureRoot = fixture("cacheable")
     fixtureRoot.resolve("build").registerForDeletionOnExit()
     fixtureRoot.resolve("build-cache").registerForDeletionOnExit()
 
-    val firstRun = gradleRunner
-      .withArguments("testDebug", "--build-cache", "--stacktrace")
-      .runFixture(fixtureRoot) { build() }
+    val firstRun = fixtureRoot.runBuild("testDebug", "--build-cache")
 
-    with(firstRun.task(":prepareMugshotDebugResources")) {
-      assertThat(this).isNotNull()
-      assertThat(this!!.outcome).isNotEqualTo(FROM_CACHE)
-    }
-    with(firstRun.task(":testDebugUnitTest")) {
-      assertThat(this).isNotNull()
-      assertThat(this!!.outcome).isNotEqualTo(FROM_CACHE)
-    }
+    firstRun.assertTaskOutcomeIsNot(":prepareMugshotDebugResources", FROM_CACHE)
+    firstRun.assertTaskOutcomeIsNot(":testDebugUnitTest", FROM_CACHE)
 
     // Rebuild the same project (with its populated cache) from a different directory, as CI and a
     // local clone would. Absolute paths in the cache key would make these entries unreachable here.
@@ -120,45 +89,33 @@ class IncrementalBuildTest : MugshotPluginTestCase() {
       it.writeText("rootProject.name = 'cacheable'\n${it.readText()}")
     }
 
-    val secondRun = gradleRunner
-      .withArguments("testDebug", "--build-cache", "--stacktrace")
-      .runFixture(relocatedRoot) { build() }
+    val secondRun = relocatedRoot.runBuild("testDebug", "--build-cache")
 
-    with(secondRun.task(":prepareMugshotDebugResources")) {
-      assertThat(this).isNotNull()
-      assertThat(this!!.outcome).isEqualTo(FROM_CACHE)
-    }
-    with(secondRun.task(":testDebugUnitTest")) {
-      assertThat(this).isNotNull()
-      assertThat(this!!.outcome).isEqualTo(FROM_CACHE)
-    }
+    secondRun.assertTaskOutcome(":prepareMugshotDebugResources", FROM_CACHE)
+    secondRun.assertTaskOutcome(":testDebugUnitTest", FROM_CACHE)
   }
 
   @Test
   fun configurationCache() {
-    val fixtureRoot = File("src/test/projects/configuration-cache")
+    val fixtureRoot = fixture("configuration-cache")
 
     // check to avoid plugin regressions that might affect Gradle's configuration caching
     // https://docs.gradle.org/current/userguide/configuration_cache.html
-    gradleRunner
-      .withArguments("testDebug", "--configuration-cache", "--stacktrace")
-      .runFixture(fixtureRoot) { build() }
+    fixtureRoot.runBuild("testDebug", "--configuration-cache")
   }
 
   @Test
   fun configurationCacheWorksWithGeneratedSources() {
-    val fixtureRoot = File("src/test/projects/configuration-cache-generated-sources")
+    val fixtureRoot = fixture("configuration-cache-generated-sources")
 
     // check to avoid plugin regressions that might affect Gradle's configuration caching
     // https://docs.gradle.org/current/userguide/configuration_cache.html
-    gradleRunner
-      .withArguments("testDebug", "--configuration-cache", "--stacktrace")
-      .runFixture(fixtureRoot) { build() }
+    fixtureRoot.runBuild("testDebug", "--configuration-cache")
   }
 
   @Test
   fun rerunRecordOnResourceChange() {
-    val fixtureRoot = File("src/test/projects/rerun-resource-change").clearNestedBuildState()
+    val fixtureRoot = fixture("rerun-resource-change").clearNestedBuildState()
 
     val snapshotsDir = File(fixtureRoot, "src/test/snapshots").registerForDeletionOnExit()
     snapshotsDir.deleteRecursively()
@@ -174,14 +131,9 @@ class IncrementalBuildTest : MugshotPluginTestCase() {
     firstResourceFile.copyTo(destResourceFile, overwrite = false)
 
     // Take 1
-    val firstRunResult = gradleRunner
-      .withArguments("recordMugshotDebug", "--stacktrace")
-      .runFixture(fixtureRoot) { build() }
+    val firstRunResult = fixtureRoot.runBuild("recordMugshotDebug")
 
-    with(firstRunResult.task(":testDebugUnitTest")) {
-      assertThat(this).isNotNull()
-      assertThat(this!!.outcome).isEqualTo(SUCCESS)
-    }
+    firstRunResult.assertTaskSucceeded(":testDebugUnitTest")
     assertThat(snapshot.exists()).isTrue()
 
     val firstRunBytes = snapshot.readBytes()
@@ -190,14 +142,9 @@ class IncrementalBuildTest : MugshotPluginTestCase() {
     secondResourceFile.copyTo(destResourceFile, overwrite = true)
 
     // Take 2
-    val secondRunResult = gradleRunner
-      .withArguments("recordMugshotDebug", "--stacktrace")
-      .runFixture(fixtureRoot) { build() }
+    val secondRunResult = fixtureRoot.runBuild("recordMugshotDebug")
 
-    with(secondRunResult.task(":testDebugUnitTest")) {
-      assertThat(this).isNotNull()
-      assertThat(this!!.outcome).isEqualTo(SUCCESS) // not UP-TO-DATE
-    }
+    secondRunResult.assertTaskSucceeded(":testDebugUnitTest") // not UP-TO-DATE
     assertThat(snapshot.exists()).isTrue()
 
     val secondRunBytes = snapshot.readBytes()
@@ -208,7 +155,7 @@ class IncrementalBuildTest : MugshotPluginTestCase() {
 
   @Test
   fun rerunVerifyOnResourceChange() {
-    val fixtureRoot = File("src/test/projects/rerun-resource-change")
+    val fixtureRoot = fixture("rerun-resource-change")
 
     val snapshotsDir = File(fixtureRoot, "src/test/snapshots").registerForDeletionOnExit()
     snapshotsDir.deleteRecursively()
@@ -223,37 +170,25 @@ class IncrementalBuildTest : MugshotPluginTestCase() {
     firstResourceFile.copyTo(destResourceFile, overwrite = false)
 
     // Setup
-    gradleRunner
-      .withArguments("recordMugshotDebug", "--stacktrace")
-      .runFixture(fixtureRoot) { build() }
+    fixtureRoot.runBuild("recordMugshotDebug")
 
     // Take 1
-    val firstRunResult = gradleRunner
-      .withArguments("verifyMugshotDebug", "--stacktrace")
-      .runFixture(fixtureRoot) { build() }
+    val firstRunResult = fixtureRoot.runBuild("verifyMugshotDebug")
 
-    with(firstRunResult.task(":testDebugUnitTest")) {
-      assertThat(this).isNotNull()
-      assertThat(this!!.outcome).isEqualTo(SUCCESS) // not UP-TO-DATE
-    }
+    firstRunResult.assertTaskSucceeded(":testDebugUnitTest") // not UP-TO-DATE
 
     // Update resource
     secondResourceFile.copyTo(destResourceFile, overwrite = true)
 
     // Take 2
-    val secondRunResult = gradleRunner
-      .withArguments("verifyMugshotDebug", "--stacktrace")
-      .runFixture(fixtureRoot) { buildAndFail() }
+    val secondRunResult = fixtureRoot.runBuildAndFail("verifyMugshotDebug")
 
-    with(secondRunResult.task(":testDebugUnitTest")) {
-      assertThat(this).isNotNull()
-      assertThat(this!!.outcome).isEqualTo(TaskOutcome.FAILED) // not UP-TO-DATE
-    }
+    secondRunResult.assertTaskOutcome(":testDebugUnitTest", TaskOutcome.FAILED) // not UP-TO-DATE
   }
 
   @Test
   fun rerunOnAssetChange() {
-    val fixtureRoot = File("src/test/projects/rerun-asset-change")
+    val fixtureRoot = fixture("rerun-asset-change")
 
     val snapshotsDir = File(fixtureRoot, "src/test/snapshots").registerForDeletionOnExit()
     val snapshot = File(snapshotsDir, "images/uk.co.fractalmotion.mugshot.plugin.test_RecordTest_record.webp")
@@ -267,14 +202,9 @@ class IncrementalBuildTest : MugshotPluginTestCase() {
     firstAssetFile.copyTo(destAssetFile, overwrite = false)
 
     // Take 1
-    val firstRunResult = gradleRunner
-      .withArguments("recordMugshotDebug", "--stacktrace")
-      .runFixture(fixtureRoot) { build() }
+    val firstRunResult = fixtureRoot.runBuild("recordMugshotDebug")
 
-    with(firstRunResult.task(":testDebugUnitTest")) {
-      assertThat(this).isNotNull()
-      assertThat(this!!.outcome).isEqualTo(SUCCESS)
-    }
+    firstRunResult.assertTaskSucceeded(":testDebugUnitTest")
     assertThat(snapshot.exists()).isTrue()
 
     val firstRunBytes = snapshot.readBytes()
@@ -283,14 +213,9 @@ class IncrementalBuildTest : MugshotPluginTestCase() {
     secondAssetFile.copyTo(destAssetFile, overwrite = true)
 
     // Take 2
-    val secondRunResult = gradleRunner
-      .withArguments("recordMugshotDebug", "--stacktrace")
-      .runFixture(fixtureRoot) { build() }
+    val secondRunResult = fixtureRoot.runBuild("recordMugshotDebug")
 
-    with(secondRunResult.task(":testDebugUnitTest")) {
-      assertThat(this).isNotNull()
-      assertThat(this!!.outcome).isEqualTo(SUCCESS) // not UP-TO-DATE
-    }
+    secondRunResult.assertTaskSucceeded(":testDebugUnitTest") // not UP-TO-DATE
     assertThat(snapshot.exists()).isTrue()
 
     val secondRunBytes = snapshot.readBytes()
@@ -301,7 +226,7 @@ class IncrementalBuildTest : MugshotPluginTestCase() {
 
   @Test
   fun rerunOnReportDeletion() {
-    val fixtureRoot = File("src/test/projects/rerun-report")
+    val fixtureRoot = fixture("rerun-report")
     val reportDir = File(fixtureRoot, "build/reports/mugshot/debug").registerForDeletionOnExit()
     val reportHtml = File(reportDir, "index.html")
     assertThat(reportHtml.exists()).isFalse()
@@ -309,103 +234,63 @@ class IncrementalBuildTest : MugshotPluginTestCase() {
     File(fixtureRoot, "src/test/snapshots").registerForDeletionOnExit()
 
     // Take 1
-    val firstRunResult = gradleRunner
-      .withArguments("recordMugshotDebug", "--stacktrace")
-      .forwardOutput()
-      .runFixture(fixtureRoot) { build() }
+    val firstRunResult = fixtureRoot.runBuild("recordMugshotDebug") { forwardOutput() }
 
-    with(firstRunResult.task(":testDebugUnitTest")) {
-      assertThat(this).isNotNull()
-      assertThat(this!!.outcome).isEqualTo(SUCCESS)
-    }
+    firstRunResult.assertTaskSucceeded(":testDebugUnitTest")
     assertThat(reportHtml.exists()).isTrue()
 
     // Remove report
     reportDir.deleteRecursively()
 
     // Take 2
-    val secondRunResult = gradleRunner
-      .withArguments("recordMugshotDebug", "--stacktrace")
-      .runFixture(fixtureRoot) { build() }
+    val secondRunResult = fixtureRoot.runBuild("recordMugshotDebug")
 
-    with(secondRunResult.task(":testDebugUnitTest")) {
-      assertThat(this).isNotNull()
-      assertThat(this!!.outcome).isEqualTo(SUCCESS) // not UP-TO-DATE
-    }
+    secondRunResult.assertTaskSucceeded(":testDebugUnitTest") // not UP-TO-DATE
     assertThat(reportHtml.exists()).isTrue()
   }
 
   @Test
   fun rerunOnSnapshotDeletion() {
-    val fixtureRoot = File("src/test/projects/rerun-snapshots")
+    val fixtureRoot = fixture("rerun-snapshots")
 
     val snapshotsDir = File(fixtureRoot, "src/test/snapshots").registerForDeletionOnExit()
     val snapshot = File(snapshotsDir, "images/uk.co.fractalmotion.mugshot.plugin.test_RecordTest_record.webp")
     assertThat(snapshot.exists()).isFalse()
 
     // Take 1
-    val firstRunResult = gradleRunner
-      .withArguments("recordMugshotDebug", "--stacktrace")
-      .forwardOutput()
-      .runFixture(fixtureRoot) { build() }
+    val firstRunResult = fixtureRoot.runBuild("recordMugshotDebug") { forwardOutput() }
 
-    with(firstRunResult.task(":testDebugUnitTest")) {
-      assertThat(this).isNotNull()
-      assertThat(this!!.outcome).isEqualTo(SUCCESS)
-    }
+    firstRunResult.assertTaskSucceeded(":testDebugUnitTest")
     assertThat(snapshot.exists()).isTrue()
 
     // Remove snapshot
     snapshotsDir.deleteRecursively()
 
     // Take 2
-    val secondRunResult = gradleRunner
-      .withArguments("recordMugshotDebug", "--stacktrace")
-      .runFixture(fixtureRoot) { build() }
+    val secondRunResult = fixtureRoot.runBuild("recordMugshotDebug")
 
-    with(secondRunResult.task(":testDebugUnitTest")) {
-      assertThat(this).isNotNull()
-      assertThat(this!!.outcome).isEqualTo(SUCCESS) // not UP-TO-DATE
-    }
+    secondRunResult.assertTaskSucceeded(":testDebugUnitTest") // not UP-TO-DATE
     assertThat(snapshot.exists()).isTrue()
   }
 
   @Test
   fun rerunTestsOnPropertyChange() {
-    val fixtureRoot = File("src/test/projects/rerun-property-change")
+    val fixtureRoot = fixture("rerun-property-change")
     File(fixtureRoot, "src/test/snapshots").registerForDeletionOnExit()
 
     // Take 1
-    val firstRunResult = gradleRunner
-      .withArguments("testDebugUnitTest", "--stacktrace")
-      .forwardOutput()
-      .runFixture(fixtureRoot) { build() }
+    val firstRunResult = fixtureRoot.runBuild("testDebugUnitTest") { forwardOutput() }
 
-    with(firstRunResult.task(":testDebugUnitTest")) {
-      assertThat(this).isNotNull()
-      assertThat(this!!.outcome).isEqualTo(SUCCESS)
-    }
+    firstRunResult.assertTaskSucceeded(":testDebugUnitTest")
 
     // Take 2
-    val secondRunResult = gradleRunner
-      .withArguments("recordMugshotDebug", "--stacktrace")
-      .forwardOutput()
-      .runFixture(fixtureRoot) { build() }
+    val secondRunResult = fixtureRoot.runBuild("recordMugshotDebug") { forwardOutput() }
 
-    with(secondRunResult.task(":testDebugUnitTest")) {
-      assertThat(this).isNotNull()
-      assertThat(this!!.outcome).isEqualTo(SUCCESS) // not UP-TO-DATE
-    }
+    secondRunResult.assertTaskSucceeded(":testDebugUnitTest") // not UP-TO-DATE
 
     // Take 3
-    val thirdRunResult = gradleRunner
-      .withArguments("verifyMugshotDebug", "--stacktrace")
-      .forwardOutput()
-      .runFixture(fixtureRoot) { build() }
+    val thirdRunResult = fixtureRoot.runBuild("verifyMugshotDebug") { forwardOutput() }
 
-    with(thirdRunResult.task(":testDebugUnitTest")) {
-      assertThat(this).isNotNull()
-      assertThat(this!!.outcome).isEqualTo(SUCCESS) // not UP-TO-DATE
-    }
+    thirdRunResult.assertTaskSucceeded(":testDebugUnitTest") // not UP-TO-DATE
   }
 }

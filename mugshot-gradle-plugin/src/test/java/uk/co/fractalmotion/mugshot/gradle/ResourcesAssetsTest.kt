@@ -15,11 +15,9 @@ import java.io.File
 class ResourcesAssetsTest : MugshotPluginTestCase() {
   @Test
   fun verifyResourcesGeneratedForJavaProject() {
-    val fixtureRoot = File("src/test/projects/verify-resources-java")
+    val fixtureRoot = fixture("verify-resources-java")
 
-    val result = gradleRunner
-      .withArguments(":consumer:testDebug", "--stacktrace")
-      .runFixture(fixtureRoot) { build() }
+    val result = fixtureRoot.runBuild(":consumer:testDebug")
 
     assertThat(result.task(":consumer:prepareMugshotDebugResources")).isNotNull()
 
@@ -50,11 +48,9 @@ class ResourcesAssetsTest : MugshotPluginTestCase() {
 
   @Test
   fun verifyResourcesGeneratedForKotlinProject() {
-    val fixtureRoot = File("src/test/projects/verify-resources-kotlin")
+    val fixtureRoot = fixture("verify-resources-kotlin")
 
-    val result = gradleRunner
-      .withArguments(":consumer:testDebug", "--stacktrace")
-      .runFixture(fixtureRoot) { build() }
+    val result = fixtureRoot.runBuild(":consumer:testDebug")
 
     assertThat(result.task(":consumer:prepareMugshotDebugResources")).isNotNull()
 
@@ -85,7 +81,7 @@ class ResourcesAssetsTest : MugshotPluginTestCase() {
 
   @Test
   fun verifyResourcesUpdatedWhenLocalResourceChanges() {
-    val fixtureRoot = File("src/test/projects/verify-update-local-resources-change")
+    val fixtureRoot = fixture("verify-update-local-resources-change")
     val buildDir = fixtureRoot.resolve("build").registerForDeletionOnExit()
     fixtureRoot.resolve("build-cache").registerForDeletionOnExit()
 
@@ -97,19 +93,10 @@ class ResourcesAssetsTest : MugshotPluginTestCase() {
     // Original resource
     firstResourceFile.copyTo(destResourceFile, overwrite = false)
 
-    val firstRun = gradleRunner
-      .withArguments("testDebug", "--build-cache", "--stacktrace")
-      .forwardOutput()
-      .runFixture(fixtureRoot) { build() }
+    val firstRun = fixtureRoot.runBuild("testDebug", "--build-cache") { forwardOutput() }
 
-    with(firstRun.task(":prepareMugshotDebugResources")) {
-      assertThat(this).isNotNull()
-      assertThat(this!!.outcome).isEqualTo(SUCCESS)
-    }
-    with(firstRun.task(":testDebugUnitTest")) {
-      assertThat(this).isNotNull()
-      assertThat(this!!.outcome).isEqualTo(SUCCESS)
-    }
+    firstRun.assertTaskSucceeded(":prepareMugshotDebugResources")
+    firstRun.assertTaskSucceeded(":testDebugUnitTest")
 
     val resourcesFile = File(fixtureRoot, "build/intermediates/mugshot/debug/resources.json")
 
@@ -124,19 +111,10 @@ class ResourcesAssetsTest : MugshotPluginTestCase() {
     // Update resource
     secondResourceFile.copyTo(destResourceFile, overwrite = true)
 
-    val secondRun = gradleRunner
-      .withArguments(":testDebug", "--build-cache", "--stacktrace")
-      .forwardOutput()
-      .runFixture(fixtureRoot) { build() }
+    val secondRun = fixtureRoot.runBuild(":testDebug", "--build-cache") { forwardOutput() }
 
-    with(secondRun.task(":prepareMugshotDebugResources")) {
-      assertThat(this).isNotNull()
-      assertThat(this!!.outcome).isEqualTo(FROM_CACHE) // paths didn't change
-    }
-    with(secondRun.task(":testDebugUnitTest")) {
-      assertThat(this).isNotNull()
-      assertThat(this!!.outcome).isEqualTo(SUCCESS) // but contents did
-    }
+    secondRun.assertTaskOutcome(":prepareMugshotDebugResources", FROM_CACHE) // paths didn't change
+    secondRun.assertTaskSucceeded(":testDebugUnitTest") // but contents did
 
     config = resourcesFile.loadConfig()
     assertThat(config.projectResourceDirs).containsExactly(
@@ -147,7 +125,7 @@ class ResourcesAssetsTest : MugshotPluginTestCase() {
 
   @Test
   fun verifyResourcesUpdatedWhenModuleResourceChanges() {
-    val fixtureRoot = File("src/test/projects/verify-update-module-resources-change")
+    val fixtureRoot = fixture("verify-update-module-resources-change")
     fixtureRoot.resolve("build-cache").registerForDeletionOnExit()
 
     val consumerModuleRoot = File(fixtureRoot, "consumer")
@@ -162,19 +140,10 @@ class ResourcesAssetsTest : MugshotPluginTestCase() {
     // Original resource
     firstResourceFile.copyTo(destResourceFile, overwrite = false)
 
-    val firstRun = gradleRunner
-      .withArguments(":consumer:testDebug", "--build-cache", "--stacktrace")
-      .forwardOutput()
-      .runFixture(fixtureRoot) { build() }
+    val firstRun = fixtureRoot.runBuild(":consumer:testDebug", "--build-cache") { forwardOutput() }
 
-    with(firstRun.task(":consumer:prepareMugshotDebugResources")) {
-      assertThat(this).isNotNull()
-      assertThat(this!!.outcome).isEqualTo(SUCCESS)
-    }
-    with(firstRun.task(":consumer:testDebugUnitTest")) {
-      assertThat(this).isNotNull()
-      assertThat(this!!.outcome).isEqualTo(SUCCESS)
-    }
+    firstRun.assertTaskSucceeded(":consumer:prepareMugshotDebugResources")
+    firstRun.assertTaskSucceeded(":consumer:testDebugUnitTest")
 
     val resourcesFile = File(consumerModuleRoot, "build/intermediates/mugshot/debug/resources.json")
 
@@ -187,19 +156,10 @@ class ResourcesAssetsTest : MugshotPluginTestCase() {
     // Update resource
     secondResourceFile.copyTo(destResourceFile, overwrite = true)
 
-    val secondRun = gradleRunner
-      .withArguments(":consumer:testDebug", "--build-cache", "--stacktrace")
-      .forwardOutput()
-      .runFixture(fixtureRoot) { build() }
+    val secondRun = fixtureRoot.runBuild(":consumer:testDebug", "--build-cache") { forwardOutput() }
 
-    with(secondRun.task(":consumer:prepareMugshotDebugResources")) {
-      assertThat(this).isNotNull()
-      assertThat(this!!.outcome).isEqualTo(FROM_CACHE) // paths didn't change
-    }
-    with(secondRun.task(":consumer:testDebugUnitTest")) {
-      assertThat(this).isNotNull()
-      assertThat(this!!.outcome).isEqualTo(SUCCESS) // but contents did
-    }
+    secondRun.assertTaskOutcome(":consumer:prepareMugshotDebugResources", FROM_CACHE) // paths didn't change
+    secondRun.assertTaskSucceeded(":consumer:testDebugUnitTest") // but contents did
 
     config = resourcesFile.loadConfig()
     assertThat(config.moduleResourceDirs)
@@ -208,21 +168,15 @@ class ResourcesAssetsTest : MugshotPluginTestCase() {
 
   @Test
   fun verifyResourcesUpdatedWhenExternalDependencyChanges() {
-    val fixtureRoot = File("src/test/projects/verify-update-aar-resources-change")
+    val fixtureRoot = fixture("verify-update-aar-resources-change")
     val buildDir = fixtureRoot.resolve("build").registerForDeletionOnExit()
     fixtureRoot.resolve("build-cache").registerForDeletionOnExit()
 
     System.setProperty("isFirstRun", "true")
 
-    val firstRun = gradleRunner
-      .withArguments(":prepareMugshotDebugResources", "--build-cache", "--stacktrace")
-      .forwardOutput()
-      .runFixture(fixtureRoot) { build() }
+    val firstRun = fixtureRoot.runBuild(":prepareMugshotDebugResources", "--build-cache") { forwardOutput() }
 
-    with(firstRun.task(":prepareMugshotDebugResources")) {
-      assertThat(this).isNotNull()
-      assertThat(this!!.outcome).isEqualTo(SUCCESS)
-    }
+    firstRun.assertTaskSucceeded(":prepareMugshotDebugResources")
 
     val resourcesFile = File(fixtureRoot, "build/intermediates/mugshot/debug/resources.json")
 
@@ -245,15 +199,9 @@ class ResourcesAssetsTest : MugshotPluginTestCase() {
 
     System.setProperty("isFirstRun", "false")
 
-    val secondRun = gradleRunner
-      .withArguments(":prepareMugshotDebugResources", "--build-cache", "--stacktrace")
-      .forwardOutput()
-      .runFixture(fixtureRoot) { build() }
+    val secondRun = fixtureRoot.runBuild(":prepareMugshotDebugResources", "--build-cache") { forwardOutput() }
 
-    with(secondRun.task(":prepareMugshotDebugResources")) {
-      assertThat(this).isNotNull()
-      assertThat(this!!.outcome).isEqualTo(SUCCESS)
-    }
+    secondRun.assertTaskSucceeded(":prepareMugshotDebugResources")
 
     config = resourcesFile.loadConfig()
     assertThat(config.aarExplodedDirs)
@@ -273,7 +221,7 @@ class ResourcesAssetsTest : MugshotPluginTestCase() {
 
   @Test
   fun verifyAssetsUpdatedWhenLocalAssetChanges() {
-    val fixtureRoot = File("src/test/projects/verify-update-local-assets-change")
+    val fixtureRoot = fixture("verify-update-local-assets-change")
     val buildDir = fixtureRoot.resolve("build").registerForDeletionOnExit()
     fixtureRoot.resolve("build-cache").registerForDeletionOnExit()
 
@@ -285,20 +233,11 @@ class ResourcesAssetsTest : MugshotPluginTestCase() {
     // Original asset
     firstAssetFile.copyTo(destAssetFile, overwrite = false)
 
-    val firstRun = gradleRunner
-      .withArguments("testDebug", "--build-cache", "--stacktrace")
-      .forwardOutput()
-      .runFixture(fixtureRoot) { build() }
+    val firstRun = fixtureRoot.runBuild("testDebug", "--build-cache") { forwardOutput() }
 
-    with(firstRun.task(":prepareMugshotDebugResources")) {
-      assertThat(this).isNotNull()
-      assertThat(this!!.outcome).isEqualTo(SUCCESS)
-    }
+    firstRun.assertTaskSucceeded(":prepareMugshotDebugResources")
 
-    with(firstRun.task(":testDebugUnitTest")) {
-      assertThat(this).isNotNull()
-      assertThat(this!!.outcome).isEqualTo(SUCCESS)
-    }
+    firstRun.assertTaskSucceeded(":testDebugUnitTest")
 
     val resourcesFile = File(fixtureRoot, "build/intermediates/mugshot/debug/resources.json")
 
@@ -310,20 +249,11 @@ class ResourcesAssetsTest : MugshotPluginTestCase() {
     // Update asset
     secondAssetFile.copyTo(destAssetFile, overwrite = true)
 
-    val secondRun = gradleRunner
-      .withArguments(":testDebug", "--build-cache", "--stacktrace")
-      .forwardOutput()
-      .runFixture(fixtureRoot) { build() }
+    val secondRun = fixtureRoot.runBuild(":testDebug", "--build-cache") { forwardOutput() }
 
-    with(secondRun.task(":prepareMugshotDebugResources")) {
-      assertThat(this).isNotNull()
-      assertThat(this!!.outcome).isEqualTo(FROM_CACHE) // paths didn't change
-    }
+    secondRun.assertTaskOutcome(":prepareMugshotDebugResources", FROM_CACHE) // paths didn't change
 
-    with(secondRun.task(":testDebugUnitTest")) {
-      assertThat(this).isNotNull()
-      assertThat(this!!.outcome).isEqualTo(SUCCESS) // but contents did
-    }
+    secondRun.assertTaskSucceeded(":testDebugUnitTest") // but contents did
 
     config = resourcesFile.loadConfig()
     assertThat(config.projectAssetDirs).containsExactly("src/main/assets", "src/debug/assets")
@@ -331,7 +261,7 @@ class ResourcesAssetsTest : MugshotPluginTestCase() {
 
   @Test
   fun verifyAssetsUpdatedWhenModuleAssetChanges() {
-    val fixtureRoot = File("src/test/projects/verify-update-module-assets-change")
+    val fixtureRoot = fixture("verify-update-module-assets-change")
     fixtureRoot.resolve("build-cache").registerForDeletionOnExit()
 
     val consumerModuleRoot = File(fixtureRoot, "consumer")
@@ -346,20 +276,11 @@ class ResourcesAssetsTest : MugshotPluginTestCase() {
     // Original asset
     firstAssetFile.copyTo(destAssetFile, overwrite = false)
 
-    val firstRun = gradleRunner
-      .withArguments(":consumer:testDebug", "--build-cache", "--stacktrace")
-      .forwardOutput()
-      .runFixture(fixtureRoot) { build() }
+    val firstRun = fixtureRoot.runBuild(":consumer:testDebug", "--build-cache") { forwardOutput() }
 
-    with(firstRun.task(":consumer:prepareMugshotDebugResources")) {
-      assertThat(this).isNotNull()
-      assertThat(this!!.outcome).isEqualTo(SUCCESS)
-    }
+    firstRun.assertTaskSucceeded(":consumer:prepareMugshotDebugResources")
 
-    with(firstRun.task(":consumer:testDebugUnitTest")) {
-      assertThat(this).isNotNull()
-      assertThat(this!!.outcome).isEqualTo(SUCCESS)
-    }
+    firstRun.assertTaskSucceeded(":consumer:testDebugUnitTest")
 
     val resourcesFile = File(consumerModuleRoot, "build/intermediates/mugshot/debug/resources.json")
 
@@ -375,20 +296,11 @@ class ResourcesAssetsTest : MugshotPluginTestCase() {
     // Update asset
     secondAssetFile.copyTo(destAssetFile, overwrite = true)
 
-    val secondRun = gradleRunner
-      .withArguments(":consumer:testDebug", "--build-cache", "--stacktrace")
-      .forwardOutput()
-      .runFixture(fixtureRoot) { build() }
+    val secondRun = fixtureRoot.runBuild(":consumer:testDebug", "--build-cache") { forwardOutput() }
 
-    with(secondRun.task(":consumer:prepareMugshotDebugResources")) {
-      assertThat(this).isNotNull()
-      assertThat(this!!.outcome).isEqualTo(FROM_CACHE) // paths didn't change
-    }
+    secondRun.assertTaskOutcome(":consumer:prepareMugshotDebugResources", FROM_CACHE) // paths didn't change
 
-    with(secondRun.task(":consumer:testDebugUnitTest")) {
-      assertThat(this).isNotNull()
-      assertThat(this!!.outcome).isEqualTo(SUCCESS) // but contents did
-    }
+    secondRun.assertTaskSucceeded(":consumer:testDebugUnitTest") // but contents did
 
     config = resourcesFile.loadConfig()
     assertThat(config.projectAssetDirs).containsExactly(
@@ -400,21 +312,15 @@ class ResourcesAssetsTest : MugshotPluginTestCase() {
 
   @Test
   fun verifyAssetsUpdatedWhenExternalDependencyChanges() {
-    val fixtureRoot = File("src/test/projects/verify-update-aar-assets-change")
+    val fixtureRoot = fixture("verify-update-aar-assets-change")
     val buildDir = fixtureRoot.resolve("build").registerForDeletionOnExit()
     fixtureRoot.resolve("build-cache").registerForDeletionOnExit()
 
     System.setProperty("isFirstRun", "true")
 
-    val firstRun = gradleRunner
-      .withArguments(":prepareMugshotDebugResources", "--build-cache", "--stacktrace")
-      .forwardOutput()
-      .runFixture(fixtureRoot) { build() }
+    val firstRun = fixtureRoot.runBuild(":prepareMugshotDebugResources", "--build-cache") { forwardOutput() }
 
-    with(firstRun.task(":prepareMugshotDebugResources")) {
-      assertThat(this).isNotNull()
-      assertThat(this!!.outcome).isEqualTo(SUCCESS)
-    }
+    firstRun.assertTaskSucceeded(":prepareMugshotDebugResources")
 
     val resourcesFile = File(fixtureRoot, "build/intermediates/mugshot/debug/resources.json")
 
@@ -427,15 +333,9 @@ class ResourcesAssetsTest : MugshotPluginTestCase() {
 
     System.setProperty("isFirstRun", "false")
 
-    val secondRun = gradleRunner
-      .withArguments(":prepareMugshotDebugResources", "--build-cache", "--stacktrace")
-      .forwardOutput()
-      .runFixture(fixtureRoot) { build() }
+    val secondRun = fixtureRoot.runBuild(":prepareMugshotDebugResources", "--build-cache") { forwardOutput() }
 
-    with(secondRun.task(":prepareMugshotDebugResources")) {
-      assertThat(this).isNotNull()
-      assertThat(this!!.outcome).isEqualTo(SUCCESS)
-    }
+    secondRun.assertTaskSucceeded(":prepareMugshotDebugResources")
 
     config = resourcesFile.loadConfig()
     assertThat(config.aarAssetDirs)
@@ -444,30 +344,15 @@ class ResourcesAssetsTest : MugshotPluginTestCase() {
   }
 
   @Test
-  fun verifyOpenAssets() {
-    val fixtureRoot = File("src/test/projects/open-assets")
-
-    gradleRunner
-      .withArguments("consumer:testDebug", "--stacktrace")
-      .runFixture(fixtureRoot) { build() }
-  }
+  fun verifyOpenAssets() = fixture("open-assets").buildSucceeds("consumer:testDebug")
 
   @Test
   fun resourceMultiModule() {
-    val fixtureRoot = File("src/test/projects/resource-multi-module")
+    val fixtureRoot = fixture("resource-multi-module")
 
-    gradleRunner
-      .withArguments("verifyMugshotDebug", "--stacktrace")
-      .forwardOutput()
-      .runFixture(fixtureRoot) { build() }
+    fixtureRoot.runBuild("verifyMugshotDebug") { forwardOutput() }
   }
 
   @Test
-  fun transitiveResources() {
-    val fixtureRoot = File("src/test/projects/transitive-resources")
-
-    gradleRunner
-      .withArguments("module:verifyMugshotDebug", "--stacktrace")
-      .runFixture(fixtureRoot) { build() }
-  }
+  fun transitiveResources() = fixture("transitive-resources").buildSucceeds("module:verifyMugshotDebug")
 }

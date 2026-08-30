@@ -16,22 +16,18 @@ import java.io.File
 class VerifyModeTest : MugshotPluginTestCase() {
   @Test
   fun verifySuccess() {
-    val fixtureRoot = File("src/test/projects/verify-mode-success")
+    val fixtureRoot = fixture("verify-mode-success")
 
-    val result = gradleRunner
-      .withArguments("verifyMugshotDebug", "--stacktrace")
-      .runFixture(fixtureRoot) { build() }
+    val result = fixtureRoot.runBuild("verifyMugshotDebug")
 
     assertThat(result.task(":testDebugUnitTest")).isNotNull()
   }
 
   @Test
   fun verifyAllVariants() {
-    val fixtureRoot = File("src/test/projects/verify-mode-success")
+    val fixtureRoot = fixture("verify-mode-success")
 
-    val result = gradleRunner
-      .withArguments("verifyMugshot", "--stacktrace")
-      .runFixture(fixtureRoot) { build() }
+    val result = fixtureRoot.runBuild("verifyMugshot")
 
     assertThat(result.task(":verifyMugshotDebug")).isNotNull()
     assertThat(result.task(":verifyMugshotRelease")).isNotNull()
@@ -39,15 +35,13 @@ class VerifyModeTest : MugshotPluginTestCase() {
 
   @Test
   fun verifyDeletesFailures() {
-    val fixtureRoot = File("src/test/projects/verify-mode-success")
+    val fixtureRoot = fixture("verify-mode-success")
     val failureDir = File(fixtureRoot, "build/mugshot/failures/debug").registerForDeletionOnExit()
     failureDir.mkdirs()
     val stale = File(failureDir, "stale.txt")
     stale.writeText("stale")
 
-    val result = gradleRunner
-      .withArguments("verifyMugshotDebug", "--stacktrace")
-      .runFixture(fixtureRoot) { build() }
+    val result = fixtureRoot.runBuild("verifyMugshotDebug")
 
     assertThat(result.task(":testDebugUnitTest")?.outcome).isEqualTo(SUCCESS)
     assertThat(stale.exists()).isFalse()
@@ -55,15 +49,13 @@ class VerifyModeTest : MugshotPluginTestCase() {
 
   @Test
   fun recordPreservesFailures() {
-    val fixtureRoot = File("src/test/projects/verify-mode-success")
+    val fixtureRoot = fixture("verify-mode-success")
     val failureDir = File(fixtureRoot, "build/mugshot/failures/debug").registerForDeletionOnExit()
     failureDir.mkdirs()
     val stale = File(failureDir, "stale.txt")
     stale.writeText("stale")
 
-    val result = gradleRunner
-      .withArguments("recordMugshotDebug", "--stacktrace")
-      .runFixture(fixtureRoot) { build() }
+    val result = fixtureRoot.runBuild("recordMugshotDebug")
 
     assertThat(result.task(":testDebugUnitTest")?.outcome).isEqualTo(SUCCESS)
     assertThat(stale.exists()).isTrue()
@@ -71,23 +63,19 @@ class VerifyModeTest : MugshotPluginTestCase() {
 
   @Test
   fun verifySuccessMultiModule() {
-    val fixtureRoot = File("src/test/projects/verify-mode-success-multiple-modules")
+    val fixtureRoot = fixture("verify-mode-success-multiple-modules")
 
-    val result = gradleRunner
-      .withArguments("module:verifyMugshotDebug", "--stacktrace")
-      .runFixture(fixtureRoot) { build() }
+    val result = fixtureRoot.runBuild("module:verifyMugshotDebug")
 
     assertThat(result.task(":module:testDebugUnitTest")).isNotNull()
   }
 
   @Test
   fun snapshotReport() {
-    val fixtureRoot = File("src/test/projects/report-snapshots")
+    val fixtureRoot = fixture("report-snapshots")
     val testReportDir = File(fixtureRoot, "build/reports/tests/testDebugUnitTest/classes")
 
-    val result = gradleRunner
-      .withArguments("verifyMugshotDebug", "--stacktrace")
-      .runFixture(fixtureRoot) { buildAndFail() }
+    val result = fixtureRoot.runBuildAndFail("verifyMugshotDebug")
 
     val testTask = result.task(":testDebugUnitTest")
     assertThat(testTask).isNotNull()
@@ -115,15 +103,13 @@ class VerifyModeTest : MugshotPluginTestCase() {
 
   @Test
   fun verifyMissingGolden() {
-    val fixtureRoot = File("src/test/projects/verify-missing-golden")
+    val fixtureRoot = fixture("verify-missing-golden")
 
     val fileName = "uk.co.fractalmotion.mugshot.plugin.test_VerifyTest_verify.webp"
     val snapshot = File(fixtureRoot, "src/test/snapshots/images/$fileName")
     assertThat(snapshot.exists()).isFalse()
 
-    val result = gradleRunner
-      .withArguments("verifyMugshotDebug", "--stacktrace", "--info")
-      .runFixture(fixtureRoot) { buildAndFail() }
+    val result = fixtureRoot.runBuildAndFail("verifyMugshotDebug", "--info")
 
     assertThat(result.task(":testDebugUnitTest")).isNotNull()
 

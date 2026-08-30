@@ -14,11 +14,9 @@ import java.io.File
 class VerifyFailureTest : MugshotPluginTestCase() {
   @Test
   fun verifyFailure() {
-    val fixtureRoot = File("src/test/projects/verify-mode-failure")
+    val fixtureRoot = fixture("verify-mode-failure")
 
-    val result = gradleRunner
-      .withArguments("verifyMugshotDebug", "--stacktrace")
-      .runFixture(fixtureRoot) { buildAndFail() }
+    val result = fixtureRoot.runBuildAndFail("verifyMugshotDebug")
 
     assertThat(result.task(":testDebugUnitTest")).isNotNull()
 
@@ -32,11 +30,9 @@ class VerifyFailureTest : MugshotPluginTestCase() {
 
   @Test
   fun verifySimilar() {
-    val fixtureRoot = File("src/test/projects/verify-similar")
+    val fixtureRoot = fixture("verify-similar")
 
-    val result = gradleRunner
-      .withArguments("verifyMugshotDebug", "--stacktrace")
-      .runFixture(fixtureRoot) { buildAndFail() }
+    val result = fixtureRoot.runBuildAndFail("verifyMugshotDebug")
 
     assertThat(result.task(":testDebugUnitTest")).isNotNull()
 
@@ -50,11 +46,9 @@ class VerifyFailureTest : MugshotPluginTestCase() {
 
   @Test
   fun verifySize() {
-    val fixtureRoot = File("src/test/projects/verify-size")
+    val fixtureRoot = fixture("verify-size")
 
-    val result = gradleRunner
-      .withArguments("verifyMugshotDebug", "--stacktrace")
-      .runFixture(fixtureRoot) { buildAndFail() }
+    val result = fixtureRoot.runBuildAndFail("verifyMugshotDebug")
 
     assertThat(result.task(":testDebugUnitTest")).isNotNull()
 
@@ -68,12 +62,10 @@ class VerifyFailureTest : MugshotPluginTestCase() {
 
   @Test
   fun verifyFailureMultiModule() {
-    val fixtureRoot = File("src/test/projects/verify-mode-failure-multiple-modules")
+    val fixtureRoot = fixture("verify-mode-failure-multiple-modules")
     val moduleRoot = File(fixtureRoot, "module")
 
-    val result = gradleRunner
-      .withArguments("module:verifyMugshotDebug", "--stacktrace")
-      .runFixture(fixtureRoot) { buildAndFail() }
+    val result = fixtureRoot.runBuildAndFail("module:verifyMugshotDebug")
 
     assertThat(result.task(":module:testDebugUnitTest")).isNotNull()
 

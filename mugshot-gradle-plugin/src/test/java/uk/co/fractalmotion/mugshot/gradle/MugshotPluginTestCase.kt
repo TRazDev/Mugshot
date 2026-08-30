@@ -45,23 +45,41 @@ abstract class MugshotPluginTestCase {
     filesToRestore.forEach { (file, contents) -> file.writeBytes(contents) }
   }
 
-  /** A fixture project under `src/test/projects/`, plus the verbs for driving a build in it. */
-  protected fun fixture(name: String) = Fixture(File("src/test/projects/$name"))
+  /** The directory of a fixture project under `src/test/projects/`. */
+  protected fun fixture(name: String): File = File("src/test/projects/$name")
 
-  protected inner class Fixture(val root: File) {
-    fun file(relative: String): File = File(root, relative)
+  /**
+   * Runs a nested Gradle build in this fixture directory and expects it to succeed.
+   *
+   * [configure] is for the occasional test that needs more of the [GradleRunner] API, e.g.
+   * `runBuild("testDebug", "--build-cache") { forwardOutput() }`.
+   */
+  protected fun File.runBuild(vararg args: String, configure: GradleRunner.() -> GradleRunner = { this }): BuildResult {
+    val root = this
+    return gradleRunner.withArguments(*args, "--stacktrace").configure().runFixture(root) { build() }
+  }
 
-    fun run(vararg args: String, action: GradleRunner.() -> BuildResult = { build() }): BuildResult =
-      gradleRunner.withArguments(*args, "--stacktrace").runFixture(root, action)
+  /** Runs a nested Gradle build in this fixture directory and expects it to fail. */
+  protected fun File.runBuildAndFail(
+    vararg args: String,
+    configure: GradleRunner.() -> GradleRunner = { this }
+  ): BuildResult {
+    val root = this
+    return gradleRunner.withArguments(*args, "--stacktrace").configure().runFixture(root) { buildAndFail() }
+  }
 
-    fun runAndFail(vararg args: String): BuildResult = run(*args) { buildAndFail() }
+  /**
+   * Runs a build that is expected to succeed and returns nothing, for the many tests whose only
+   * assertion is that the build passed. Returns [Unit] so it can be a JUnit test's expression
+   * body -- JUnit rejects test methods with a return value.
+   */
+  protected fun File.buildSucceeds(vararg args: String) {
+    runBuild(*args)
+  }
 
-    fun verifyDebug(vararg extra: String): BuildResult = run("verifyMugshotDebug", *extra)
-
-    fun recordDebug(vararg extra: String): BuildResult = run("recordMugshotDebug", *extra)
-
-    /** Fixture builds keep their own `build/`/`.gradle/`; clear it when a test needs a real re-run. */
-    fun clearBuildState(): Fixture = apply { root.clearNestedBuildState() }
+  /** The common case of [buildSucceeds]: a snapshot regression test for the debug variant. */
+  protected fun File.verifyDebug() {
+    buildSucceeds("verifyMugshotDebug")
   }
 
   protected fun BuildResult.assertTaskSucceeded(path: String) {
@@ -72,6 +90,12 @@ abstract class MugshotPluginTestCase {
     val task = task(path)
     assertThat(task).isNotNull()
     assertThat(task!!.outcome).isEqualTo(outcome)
+  }
+
+  protected fun BuildResult.assertTaskOutcomeIsNot(path: String, outcome: TaskOutcome) {
+    val task = task(path)
+    assertThat(task).isNotNull()
+    assertThat(task!!.outcome).isNotEqualTo(outcome)
   }
 
   // `internal` rather than `protected`: PrepareResourcesTask.Config is itself internal.
