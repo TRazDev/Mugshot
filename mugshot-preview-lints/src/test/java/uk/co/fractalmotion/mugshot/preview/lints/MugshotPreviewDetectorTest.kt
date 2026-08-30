@@ -192,12 +192,72 @@ class MugshotPreviewDetectorTest {
         *COMPOSE_SOURCES.toTypedArray(),
         MUGSHOT_ANNOTATION
       )
-      .issues(MugshotPreviewDetector.PREVIEW_PARAMETERS_NOT_SUPPORTED)
+      .detector(MugshotPreviewDetector())
+      .skipTestModes(TestMode.SUPPRESSIBLE)
+      .run()
+      .expectClean()
+  }
+
+  @Test
+  fun transitivePreview() {
+    lint()
+      .files(
+        kotlin(
+          """
+          package test
+
+          import androidx.compose.runtime.Composable
+          import androidx.compose.ui.tooling.preview.Preview
+          import uk.co.fractalmotion.mugshot.annotations.Mugshot
+
+          @Preview(name = "Light")
+          @Preview(name = "Dark", uiMode = 0x20)
+          annotation class ThemePreviews
+
+          @Mugshot
+          @ThemePreviews
+          @Composable
+          fun SamplePreview() {}
+          """
+        ).indented(),
+        *COMPOSE_SOURCES.toTypedArray(),
+        MUGSHOT_ANNOTATION
+      )
+      .detector(MugshotPreviewDetector())
+      .skipTestModes(TestMode.SUPPRESSIBLE)
+      .run()
+      .expectClean()
+  }
+
+  @Test
+  fun selfReferencingAnnotationDoesNotRecurse() {
+    lint()
+      .files(
+        kotlin(
+          """
+          package test
+
+          import androidx.compose.runtime.Composable
+          import uk.co.fractalmotion.mugshot.annotations.Mugshot
+
+          @Cyclic
+          annotation class Cyclic
+
+          @Mugshot
+          @Cyclic
+          @Composable
+          fun SamplePreview() {}
+          """
+        ).indented(),
+        *COMPOSE_SOURCES.toTypedArray(),
+        MUGSHOT_ANNOTATION
+      )
+      .issues(MugshotPreviewDetector.PREVIEW_NOT_DETECTED)
       .skipTestModes(TestMode.SUPPRESSIBLE)
       .run()
       .expect(
         """
-        src/test/SamplePreviewParameter.kt:9: Error: @Preview of SamplePreview uses PreviewParameters which aren't currently supported. [PreviewParametersNotSupported]
+        src/test/Cyclic.kt:9: Error: SamplePreview is not annotated with @Preview. [PreviewAnnotationNotFound]
         @Mugshot
         ~~~~~~~~
         1 errors, 0 warnings

@@ -12,6 +12,7 @@ import com.android.tools.lint.detector.api.JavaContext
 import com.android.tools.lint.detector.api.Scope
 import com.android.tools.lint.detector.api.Severity
 import com.android.tools.lint.detector.api.SourceCodeScanner
+import com.intellij.psi.PsiAnnotation
 import org.jetbrains.uast.UElement
 import org.jetbrains.uast.UMethod
 import org.jetbrains.uast.UastVisibility
@@ -48,8 +49,7 @@ public class MugshotPreviewDetector : Detector(), SourceCodeScanner {
       )
     }
 
-    val hasPreview = annotatedMethod.annotations.any { it.qualifiedName == PREVIEW_ANNOTATION }
-    if (!hasPreview) {
+    if (!context.containsPreview(annotatedMethod.annotations)) {
       context.report(
         issue = PREVIEW_NOT_DETECTED,
         scope = element,
@@ -66,25 +66,36 @@ public class MugshotPreviewDetector : Detector(), SourceCodeScanner {
         message = "$annotatedMethodName is private. Make it internal or public to generate a snapshot."
       )
     }
-
-    val hasPreviewParameter = annotatedMethod.parameters.any {
-      it.annotations.any { it.qualifiedName == PREVIEW_PARAMETER_ANNOTATION }
-    }
-    if (hasPreviewParameter) {
-      context.report(
-        issue = PREVIEW_PARAMETERS_NOT_SUPPORTED,
-        scope = element,
-        location = context.getLocation(element),
-        message = "@Preview of $annotatedMethodName uses PreviewParameters which aren't currently supported."
-      )
-    }
   }
+
+  /**
+   * Reports whether `@Preview` is reachable, directly or through a multi-preview annotation.
+   *
+   * The processor resolves `@Preview` recursively, so this has to as well — checking only direct
+   * annotations would reject a function the processor is perfectly happy to generate from. The
+   * visited set breaks the cycle an annotation applied to itself would otherwise create.
+   */
+  private fun JavaContext.containsPreview(
+    annotations: Array<out PsiAnnotation>,
+    visited: MutableSet<String> = mutableSetOf()
+  ): Boolean =
+    annotations.any { annotation ->
+      val qualifiedName = annotation.qualifiedName
+      when {
+        qualifiedName == null -> false
+        qualifiedName == PREVIEW_ANNOTATION -> true
+        !visited.add(qualifiedName) -> false
+        else -> {
+          val declaration = evaluator.findClass(qualifiedName)
+          declaration != null && containsPreview(declaration.annotations, visited)
+        }
+      }
+    }
 
   internal companion object {
     private const val MUGSHOT_ANNOTATION = "uk.co.fractalmotion.mugshot.annotations.Mugshot"
     private const val COMPOSABLE_ANNOTATION = "androidx.compose.runtime.Composable"
     private const val PREVIEW_ANNOTATION = "androidx.compose.ui.tooling.preview.Preview"
-    private const val PREVIEW_PARAMETER_ANNOTATION = "androidx.compose.ui.tooling.preview.PreviewParameter"
 
     val COMPOSABLE_NOT_DETECTED: Issue = Issue.create(
       id = "ComposableAnnotationNotFound",
@@ -118,20 +129,6 @@ public class MugshotPreviewDetector : Detector(), SourceCodeScanner {
       id = "PrivatePreviewDetected",
       briefDescription = "@Preview of private Composable detected",
       explanation = "Mugshot Previews does not support private Composables.",
-      category = Category.CUSTOM_LINT_CHECKS,
-      priority = 10,
-      severity = Severity.ERROR,
-      implementation = Implementation(
-        MugshotPreviewDetector::class.java,
-        Scope.JAVA_FILE_SCOPE,
-        Scope.JAVA_FILE_SCOPE
-      )
-    )
-
-    val PREVIEW_PARAMETERS_NOT_SUPPORTED: Issue = Issue.create(
-      id = "PreviewParametersNotSupported",
-      briefDescription = "Preview Parameters not supported",
-      explanation = "Mugshot Previews does not support Preview Parameters.",
       category = Category.CUSTOM_LINT_CHECKS,
       priority = 10,
       severity = Severity.ERROR,

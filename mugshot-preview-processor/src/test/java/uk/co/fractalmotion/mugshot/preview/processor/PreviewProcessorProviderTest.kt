@@ -79,12 +79,14 @@ class PreviewProcessorProviderTest {
         """
         package test
 
-        internal val mugshotPreviews = listOf<uk.co.fractalmotion.mugshot.preview.runtime.MugshotPreviewData>(
-          uk.co.fractalmotion.mugshot.preview.runtime.MugshotPreviewData(
-            snapshotName = "SamplePreview_SamplePreview",
-            composable = { test.SamplePreview() },
-          ),
-        )
+        internal val mugshotPreviews: List<uk.co.fractalmotion.mugshot.preview.runtime.MugshotPreviewData> = buildList {
+          add(
+            uk.co.fractalmotion.mugshot.preview.runtime.MugshotPreviewData(
+              snapshotName = "SamplePreview_SamplePreview",
+              composable = { test.SamplePreview() }
+            )
+          )
+        }
         """.trimIndent()
       )
   }
@@ -116,7 +118,7 @@ class PreviewProcessorProviderTest {
   }
 
   @Test
-  fun previewParameters() {
+  fun previewParametersFromObjectProvider() {
     val compilation = prepareCompilation(
       SourceFile.kotlin(
         "SamplePreview.kt",
@@ -133,20 +135,142 @@ class PreviewProcessorProviderTest {
         @Preview
         @Composable
         fun SamplePreview(
-          @PreviewParameter(SamplePreviewParameter::class) text: String,
+          @PreviewParameter(SamplePreviewParameter::class) text: String
         ) = Unit
 
         object SamplePreviewParameter: PreviewParameterProvider<String> {
           override val values: Sequence<String> = sequenceOf("test")
         }
+        """.trimIndent()
+      )
+    )
+    val result = compilation.compile()
+
+    assertThat(result.exitCode).isEqualTo(KotlinCompilation.ExitCode.OK)
+    assertThat(previewsFile.readText())
+      .isEqualTo(
         """
+        package test
+
+        internal val mugshotPreviews: List<uk.co.fractalmotion.mugshot.preview.runtime.MugshotPreviewData> = buildList {
+          addAll(
+            uk.co.fractalmotion.mugshot.preview.runtime.parameterizedPreviews(
+              snapshotName = "SamplePreview_SamplePreview",
+              values = test.SamplePreviewParameter.values,
+              limit = 2_147_483_647
+            ) { test.SamplePreview(it) }
+          )
+        }
+        """.trimIndent()
+      )
+  }
+
+  @Test
+  fun previewParametersFromClassProviderWithLimit() {
+    val compilation = prepareCompilation(
+      SourceFile.kotlin(
+        "SamplePreview.kt",
+        """
+        package test
+
+        import androidx.compose.runtime.Composable
+        import androidx.compose.ui.tooling.preview.Preview
+        import androidx.compose.ui.tooling.preview.PreviewParameter
+        import androidx.compose.ui.tooling.preview.PreviewParameterProvider
+        import uk.co.fractalmotion.mugshot.annotations.Mugshot
+
+        @Mugshot
+        @Preview
+        @Composable
+        fun SamplePreview(
+          @PreviewParameter(SamplePreviewParameter::class, limit = 2) text: String
+        ) = Unit
+
+        class SamplePreviewParameter: PreviewParameterProvider<String> {
+          override val values: Sequence<String> = sequenceOf("one", "two", "three")
+        }
+        """.trimIndent()
+      )
+    )
+    val result = compilation.compile()
+
+    assertThat(result.exitCode).isEqualTo(KotlinCompilation.ExitCode.OK)
+    assertThat(previewsFile.readText())
+      .isEqualTo(
+        """
+        package test
+
+        internal val mugshotPreviews: List<uk.co.fractalmotion.mugshot.preview.runtime.MugshotPreviewData> = buildList {
+          addAll(
+            uk.co.fractalmotion.mugshot.preview.runtime.parameterizedPreviews(
+              snapshotName = "SamplePreview_SamplePreview",
+              values = test.SamplePreviewParameter().values,
+              limit = 2
+            ) { test.SamplePreview(it) }
+          )
+        }
+        """.trimIndent()
+      )
+  }
+
+  @Test
+  fun previewParameterProviderWithoutNoArgConstructor() {
+    val compilation = prepareCompilation(
+      SourceFile.kotlin(
+        "SamplePreview.kt",
+        """
+        package test
+
+        import androidx.compose.runtime.Composable
+        import androidx.compose.ui.tooling.preview.Preview
+        import androidx.compose.ui.tooling.preview.PreviewParameter
+        import androidx.compose.ui.tooling.preview.PreviewParameterProvider
+        import uk.co.fractalmotion.mugshot.annotations.Mugshot
+
+        @Mugshot
+        @Preview
+        @Composable
+        fun SamplePreview(
+          @PreviewParameter(SamplePreviewParameter::class) text: String
+        ) = Unit
+
+        class SamplePreviewParameter(private val seed: String): PreviewParameterProvider<String> {
+          override val values: Sequence<String> = sequenceOf(seed)
+        }
+        """.trimIndent()
       )
     )
     val result = compilation.compile()
 
     assertThat(result.exitCode).isEqualTo(KotlinCompilation.ExitCode.COMPILATION_ERROR)
     assertThat(result.messages)
-      .contains("e: [ksp] test.SamplePreview preview uses @PreviewParameters which aren't currently supported.")
+      .contains("e: [ksp] test.SamplePreviewParameter needs a no-argument constructor to generate a snapshot.")
+  }
+
+  @Test
+  fun unannotatedParameter() {
+    val compilation = prepareCompilation(
+      SourceFile.kotlin(
+        "SamplePreview.kt",
+        """
+        package test
+
+        import androidx.compose.runtime.Composable
+        import androidx.compose.ui.tooling.preview.Preview
+        import uk.co.fractalmotion.mugshot.annotations.Mugshot
+
+        @Mugshot
+        @Preview
+        @Composable
+        fun SamplePreview(text: String) = Unit
+        """.trimIndent()
+      )
+    )
+    val result = compilation.compile()
+
+    assertThat(result.exitCode).isEqualTo(KotlinCompilation.ExitCode.COMPILATION_ERROR)
+    assertThat(result.messages)
+      .contains("e: [ksp] test.SamplePreview has parameters. Only @PreviewParameter parameters are supported.")
   }
 
   @Test
@@ -181,16 +305,14 @@ class PreviewProcessorProviderTest {
         """
         package test
 
-        internal val mugshotPreviews = listOf<uk.co.fractalmotion.mugshot.preview.runtime.MugshotPreviewData>(
-          uk.co.fractalmotion.mugshot.preview.runtime.MugshotPreviewData(
-            snapshotName = "SamplePreview_SamplePreview",
-            composable = { test.SamplePreview() },
-          ),
-          uk.co.fractalmotion.mugshot.preview.runtime.MugshotPreviewData(
-            snapshotName = "SamplePreview_SamplePreview",
-            composable = { test.SamplePreview() },
-          ),
-        )
+        internal val mugshotPreviews: List<uk.co.fractalmotion.mugshot.preview.runtime.MugshotPreviewData> = buildList {
+          add(
+            uk.co.fractalmotion.mugshot.preview.runtime.MugshotPreviewData(
+              snapshotName = "SamplePreview_SamplePreview",
+              composable = { test.SamplePreview() }
+            )
+          )
+        }
         """.trimIndent()
       )
   }
@@ -305,6 +427,16 @@ class PreviewProcessorProviderTest {
           val snapshotName: String,
           val composable: @Composable () -> Unit
         )
+
+        fun <T> parameterizedPreviews(
+          snapshotName: String,
+          values: Sequence<T>,
+          limit: Int,
+          composable: @Composable (T) -> Unit
+        ): List<MugshotPreviewData> =
+          values.take(limit).mapIndexed { index, value ->
+            MugshotPreviewData(snapshotName + "_" + index, { composable(value) })
+          }.toList()
       """.trimIndent()
     )
   }

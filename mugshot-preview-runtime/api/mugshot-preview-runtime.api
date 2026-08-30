@@ -12,3 +12,7 @@ public final class uk/co/fractalmotion/mugshot/preview/runtime/MugshotPreviewDat
 	public fun toString ()Ljava/lang/String;
 }
 
+public final class uk/co/fractalmotion/mugshot/preview/runtime/MugshotPreviewExpansionKt {
+	public static final fun parameterizedPreviews (Ljava/lang/String;Lkotlin/sequences/Sequence;ILkotlin/jvm/functions/Function3;)Ljava/util/List;
+}
+
