@@ -13,6 +13,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import uk.co.fractalmotion.mugshot.annotations.Mugshot
+import uk.co.fractalmotion.mugshot.annotations.MugshotLightDark
+import uk.co.fractalmotion.mugshot.annotations.MugshotShrink
 import uk.co.fractalmotion.mugshot.sample.R
 import uk.co.fractalmotion.mugshot.sample.designsystem.foundation.MugshotArtwork
 import uk.co.fractalmotion.mugshot.sample.designsystem.foundation.MugshotAvatar
@@ -97,6 +100,9 @@ internal fun MugshotIconCatalog(modifier: Modifier = Modifier) {
   }
 }
 
+@Mugshot
+@MugshotShrink
+@MugshotLightDark
 @Preview
 @Composable
 internal fun MugshotIconCatalogPreview() {

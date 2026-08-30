@@ -18,6 +18,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import uk.co.fractalmotion.mugshot.annotations.Mugshot
+import uk.co.fractalmotion.mugshot.annotations.MugshotLightDark
+import uk.co.fractalmotion.mugshot.annotations.MugshotShrink
 import uk.co.fractalmotion.mugshot.sample.designsystem.theme.MugshotTheme
 import uk.co.fractalmotion.mugshot.sample.designsystem.theme.spacing
 
@@ -94,6 +97,9 @@ private fun SwatchRow(swatches: List<Triple<String, Color, Color>>, modifier: Mo
   }
 }
 
+@Mugshot
+@MugshotShrink
+@MugshotLightDark
 @Preview
 @Composable
 internal fun MugshotTokenCatalogPreview() {

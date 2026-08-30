@@ -8,6 +8,9 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import uk.co.fractalmotion.mugshot.annotations.Mugshot
+import uk.co.fractalmotion.mugshot.annotations.MugshotLightDark
+import uk.co.fractalmotion.mugshot.annotations.MugshotShrink
 import uk.co.fractalmotion.mugshot.sample.designsystem.component.MugshotOutlinedButton
 import uk.co.fractalmotion.mugshot.sample.designsystem.component.MugshotPrimaryButton
 import uk.co.fractalmotion.mugshot.sample.designsystem.component.MugshotTextButton
@@ -44,6 +47,9 @@ internal fun MugshotButtonCatalog(modifier: Modifier = Modifier) {
   }
 }
 
+@Mugshot
+@MugshotShrink
+@MugshotLightDark
 @Preview
 @Composable
 internal fun MugshotButtonCatalogPreview() {

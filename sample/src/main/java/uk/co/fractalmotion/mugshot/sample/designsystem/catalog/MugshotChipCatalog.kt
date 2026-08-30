@@ -6,6 +6,9 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import uk.co.fractalmotion.mugshot.annotations.Mugshot
+import uk.co.fractalmotion.mugshot.annotations.MugshotLightDark
+import uk.co.fractalmotion.mugshot.annotations.MugshotShrink
 import uk.co.fractalmotion.mugshot.sample.designsystem.component.MugshotAssistChip
 import uk.co.fractalmotion.mugshot.sample.designsystem.component.MugshotFilterChipRow
 import uk.co.fractalmotion.mugshot.sample.designsystem.component.MugshotStatusChip
@@ -46,6 +49,9 @@ internal fun MugshotChipCatalog(modifier: Modifier = Modifier) {
   }
 }
 
+@Mugshot
+@MugshotShrink
+@MugshotLightDark
 @Preview
 @Composable
 internal fun MugshotChipCatalogPreview() {

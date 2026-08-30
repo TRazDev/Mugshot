@@ -17,6 +17,7 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import uk.co.fractalmotion.mugshot.annotations.Mugshot
+import uk.co.fractalmotion.mugshot.annotations.MugshotDevices
 import uk.co.fractalmotion.mugshot.sample.R
 import uk.co.fractalmotion.mugshot.sample.designsystem.component.MugshotCard
 import uk.co.fractalmotion.mugshot.sample.designsystem.component.MugshotEmptyState
@@ -151,6 +152,7 @@ internal class HealthStateProvider : PreviewParameterProvider<HealthUiState> {
 }
 
 @Mugshot
+@MugshotDevices
 @Preview
 @Composable
 internal fun HealthScreenPreview(@PreviewParameter(HealthStateProvider::class) state: HealthUiState) {

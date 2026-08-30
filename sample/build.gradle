@@ -34,10 +34,6 @@ androidComponents {
   beforeVariants(selector().withBuildType("release")) { enable = false }
 }
 
-ksp {
-  arg("uk.co.fractalmotion.mugshot.preview.namespace", "uk.co.fractalmotion.mugshot.sample")
-}
-
 dependencies {
   implementation libs.androidx.compose.ui.android
   implementation libs.composeUi.material3.android
@@ -46,12 +42,8 @@ dependencies {
   implementation libs.composeUi.uiToolingPreview
   implementation libs.androidx.appcompat
 
-  // TODO: wire via plugin
-  implementation projects.mugshotAnnotations
-  implementation projects.mugshotPreviewRuntime
-  // Scoped to the debug variant so the processor never runs for the unit test compilation, where it
-  // would generate a second MugshotPreviews.kt declaring the same top level val.
-  kspDebug projects.mugshotPreviewProcessor
+  // The Mugshot plugin supplies the annotations, the preview runtime and the KSP processor itself,
+  // and generates the test that renders every @Mugshot preview.
   lintChecks projects.mugshotPreviewLints
 
   testImplementation libs.testParameterInjector
