@@ -1,12 +1,15 @@
 package uk.co.fractalmotion.mugshot.gradle
 
 import com.google.common.truth.Correspondence
+import com.google.common.truth.Truth.assertThat
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import okio.buffer
 import okio.source
 import org.gradle.testkit.runner.BuildResult
 import org.gradle.testkit.runner.GradleRunner
+import org.gradle.testkit.runner.TaskOutcome
+import org.gradle.testkit.runner.TaskOutcome.SUCCESS
 import org.junit.After
 import org.junit.Before
 import uk.co.fractalmotion.mugshot.gradle.PrepareResourcesTask.Config
@@ -40,6 +43,35 @@ abstract class MugshotPluginTestCase {
   fun restoreFixtures() {
     filesToDelete.forEach(File::deleteRecursively)
     filesToRestore.forEach { (file, contents) -> file.writeBytes(contents) }
+  }
+
+  /** A fixture project under `src/test/projects/`, plus the verbs for driving a build in it. */
+  protected fun fixture(name: String) = Fixture(File("src/test/projects/$name"))
+
+  protected inner class Fixture(val root: File) {
+    fun file(relative: String): File = File(root, relative)
+
+    fun run(vararg args: String, action: GradleRunner.() -> BuildResult = { build() }): BuildResult =
+      gradleRunner.withArguments(*args, "--stacktrace").runFixture(root, action)
+
+    fun runAndFail(vararg args: String): BuildResult = run(*args) { buildAndFail() }
+
+    fun verifyDebug(vararg extra: String): BuildResult = run("verifyMugshotDebug", *extra)
+
+    fun recordDebug(vararg extra: String): BuildResult = run("recordMugshotDebug", *extra)
+
+    /** Fixture builds keep their own `build/`/`.gradle/`; clear it when a test needs a real re-run. */
+    fun clearBuildState(): Fixture = apply { root.clearNestedBuildState() }
+  }
+
+  protected fun BuildResult.assertTaskSucceeded(path: String) {
+    assertTaskOutcome(path, SUCCESS)
+  }
+
+  protected fun BuildResult.assertTaskOutcome(path: String, outcome: TaskOutcome) {
+    val task = task(path)
+    assertThat(task).isNotNull()
+    assertThat(task!!.outcome).isEqualTo(outcome)
   }
 
   // `internal` rather than `protected`: PrepareResourcesTask.Config is itself internal.
