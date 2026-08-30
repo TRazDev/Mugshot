@@ -1,0 +1,28 @@
+plugins {
+  id 'com.android.library'
+  id 'org.jetbrains.kotlin.plugin.compose'
+  id 'com.google.devtools.ksp'
+  id 'uk.co.fractalmotion.mugshot'
+}
+
+android {
+  namespace = 'uk.co.fractalmotion.mugshot.plugin.test'
+  compileSdk = libs.versions.compileSdk.get() as int
+  defaultConfig {
+    minSdk = libs.versions.minSdk.get() as int
+  }
+  compileOptions {
+    sourceCompatibility = libs.versions.javaTarget.get()
+    targetCompatibility = libs.versions.javaTarget.get()
+  }
+  buildFeatures {
+    compose = true
+  }
+}
+
+// Deliberately no ksp block, no processor dependency and no test source: applying KSP is the only
+// thing a consumer does. Everything else comes from the Mugshot plugin.
+dependencies {
+  implementation libs.composeUi.material
+  implementation libs.composeUi.uiToolingPreview
+}

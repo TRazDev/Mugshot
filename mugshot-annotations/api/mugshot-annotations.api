@@ -1,3 +1,42 @@
 public abstract interface annotation class uk/co/fractalmotion/mugshot/annotations/Mugshot : java/lang/annotation/Annotation {
 }
 
+public final class uk/co/fractalmotion/mugshot/annotations/MugshotDevice : java/lang/Enum {
+	public static final field FOLDABLE Luk/co/fractalmotion/mugshot/annotations/MugshotDevice;
+	public static final field LANDSCAPE Luk/co/fractalmotion/mugshot/annotations/MugshotDevice;
+	public static final field PHONE Luk/co/fractalmotion/mugshot/annotations/MugshotDevice;
+	public static final field TABLET Luk/co/fractalmotion/mugshot/annotations/MugshotDevice;
+	public static final field WEAR_ROUND Luk/co/fractalmotion/mugshot/annotations/MugshotDevice;
+	public static final field WEAR_SQUARE Luk/co/fractalmotion/mugshot/annotations/MugshotDevice;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
+	public static fun valueOf (Ljava/lang/String;)Luk/co/fractalmotion/mugshot/annotations/MugshotDevice;
+	public static fun values ()[Luk/co/fractalmotion/mugshot/annotations/MugshotDevice;
+}
+
+public abstract interface annotation class uk/co/fractalmotion/mugshot/annotations/MugshotDevices : java/lang/annotation/Annotation {
+	public abstract fun devices ()[Luk/co/fractalmotion/mugshot/annotations/MugshotDevice;
+}
+
+public abstract interface annotation class uk/co/fractalmotion/mugshot/annotations/MugshotFontScales : java/lang/annotation/Annotation {
+	public abstract fun scales ()[F
+}
+
+public abstract interface annotation class uk/co/fractalmotion/mugshot/annotations/MugshotFullScreen : java/lang/annotation/Annotation {
+}
+
+public abstract interface annotation class uk/co/fractalmotion/mugshot/annotations/MugshotLightDark : java/lang/annotation/Annotation {
+}
+
+public abstract interface annotation class uk/co/fractalmotion/mugshot/annotations/MugshotLocales : java/lang/annotation/Annotation {
+	public abstract fun locales ()[Ljava/lang/String;
+}
+
+public abstract interface annotation class uk/co/fractalmotion/mugshot/annotations/MugshotMatrix : java/lang/annotation/Annotation {
+}
+
+public abstract interface annotation class uk/co/fractalmotion/mugshot/annotations/MugshotShrink : java/lang/annotation/Annotation {
+}
+
+public abstract interface annotation class uk/co/fractalmotion/mugshot/annotations/MugshotWear : java/lang/annotation/Annotation {
+}
+

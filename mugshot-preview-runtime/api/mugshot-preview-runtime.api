@@ -1,18 +1,59 @@
-public final class uk/co/fractalmotion/mugshot/preview/runtime/MugshotPreviewData {
+public final class uk/co/fractalmotion/mugshot/preview/runtime/MugshotPreviewCase {
 	public static final field $stable I
-	public fun <init> (Ljava/lang/String;Lkotlin/jvm/functions/Function2;)V
-	public final fun component1 ()Ljava/lang/String;
-	public final fun component2 ()Lkotlin/jvm/functions/Function2;
-	public final fun copy (Ljava/lang/String;Lkotlin/jvm/functions/Function2;)Luk/co/fractalmotion/mugshot/preview/runtime/MugshotPreviewData;
-	public static synthetic fun copy$default (Luk/co/fractalmotion/mugshot/preview/runtime/MugshotPreviewData;Ljava/lang/String;Lkotlin/jvm/functions/Function2;ILjava/lang/Object;)Luk/co/fractalmotion/mugshot/preview/runtime/MugshotPreviewData;
-	public fun equals (Ljava/lang/Object;)Z
-	public final fun getComposable ()Lkotlin/jvm/functions/Function2;
+	public fun <init> (Ljava/lang/String;Luk/co/fractalmotion/mugshot/preview/runtime/MugshotPreviewConfig;Lkotlin/jvm/functions/Function0;)V
+	public final fun frames ()Ljava/util/List;
+	public final fun getConfig ()Luk/co/fractalmotion/mugshot/preview/runtime/MugshotPreviewConfig;
 	public final fun getSnapshotName ()Ljava/lang/String;
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class uk/co/fractalmotion/mugshot/preview/runtime/MugshotPreviewCaseKt {
+	public static final fun parameterizedFrames (Lkotlin/sequences/Sequence;ILkotlin/jvm/functions/Function3;)Ljava/util/List;
+}
+
+public final class uk/co/fractalmotion/mugshot/preview/runtime/MugshotPreviewConfig {
+	public static final field $stable I
+	public fun <init> ()V
+	public fun <init> (Luk/co/fractalmotion/mugshot/preview/runtime/MugshotPreviewDevice;ZFLjava/lang/String;ZLuk/co/fractalmotion/mugshot/preview/runtime/MugshotPreviewRenderingMode;)V
+	public synthetic fun <init> (Luk/co/fractalmotion/mugshot/preview/runtime/MugshotPreviewDevice;ZFLjava/lang/String;ZLuk/co/fractalmotion/mugshot/preview/runtime/MugshotPreviewRenderingMode;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Luk/co/fractalmotion/mugshot/preview/runtime/MugshotPreviewDevice;
+	public final fun component2 ()Z
+	public final fun component3 ()F
+	public final fun component4 ()Ljava/lang/String;
+	public final fun component5 ()Z
+	public final fun component6 ()Luk/co/fractalmotion/mugshot/preview/runtime/MugshotPreviewRenderingMode;
+	public final fun copy (Luk/co/fractalmotion/mugshot/preview/runtime/MugshotPreviewDevice;ZFLjava/lang/String;ZLuk/co/fractalmotion/mugshot/preview/runtime/MugshotPreviewRenderingMode;)Luk/co/fractalmotion/mugshot/preview/runtime/MugshotPreviewConfig;
+	public static synthetic fun copy$default (Luk/co/fractalmotion/mugshot/preview/runtime/MugshotPreviewConfig;Luk/co/fractalmotion/mugshot/preview/runtime/MugshotPreviewDevice;ZFLjava/lang/String;ZLuk/co/fractalmotion/mugshot/preview/runtime/MugshotPreviewRenderingMode;ILjava/lang/Object;)Luk/co/fractalmotion/mugshot/preview/runtime/MugshotPreviewConfig;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getDevice ()Luk/co/fractalmotion/mugshot/preview/runtime/MugshotPreviewDevice;
+	public final fun getFontScale ()F
+	public final fun getLocale ()Ljava/lang/String;
+	public final fun getNightMode ()Z
+	public final fun getRenderingMode ()Luk/co/fractalmotion/mugshot/preview/runtime/MugshotPreviewRenderingMode;
+	public final fun getRtl ()Z
 	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;
 }
 
-public final class uk/co/fractalmotion/mugshot/preview/runtime/MugshotPreviewExpansionKt {
-	public static final fun parameterizedPreviews (Ljava/lang/String;Lkotlin/sequences/Sequence;ILkotlin/jvm/functions/Function3;)Ljava/util/List;
+public final class uk/co/fractalmotion/mugshot/preview/runtime/MugshotPreviewDevice : java/lang/Enum {
+	public static final field DEFAULT Luk/co/fractalmotion/mugshot/preview/runtime/MugshotPreviewDevice;
+	public static final field FOLDABLE Luk/co/fractalmotion/mugshot/preview/runtime/MugshotPreviewDevice;
+	public static final field LANDSCAPE Luk/co/fractalmotion/mugshot/preview/runtime/MugshotPreviewDevice;
+	public static final field PHONE Luk/co/fractalmotion/mugshot/preview/runtime/MugshotPreviewDevice;
+	public static final field TABLET Luk/co/fractalmotion/mugshot/preview/runtime/MugshotPreviewDevice;
+	public static final field WEAR_ROUND Luk/co/fractalmotion/mugshot/preview/runtime/MugshotPreviewDevice;
+	public static final field WEAR_SQUARE Luk/co/fractalmotion/mugshot/preview/runtime/MugshotPreviewDevice;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
+	public static fun valueOf (Ljava/lang/String;)Luk/co/fractalmotion/mugshot/preview/runtime/MugshotPreviewDevice;
+	public static fun values ()[Luk/co/fractalmotion/mugshot/preview/runtime/MugshotPreviewDevice;
+}
+
+public final class uk/co/fractalmotion/mugshot/preview/runtime/MugshotPreviewRenderingMode : java/lang/Enum {
+	public static final field NORMAL Luk/co/fractalmotion/mugshot/preview/runtime/MugshotPreviewRenderingMode;
+	public static final field SHRINK Luk/co/fractalmotion/mugshot/preview/runtime/MugshotPreviewRenderingMode;
+	public static final field V_SCROLL Luk/co/fractalmotion/mugshot/preview/runtime/MugshotPreviewRenderingMode;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
+	public static fun valueOf (Ljava/lang/String;)Luk/co/fractalmotion/mugshot/preview/runtime/MugshotPreviewRenderingMode;
+	public static fun values ()[Luk/co/fractalmotion/mugshot/preview/runtime/MugshotPreviewRenderingMode;
 }
 

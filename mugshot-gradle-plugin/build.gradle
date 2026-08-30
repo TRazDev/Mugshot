@@ -33,6 +33,7 @@ dependencies {
   compileOnly gradleApi()
   compileOnly libs.plugin.kotlin
   compileOnly libs.plugin.android
+  compileOnly libs.plugin.ksp
 
   implementation platform(libs.kotlin.bom)
   implementation(libs.tools.sdkCommon) {
@@ -49,6 +50,7 @@ dependencies {
   fixtureClasspath libs.plugin.kotlin
   fixtureClasspath libs.plugin.kotlin.compose
   fixtureClasspath libs.plugin.android
+  fixtureClasspath libs.plugin.ksp
 }
 
 buildConfig {
@@ -74,7 +76,13 @@ tasks.withType(Test).configureEach {
     .withPropertyName("libs.versions.toml")
   inputs.dir(rootProject.layout.buildDirectory.dir("localMaven"))
     .withPropertyName("localMaven")
+  // The plugin injects these into every consumer, so fixture builds must be able to resolve them
+  // from build/localMaven.
   dependsOn(':mugshot:publishMavenPublicationToProjectLocalMavenRepository')
+  dependsOn(':mugshot-annotations:publishMavenPublicationToProjectLocalMavenRepository')
+  dependsOn(':mugshot-preview-runtime:publishMavenPublicationToProjectLocalMavenRepository')
+  dependsOn(':mugshot-preview-junit:publishMavenPublicationToProjectLocalMavenRepository')
+  dependsOn(':mugshot-preview-processor:publishMavenPublicationToProjectLocalMavenRepository')
 }
 
 // When cleaning this project, we also want to clean the test projects.

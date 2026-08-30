@@ -5,6 +5,9 @@ dependencies {
   implementation libs.kotlinpoet.ksp
   implementation libs.ksp
 
+  // The real annotations rather than stubs, so the axis tests cannot drift from the vocabulary.
+  testImplementation projects.mugshotAnnotations
+
   testImplementation libs.junit
   testImplementation libs.truth
   testImplementation libs.kotlin.compile.testing.ksp

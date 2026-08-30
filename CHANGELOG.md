@@ -7,12 +7,27 @@ down, under "Upstream Paparazzi history".
 ## [Unreleased]
 
 ### Added
-* `@Mugshot` previews may now take a `@PreviewParameter`. The processor cannot enumerate a
-  `PreviewParameterProvider` at compile time, so generated code defers to the new
-  `parameterizedPreviews` function in `mugshot-preview-runtime`, which expands the provider's
-  values when the test runs. Each value becomes its own entry in `mugshotPreviews`, named by its
-  position (`_0`, `_1`, ...) rather than by the value, so golden filenames stay deterministic. The
-  `PreviewParametersNotSupported` lint check is gone.
+* Screenshot coverage from a single annotation. A `@Preview` composable marked `@Mugshot` now gets
+  a golden image with no test file to write: the Gradle plugin generates a parameterised JUnit test
+  that renders every annotated preview in the module, one case each so a failure names the preview
+  that broke. Apply KSP alongside the plugin and the annotations, preview runtime and processor are
+  supplied for you — the `ksp` block, the processor dependency and the namespace argument are gone.
+* Axis annotations that configure what gets rendered, and multiply when stacked: `@MugshotShrink`,
+  `@MugshotFullScreen`, `@MugshotDevices`, `@MugshotWear`, `@MugshotLightDark`,
+  `@MugshotFontScales`, `@MugshotLocales` and `@MugshotMatrix`. All of them target annotation
+  classes as well as functions, so a team can bundle its house style behind one name. RTL layout is
+  inferred from the locale.
+* `mugshot-preview-junit`, a new artifact holding the bridge from a generated preview case to a
+  `Mugshot` rule. It is added to `testImplementation` by the plugin.
+* Lint warning `MugshotPreviewArgumentsIgnored`, reported when a `@Mugshot` function's `@Preview`
+  sets configuration Mugshot does not read, so the IDE preview and the golden cannot silently
+  diverge.
+
+* `@Mugshot` previews may take a `@PreviewParameter`. The processor cannot enumerate a
+  `PreviewParameterProvider` at compile time, so generated code defers to `parameterizedFrames` in
+  `mugshot-preview-runtime`, which expands the provider's values when the test runs. Each value
+  becomes its own image, named by position (`_0`, `_1`, ...) rather than by the value, so golden
+  filenames stay deterministic. The `PreviewParametersNotSupported` lint check is gone.
 
 ### Fixed
 * A `@Mugshot` function carrying more than one `@Preview` generated one entry per `@Preview`, each
@@ -24,6 +39,12 @@ down, under "Upstream Paparazzi history".
   trees the same way the processor does.
 
 ### Changed
+* **Breaking:** `mugshot-preview-runtime` now exposes `MugshotPreviewCase` and
+  `MugshotPreviewConfig` in place of `MugshotPreviewData`, and `parameterizedFrames` in place of
+  `parameterizedPreviews`. The generated property is `mugshotPreviewCases`, not `mugshotPreviews`.
+  Hand-written tests that iterated the old list can be deleted — the plugin generates one.
+* **Breaking:** `@Preview` arguments are not read. Configuration comes from the Mugshot annotations
+  instead; see the lint warning above.
 * **Breaking:** the project is renamed from Paparazzi to Mugshot. There is no
   compatibility layer — every name below changes at once:
   * Maven group `app.cash.paparazzi` -> `uk.co.fractalmotion.mugshot`, and the

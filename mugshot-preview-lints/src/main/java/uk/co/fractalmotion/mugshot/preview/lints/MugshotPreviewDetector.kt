@@ -58,6 +58,23 @@ public class MugshotPreviewDetector : Detector(), SourceCodeScanner {
       )
     }
 
+    val ignoredArguments = annotatedMethod.annotations
+      .filter { it.qualifiedName == PREVIEW_ANNOTATION }
+      .flatMap { it.parameterList.attributes.asList() }
+      .mapNotNull { it.name }
+      .filter { it in IGNORED_PREVIEW_ARGUMENTS }
+      .distinct()
+      .sorted()
+    if (ignoredArguments.isNotEmpty()) {
+      context.report(
+        issue = PREVIEW_ARGUMENTS_IGNORED,
+        scope = element,
+        location = context.getLocation(element),
+        message = "@Preview of $annotatedMethodName sets ${ignoredArguments.joinToString()}, which " +
+          "Mugshot ignores. Configure the snapshot with the Mugshot annotations instead."
+      )
+    }
+
     if (annotatedMethod.visibility == UastVisibility.PRIVATE) {
       context.report(
         issue = PRIVATE_PREVIEW_DETECTED,
@@ -118,6 +135,43 @@ public class MugshotPreviewDetector : Detector(), SourceCodeScanner {
       category = Category.CUSTOM_LINT_CHECKS,
       priority = 10,
       severity = Severity.ERROR,
+      implementation = Implementation(
+        MugshotPreviewDetector::class.java,
+        Scope.JAVA_FILE_SCOPE,
+        Scope.JAVA_FILE_SCOPE
+      )
+    )
+
+    /**
+     * `@Preview` arguments Mugshot does not read.
+     *
+     * `name` and `group` are absent on purpose: they affect only how the IDE lists a preview, so
+     * setting them says nothing about what the golden will contain.
+     */
+    private val IGNORED_PREVIEW_ARGUMENTS = setOf(
+      "apiLevel",
+      "backgroundColor",
+      "device",
+      "fontScale",
+      "heightDp",
+      "locale",
+      "showBackground",
+      "showSystemUi",
+      "uiMode",
+      "wallpaper",
+      "widthDp"
+    )
+
+    val PREVIEW_ARGUMENTS_IGNORED: Issue = Issue.create(
+      id = "MugshotPreviewArgumentsIgnored",
+      briefDescription = "@Preview arguments are ignored by Mugshot",
+      explanation = "Mugshot takes its configuration from the @Mugshot annotations rather than " +
+        "from @Preview, so configuration set on @Preview changes what the IDE renders without " +
+        "changing the golden image. Use @MugshotDevices, @MugshotLightDark, @MugshotFontScales, " +
+        "@MugshotLocales, @MugshotShrink or @MugshotFullScreen instead.",
+      category = Category.CUSTOM_LINT_CHECKS,
+      priority = 5,
+      severity = Severity.WARNING,
       implementation = Implementation(
         MugshotPreviewDetector::class.java,
         Scope.JAVA_FILE_SCOPE,

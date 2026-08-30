@@ -80,9 +80,9 @@ fun snapshot_example() {
 Snapshotting `@Preview` composables
 -------
 
-Annotate a `@Preview` composable in your main source set with `@Mugshot` and the
-preview processor generates a `mugshotPreviews` list your tests can iterate, so a
-screen's preview and its golden never drift apart:
+Annotate a `@Preview` composable with `@Mugshot` and it gets a golden image. There is no
+test to write — the Gradle plugin generates one that renders every annotated preview in
+the module:
 
 ```kotlin
 @Mugshot
@@ -93,40 +93,63 @@ internal fun ProfileScreenPreview() {
 }
 ```
 
-```kotlin
-class GeneratedPreviewTest {
-  @get:Rule val mugshot = Mugshot()
-
-  @Test
-  fun preview() {
-    mugshotPreviews.forEach { preview ->
-      mugshot.snapshot(name = preview.snapshotName) { preview.composable() }
-    }
-  }
-}
-```
-
-A `@PreviewParameter` is expanded at test runtime into one snapshot per value,
-named by position, so a single preview can cover a screen's loading, empty and
-populated states. The annotated function must be `@Composable`, must carry a
-literal `@Preview`, and must not be `private`.
-
-Wire the processor up alongside the Gradle plugin:
+Apply KSP alongside the plugin and that is the whole setup. The annotations, the preview
+runtime and the processor are all supplied for you:
 
 ```groovy
-apply plugin: 'com.google.devtools.ksp'
-
-ksp {
-  arg("uk.co.fractalmotion.mugshot.preview.namespace", "com.example.myapp")
-}
-
-dependencies {
-  implementation "uk.co.fractalmotion.mugshot:mugshot-annotations:$version"
-  implementation "uk.co.fractalmotion.mugshot:mugshot-preview-runtime:$version"
-  kspDebug "uk.co.fractalmotion.mugshot:mugshot-preview-processor:$version"
-  lintChecks "uk.co.fractalmotion.mugshot:mugshot-preview-lints:$version"
+plugins {
+  id 'com.android.library'
+  id 'com.google.devtools.ksp'
+  id 'uk.co.fractalmotion.mugshot'
 }
 ```
+
+### Configuring what gets rendered
+
+Bare `@Mugshot` records one image at the library defaults. Each additional annotation adds
+an axis, and **axes multiply**:
+
+| Annotation | Renders |
+| --- | --- |
+| `@MugshotShrink` | wrapped to the content, for components and dialogs |
+| `@MugshotFullScreen` | the whole scrollable height in one image |
+| `@MugshotDevices` | phone, foldable, tablet, landscape — or the ones you name |
+| `@MugshotWear` | a round and a square watch |
+| `@MugshotLightDark` | light and dark |
+| `@MugshotFontScales` | 1x, 1.5x, 2x — or the ones you name |
+| `@MugshotLocales("ar")` | the default locale plus each you name, mirroring RTL ones |
+| `@MugshotMatrix` | devices x light/dark x font scales — 24 images |
+
+```kotlin
+@Mugshot
+@MugshotDevices(MugshotDevice.PHONE, MugshotDevice.TABLET)
+@MugshotLightDark
+@Preview
+@Composable
+internal fun ProfileScreenPreview() { ... }
+// 2 devices x 2 appearances = 4 golden images
+```
+
+Bundle your house style behind one name — the annotations target annotation classes too:
+
+```kotlin
+@Mugshot
+@MugshotDevices(MugshotDevice.PHONE, MugshotDevice.TABLET)
+@MugshotLightDark
+annotation class OurScreenshots
+```
+
+A `@PreviewParameter` provider is expanded at test time into one image per value, so a
+single preview can cover a screen's loading, empty and populated states.
+
+Two things to know. Mugshot reads its configuration from these annotations and **not** from
+`@Preview`'s own arguments — setting `device` or `uiMode` on `@Preview` changes what the IDE
+renders without changing the golden, and lint warns when you do. And a
+`@MugshotFullScreen` preview must not scroll itself: the renderer measures with an unbounded
+height, which `Modifier.verticalScroll` and `Scaffold` both reject.
+
+The annotated function must be `@Composable`, must carry a `@Preview`, must not be
+`private`, and must take no parameters other than a single `@PreviewParameter`.
 
 Tasks
 -------
