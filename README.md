@@ -4,24 +4,14 @@ Mugshot
 ![Mugshot](.github/images/logo.webp)
 An Android library to render your application screens without a physical device or emulator.
 
-Add the plugin, annotate a `@Preview`, run one command. There is no test code to write.
-
 ### 1. Add the plugin
 
-To a module that already renders Compose previews, add two plugin ids:
+To a module that already renders Compose previews:
 
 ```groovy
 plugins {
-  id 'com.android.library'
-  id 'org.jetbrains.kotlin.plugin.compose'
-
-  id 'com.google.devtools.ksp'          // add
-  id 'uk.co.fractalmotion.mugshot'      // add
-}
-
-dependencies {
-  // @Preview lives here; you probably have it already
-  implementation 'androidx.compose.ui:ui-tooling-preview:<version>'
+  id 'com.google.devtools.ksp'
+  id 'uk.co.fractalmotion.mugshot'
 }
 ```
 
@@ -31,9 +21,7 @@ dependencies {
 @Mugshot
 @Preview
 @Composable
-internal fun ProfileScreenPreview() {
-  MyTheme { ProfileScreen(state = sampleProfile) }
-}
+internal fun ProfileScreenPreview()
 ```
 
 ### 3. Record
@@ -49,41 +37,6 @@ No test class, no rule, no `snapshot()` call: the plugin generated the test that
 every annotated preview in the module. Want more than one image? Add an axis — `@MugshotLightDark`
 gives you light and dark, `@MugshotDevices` gives you one per device shape, and they
 multiply.
-
-See the [project website][mugshot] for documentation and APIs.
-
-Setup
--------
-
-Step 1 above is the entire build configuration. The plugin adds the rest for you:
-
-- `mugshot` on `testImplementation`
-- `mugshot-annotations` and `mugshot-preview-runtime` on `implementation`
-- `mugshot-preview-junit` on `testImplementation`
-- `mugshot-preview-processor` on every `ksp<Variant>` configuration
-- the KSP namespace argument, read from `android.namespace`
-- `MugshotGeneratedPreviewTest`, the test that renders your previews
-
-Two things stay yours to declare. `androidx.compose.ui:ui-tooling-preview`, because
-`@Preview` lives there and the plugin does not add Compose on your behalf; and the lint
-checks, which catch previews that cannot be snapshotted — optional, but recommended:
-
-```groovy
-dependencies {
-  lintChecks 'uk.co.fractalmotion.mugshot:mugshot-preview-lints:0.1.0'
-}
-```
-
-Kotlin Multiplatform projects are not wired automatically, and must declare
-`mugshot-annotations`, `mugshot-preview-runtime` and `mugshot-preview-junit` themselves.
-
-To gate CI on your goldens:
-
-```groovy
-tasks.named("check").configure {
-  dependsOn("verifyMugshot")
-}
-```
 
 Annotations
 -------
@@ -164,8 +117,16 @@ Images are indexed (`_0`, `_1`, …) rather than named after the value, because 
 ### Rules
 
 An annotated function must be `@Composable`, must carry a `@Preview`, must not be `private`,
-and must take no parameters other than a single `@PreviewParameter`. The lint checks report
-each of these.
+and must take no parameters other than a single `@PreviewParameter`.
+
+Optional, but recommended — lint checks that report each of those, plus configuration set on
+`@Preview` that Mugshot ignores:
+
+```groovy
+dependencies {
+  lintChecks 'uk.co.fractalmotion.mugshot:mugshot-preview-lints:0.1.0'
+}
+```
 
 Two things that surprise people:
 
@@ -213,6 +174,14 @@ Each task has an anchor form that covers every variant and a per-variant form
 Verification failures write a diff for each mismatch to `build/mugshot/failures`. Running
 the tests directly — `./gradlew testDebugUnitTest` — produces an HTML report of every
 snapshot at `build/reports/mugshot/<variant>`.
+
+To gate CI on your goldens:
+
+```groovy
+tasks.named("check").configure {
+  dependsOn("verifyMugshot")
+}
+```
 
 Configuration
 -------
