@@ -4,11 +4,31 @@ Mugshot
 ![Mugshot](.github/images/logo.webp)
 An Android library to render your application screens without a physical device or emulator.
 
-Annotate a `@Preview` composable and it gets a golden image. There is no test to write:
+Add the plugin, annotate a `@Preview`, run one command. There is no test code to write.
+
+### 1. Add the plugin
+
+To a module that already renders Compose previews, add two plugin ids:
+
+```groovy
+plugins {
+  id 'com.android.library'
+  id 'org.jetbrains.kotlin.plugin.compose'
+
+  id 'com.google.devtools.ksp'          // add
+  id 'uk.co.fractalmotion.mugshot'      // add
+}
+
+dependencies {
+  // @Preview lives here; you probably have it already
+  implementation 'androidx.compose.ui:ui-tooling-preview:<version>'
+}
+```
+
+### 2. Annotate a preview
 
 ```kotlin
 @Mugshot
-@MugshotLightDark
 @Preview
 @Composable
 internal fun ProfileScreenPreview() {
@@ -16,52 +36,46 @@ internal fun ProfileScreenPreview() {
 }
 ```
 
+### 3. Record
+
 ```bash
 ./gradlew recordMugshotDebug
 ```
 
-Two images, light and dark, recorded to `src/test/snapshots/images`. The Gradle plugin
-generates the JUnit test that renders every annotated preview in the module.
+That's it. The image is in `src/test/snapshots/images/`, and `./gradlew verifyMugshotDebug`
+now fails if that screen ever changes.
+
+No test class, no rule, no `snapshot()` call: the plugin generated the test that renders
+every annotated preview in the module. Want more than one image? Add an axis — `@MugshotLightDark`
+gives you light and dark, `@MugshotDevices` gives you one per device shape, and they
+multiply.
 
 See the [project website][mugshot] for documentation and APIs.
 
 Setup
 -------
 
-Apply KSP alongside the plugin:
+Step 1 above is the entire build configuration. The plugin adds the rest for you:
+
+- `mugshot` on `testImplementation`
+- `mugshot-annotations` and `mugshot-preview-runtime` on `implementation`
+- `mugshot-preview-junit` on `testImplementation`
+- `mugshot-preview-processor` on every `ksp<Variant>` configuration
+- the KSP namespace argument, read from `android.namespace`
+- `MugshotGeneratedPreviewTest`, the test that renders your previews
+
+Two things stay yours to declare. `androidx.compose.ui:ui-tooling-preview`, because
+`@Preview` lives there and the plugin does not add Compose on your behalf; and the lint
+checks, which catch previews that cannot be snapshotted — optional, but recommended:
 
 ```groovy
-plugins {
-  id 'com.android.library'
-  id 'org.jetbrains.kotlin.plugin.compose'
-  id 'com.google.devtools.ksp'
-  id 'uk.co.fractalmotion.mugshot'
-}
-
-android {
-  namespace = 'com.example.myapp'
-  buildFeatures {
-    compose = true
-  }
-}
-
 dependencies {
-  implementation 'androidx.compose.ui:ui-tooling-preview:<version>'
-
-  // Optional, but recommended: catches @Mugshot previews that cannot be snapshotted.
   lintChecks 'uk.co.fractalmotion.mugshot:mugshot-preview-lints:0.1.0'
 }
 ```
 
-That is the whole setup. The plugin adds the rest for you: the `@Mugshot` annotations and
-the preview runtime on `implementation`, the JUnit bridge on `testImplementation`, the KSP
-processor on each `ksp<Variant>` configuration, the KSP namespace argument (read from
-`android.namespace`), and the generated test itself.
-
-You supply `ui-tooling-preview` because `@Preview` lives there, and `lintChecks` because the
-plugin does not wire lint checks. Kotlin Multiplatform projects are not wired automatically
-and must declare `mugshot-annotations`, `mugshot-preview-runtime` and
-`mugshot-preview-junit` themselves.
+Kotlin Multiplatform projects are not wired automatically, and must declare
+`mugshot-annotations`, `mugshot-preview-runtime` and `mugshot-preview-junit` themselves.
 
 To gate CI on your goldens:
 
