@@ -45,8 +45,6 @@ dependencies {
   // The Mugshot plugin supplies the annotations, the preview runtime and the KSP processor itself,
   // and generates the test that renders every @Mugshot preview.
   lintChecks projects.mugshotPreviewLints
-
-  testImplementation libs.testParameterInjector
 }
 
 // https://github.com/diffplug/spotless/issues/1572
