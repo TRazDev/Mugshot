@@ -6,6 +6,8 @@ down, under "Upstream Paparazzi history".
 
 ## [Unreleased]
 
+## [3.0.1] - 2026-08-31
+
 ### Added
 * Screenshot coverage from a single annotation. A `@Preview` composable marked `@Mugshot` now gets
   a golden image with no test file to write: the Gradle plugin generates a parameterised JUnit test
@@ -561,7 +563,8 @@ As of this release, consumers must build on Java 11 environments.
 
 
 
-[Unreleased]: https://github.com/TRazDev/Mugshot/commits/main
+[Unreleased]: https://github.com/TRazDev/Mugshot/compare/3.0.1...HEAD
+[3.0.1]: https://github.com/TRazDev/Mugshot/releases/tag/3.0.1
 [2.0.0-alpha05]: https://github.com/cashapp/paparazzi/releases/tag/2.0.0-alpha05
 [2.0.0-alpha04]: https://github.com/cashapp/paparazzi/releases/tag/2.0.0-alpha04
 [2.0.0-alpha03]: https://github.com/cashapp/paparazzi/releases/tag/2.0.0-alpha03

@@ -119,22 +119,11 @@ Images are indexed (`_0`, `_1`, …) rather than named after the value, because 
 An annotated function must be `@Composable`, must carry a `@Preview`, must not be `private`,
 and must take no parameters other than a single `@PreviewParameter`.
 
-Optional, but recommended — lint checks that report each of those, plus configuration set on
-`@Preview` that Mugshot ignores:
-
-```groovy
-dependencies {
-  lintChecks 'uk.co.fractalmotion.mugshot:mugshot-preview-lints:0.1.0'
-}
-```
-
 Two things that surprise people:
 
 - **`@Preview`'s own arguments are ignored.** Mugshot takes its configuration from the
   annotations above, so setting `device`, `uiMode`, `locale` or `fontScale` on `@Preview`
-  changes what the IDE renders without changing the golden. Lint warns when you do —
-  though only for arguments set directly on `@Preview`, not for ones reaching it through a
-  multi-preview annotation such as AndroidX's `@PreviewLightDark`.
+  changes what the IDE renders without changing the golden.
 - **A `@MugshotFullScreen` preview must not scroll itself.** That mode measures with an
   unbounded height so it can draw the whole screen at once, which `Modifier.verticalScroll`
   and `Scaffold` both reject. Either the app scrolls the content or the renderer expands to
@@ -317,7 +306,7 @@ buildscript {
     google()
   }
   dependencies {
-    classpath 'uk.co.fractalmotion.mugshot:mugshot-gradle-plugin:0.1.0'
+    classpath 'uk.co.fractalmotion.mugshot:mugshot-gradle-plugin:3.0.1'
   }
 }
 
@@ -327,7 +316,7 @@ apply plugin: 'uk.co.fractalmotion.mugshot'
 Using the plugins DSL:
 ```groovy
 plugins {
-  id 'uk.co.fractalmotion.mugshot' version '0.1.0'
+  id 'uk.co.fractalmotion.mugshot' version '3.0.1'
 }
 ```
 
