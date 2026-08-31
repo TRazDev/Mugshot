@@ -59,7 +59,13 @@ class MugshotPreviewDetectorTest {
         *COMPOSE_SOURCES.toTypedArray(),
         MUGSHOT_ANNOTATION
       )
-      .detector(MugshotPreviewDetector())
+      // Scoped to the error checks: these previews differ by uiMode and device, which correctly
+      // trips MugshotPreviewArgumentsIgnored -- covered by its own test.
+      .issues(
+        MugshotPreviewDetector.COMPOSABLE_NOT_DETECTED,
+        MugshotPreviewDetector.PREVIEW_NOT_DETECTED,
+        MugshotPreviewDetector.PRIVATE_PREVIEW_DETECTED
+      )
       .skipTestModes(TestMode.SUPPRESSIBLE)
       .run()
       .expectClean()
@@ -263,6 +269,67 @@ class MugshotPreviewDetectorTest {
         1 errors, 0 warnings
         """.trimIndent()
       )
+  }
+
+  @Test
+  fun previewArgumentsAreReportedAsIgnored() {
+    lint()
+      .files(
+        kotlin(
+          """
+          package test
+
+          import androidx.compose.runtime.Composable
+          import androidx.compose.ui.tooling.preview.Preview
+          import uk.co.fractalmotion.mugshot.annotations.Mugshot
+
+          @Mugshot
+          @Preview(name = "Big", fontScale = 2f, device = "id:pixel_5")
+          @Composable
+          fun SamplePreview() {}
+          """
+        ).indented(),
+        *COMPOSE_SOURCES.toTypedArray(),
+        MUGSHOT_ANNOTATION
+      )
+      .issues(MugshotPreviewDetector.PREVIEW_ARGUMENTS_IGNORED)
+      .skipTestModes(TestMode.SUPPRESSIBLE)
+      .run()
+      .expect(
+        """
+        src/test/test.kt:7: Warning: @Preview of SamplePreview sets device, fontScale, which Mugshot ignores. Configure the snapshot with the Mugshot annotations instead. [MugshotPreviewArgumentsIgnored]
+        @Mugshot
+        ~~~~~~~~
+        0 errors, 1 warnings
+        """.trimIndent()
+      )
+  }
+
+  @Test
+  fun previewNameAndGroupAreNotReported() {
+    lint()
+      .files(
+        kotlin(
+          """
+          package test
+
+          import androidx.compose.runtime.Composable
+          import androidx.compose.ui.tooling.preview.Preview
+          import uk.co.fractalmotion.mugshot.annotations.Mugshot
+
+          @Mugshot
+          @Preview(name = "Anything", group = "Screens")
+          @Composable
+          fun SamplePreview() {}
+          """
+        ).indented(),
+        *COMPOSE_SOURCES.toTypedArray(),
+        MUGSHOT_ANNOTATION
+      )
+      .issues(MugshotPreviewDetector.PREVIEW_ARGUMENTS_IGNORED)
+      .skipTestModes(TestMode.SUPPRESSIBLE)
+      .run()
+      .expectClean()
   }
 
   private companion object {

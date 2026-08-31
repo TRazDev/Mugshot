@@ -9,6 +9,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
+import uk.co.fractalmotion.mugshot.annotations.Mugshot
+import uk.co.fractalmotion.mugshot.annotations.MugshotLightDark
+import uk.co.fractalmotion.mugshot.annotations.MugshotShrink
 import uk.co.fractalmotion.mugshot.sample.R
 import uk.co.fractalmotion.mugshot.sample.designsystem.component.MugshotCard
 import uk.co.fractalmotion.mugshot.sample.designsystem.component.MugshotHeroCard
@@ -68,6 +71,9 @@ internal fun MugshotCardCatalog(modifier: Modifier = Modifier) {
   }
 }
 
+@Mugshot
+@MugshotShrink
+@MugshotLightDark
 @Preview
 @Composable
 internal fun MugshotCardCatalogPreview() {

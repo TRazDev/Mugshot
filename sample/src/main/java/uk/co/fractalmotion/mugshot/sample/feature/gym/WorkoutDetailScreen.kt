@@ -11,6 +11,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import uk.co.fractalmotion.mugshot.annotations.Mugshot
+import uk.co.fractalmotion.mugshot.annotations.MugshotFullScreen
 import uk.co.fractalmotion.mugshot.sample.R
 import uk.co.fractalmotion.mugshot.sample.designsystem.component.MugshotListRow
 import uk.co.fractalmotion.mugshot.sample.designsystem.component.MugshotScreenScaffold
@@ -21,11 +22,16 @@ import uk.co.fractalmotion.mugshot.sample.designsystem.theme.MugshotTheme
 import uk.co.fractalmotion.mugshot.sample.designsystem.theme.spacing
 
 @Composable
-internal fun WorkoutDetailScreen(state: WorkoutDetailUiState, modifier: Modifier = Modifier) {
+internal fun WorkoutDetailScreen(
+  state: WorkoutDetailUiState,
+  modifier: Modifier = Modifier,
+  scrollable: Boolean = true
+) {
   MugshotScreenScaffold(
     title = stringResource(state.nameRes),
     modifier = modifier,
-    onBack = {}
+    onBack = {},
+    scrollable = scrollable
   ) {
     MugshotArtworkBanner(
       icon = R.drawable.ic_dumbbell,
@@ -67,8 +73,14 @@ internal fun WorkoutDetailScreen(state: WorkoutDetailUiState, modifier: Modifier
 }
 
 @Mugshot
+@MugshotFullScreen
 @Preview
 @Composable
 internal fun WorkoutDetailScreenPreview() {
-  MugshotTheme { WorkoutDetailScreen(state = GymFixtures.pushDay) }
+  MugshotTheme {
+    // @MugshotFullScreen renders the whole height in one image, which means measuring with an
+    // unbounded maximum. The screen must not scroll itself as well: either the app scrolls the
+    // content or the renderer expands to fit it.
+    WorkoutDetailScreen(state = GymFixtures.pushDay, scrollable = false)
+  }
 }

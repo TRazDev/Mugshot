@@ -4,154 +4,226 @@ Mugshot
 ![Mugshot](.github/images/logo.webp)
 An Android library to render your application screens without a physical device or emulator.
 
-```kotlin
-class ProfileScreenTest {
-  @get:Rule
-  val mugshot = Mugshot(
-    deviceConfig = PIXEL_6,
-    theme = "android:Theme.Material.Light.NoActionBar"
-    // ...see docs for more options
-  )
+### 1. Add the plugin
 
-  @Test
-  fun profile() {
-    mugshot.snapshot {
-      MyTheme { ProfileScreen(state = sampleProfile) }
-    }
-  }
+To a module that already renders Compose previews:
 
-  @Test
-  fun profileInDarkMode() {
-    mugshot.unsafeUpdateConfig(
-      deviceConfig = PIXEL_6.copy(nightMode = NightMode.NIGHT)
-    )
-    mugshot.snapshot {
-      MyTheme { ProfileScreen(state = sampleProfile) }
-    }
-  }
+```groovy
+plugins {
+  id 'com.google.devtools.ksp'
+  id 'uk.co.fractalmotion.mugshot'
 }
 ```
 
-Android Views work the same way:
-
-```kotlin
-val view = mugshot.inflate<LaunchView>(R.layout.launch)
-mugshot.snapshot(view)
-```
-
-See the [project website][mugshot] for documentation and APIs.
-
-Using JUnit 5
--------
-
-```kotlin
-lateinit var mugshot: Mugshot
-
-@BeforeEach
-fun setup(testInfo: TestInfo) {
-  mugshot = Mugshot().apply {
-    setup(
-      testName = TestName(
-        packageName = testInfo.testClass.get().`package`?.name.orEmpty(),
-        className = testInfo.testClass.get().simpleName,
-        methodName = testInfo.testMethod.get().name
-      )
-    )
-  }
-}
-
-@AfterEach
-fun tearDown() {
-  mugshot.teardown()
-}
-
-@Test
-fun snapshot_example() {
-  val view = mugshot.inflate<TextView>(android.R.layout.simple_list_item_1).apply {
-    text = "Hello Mugshot"
-    textSize = 24f
-    gravity = Gravity.CENTER
-  }
-
-  mugshot.snapshot(view)
-}
-```
-
-Snapshotting `@Preview` composables
--------
-
-Annotate a `@Preview` composable in your main source set with `@Mugshot` and the
-preview processor generates a `mugshotPreviews` list your tests can iterate, so a
-screen's preview and its golden never drift apart:
+### 2. Annotate a preview
 
 ```kotlin
 @Mugshot
 @Preview
 @Composable
-internal fun ProfileScreenPreview() {
-  MyTheme { ProfileScreen(state = sampleProfile) }
-}
+internal fun ProfileScreenPreview()
 ```
+
+### 3. Record
+
+```bash
+./gradlew recordMugshotDebug
+```
+
+That's it. The image is in `src/test/snapshots/images/`, and `./gradlew verifyMugshotDebug`
+now fails if that screen ever changes.
+
+No test class, no rule, no `snapshot()` call: the plugin generated the test that renders
+every annotated preview in the module. Want more than one image? Add an axis — `@MugshotLightDark`
+gives you light and dark, `@MugshotDevices` gives you one per device shape, and they
+multiply.
+
+Annotations
+-------
+
+`@Mugshot` marks a preview for snapshotting and records one image at the library defaults.
+Every other annotation adds an axis:
+
+| Annotation | Renders |
+| --- | --- |
+| `@Mugshot` | one image at the defaults — required on every snapshotted preview |
+| `@MugshotShrink` | wrapped to the content, for components and dialogs |
+| `@MugshotFullScreen` | the whole scrollable height in one image |
+| `@MugshotDevices` | `PHONE`, `FOLDABLE`, `TABLET`, `LANDSCAPE` — or the ones you name |
+| `@MugshotWear` | a round and a square watch |
+| `@MugshotLightDark` | light and dark |
+| `@MugshotFontScales` | `1f`, `1.5f`, `2f` — or the ones you name |
+| `@MugshotLocales("ar")` | the default locale plus each you name, mirroring RTL ones |
+| `@MugshotMatrix` | devices × light/dark × font scales — 24 images |
+
+`MugshotDevice` is one of `PHONE`, `FOLDABLE`, `TABLET`, `LANDSCAPE`, `WEAR_ROUND`,
+`WEAR_SQUARE`.
+
+### Axes multiply
+
+Each annotation is an independent axis, and the images are their cross-product. Narrow a
+matrix by passing arguments rather than by dropping an annotation:
 
 ```kotlin
-class GeneratedPreviewTest {
-  @get:Rule val mugshot = Mugshot()
+@Mugshot
+@MugshotDevices(MugshotDevice.PHONE, MugshotDevice.TABLET)
+@MugshotLightDark
+@Preview
+@Composable
+internal fun ProfileScreenPreview() { ... }
+// 2 devices × 2 appearances = 4 images
+```
 
-  @Test
-  fun preview() {
-    mugshotPreviews.forEach { preview ->
-      mugshot.snapshot(name = preview.snapshotName) { preview.composable() }
-    }
-  }
+`@MugshotLocales` is the one axis that keeps a baseline of its own: the others already
+include theirs (`PHONE`, light, `1f`), so naming a single locale gives you two images — the
+default and that locale.
+
+### Bundling
+
+The annotations target annotation classes as well as functions, so a team can put its house
+style behind one name:
+
+```kotlin
+@Mugshot
+@MugshotDevices(MugshotDevice.PHONE, MugshotDevice.TABLET)
+@MugshotLightDark
+annotation class OurScreenshots
+
+@OurScreenshots
+@Preview
+@Composable
+internal fun ProfileScreenPreview() { ... }
+```
+
+### Preview parameters
+
+A `@PreviewParameter` provider is expanded when the test runs, one image per value, so a
+single preview covers a screen's loading, empty and populated states:
+
+```kotlin
+@Mugshot
+@Preview
+@Composable
+internal fun StorefrontScreenPreview(
+  @PreviewParameter(StorefrontStateProvider::class) state: StorefrontUiState
+) {
+  MyTheme { StorefrontScreen(state) }
 }
 ```
 
-A `@PreviewParameter` is expanded at test runtime into one snapshot per value,
-named by position, so a single preview can cover a screen's loading, empty and
-populated states. The annotated function must be `@Composable`, must carry a
-literal `@Preview`, and must not be `private`.
+Images are indexed (`_0`, `_1`, …) rather than named after the value, because a value's
+`toString()` is not safe in a filename.
 
-Wire the processor up alongside the Gradle plugin:
+### Rules
+
+An annotated function must be `@Composable`, must carry a `@Preview`, must not be `private`,
+and must take no parameters other than a single `@PreviewParameter`.
+
+Optional, but recommended — lint checks that report each of those, plus configuration set on
+`@Preview` that Mugshot ignores:
 
 ```groovy
-apply plugin: 'com.google.devtools.ksp'
-
-ksp {
-  arg("uk.co.fractalmotion.mugshot.preview.namespace", "com.example.myapp")
-}
-
 dependencies {
-  implementation "uk.co.fractalmotion.mugshot:mugshot-annotations:$version"
-  implementation "uk.co.fractalmotion.mugshot:mugshot-preview-runtime:$version"
-  kspDebug "uk.co.fractalmotion.mugshot:mugshot-preview-processor:$version"
-  lintChecks "uk.co.fractalmotion.mugshot:mugshot-preview-lints:$version"
+  lintChecks 'uk.co.fractalmotion.mugshot:mugshot-preview-lints:0.1.0'
 }
 ```
+
+Two things that surprise people:
+
+- **`@Preview`'s own arguments are ignored.** Mugshot takes its configuration from the
+  annotations above, so setting `device`, `uiMode`, `locale` or `fontScale` on `@Preview`
+  changes what the IDE renders without changing the golden. Lint warns when you do —
+  though only for arguments set directly on `@Preview`, not for ones reaching it through a
+  multi-preview annotation such as AndroidX's `@PreviewLightDark`.
+- **A `@MugshotFullScreen` preview must not scroll itself.** That mode measures with an
+  unbounded height so it can draw the whole screen at once, which `Modifier.verticalScroll`
+  and `Scaffold` both reject. Either the app scrolls the content or the renderer expands to
+  fit it.
+
+### Where the images go
+
+The generated test is `MugshotGeneratedPreviewTest`, in your module's namespace, so goldens
+are named:
+
+```
+<namespace>_MugshotGeneratedPreviewTest_snapshot[<preview>_<axes>].webp
+```
+
+for example
+`com.example.myapp_MugshotGeneratedPreviewTest_snapshot[ui_ProfileScreen_ProfileScreenPreview_Dark].webp`.
 
 Tasks
 -------
 
-```bash
-./gradlew :sample:testDebug
-```
+Each task has an anchor form that covers every variant and a per-variant form
+(`recordMugshotDebug`, `verifyMugshotRelease`, and so on).
 
-Runs tests and generates an HTML report at `sample/build/reports/mugshot/` showing all
-test runs and snapshots.
-
-```bash
-./gradlew :sample:recordMugshotDebug
-```
-
-Saves snapshots as golden values to a predefined source-controlled location
-(defaults to `src/test/snapshots`).
+| Task | Does |
+| --- | --- |
+| `recordMugshot` | writes golden images to `src/test/snapshots` |
+| `verifyMugshot` | renders and compares against the goldens |
+| `cleanRecordMugshot` | deletes the goldens, then records |
+| `deleteMugshotSnapshots` | deletes the goldens |
 
 ```bash
-./gradlew :sample:verifyMugshotDebug
+./gradlew recordMugshotDebug
+./gradlew verifyMugshotDebug
+./gradlew verifyMugshotDebug --tests '*ProfileScreen*'
 ```
 
-Runs tests and verifies against previously-recorded golden values. Failures generate diffs at `sample/build/mugshot/failures`.
+Verification failures write a diff for each mismatch to `build/mugshot/failures`. Running
+the tests directly — `./gradlew testDebugUnitTest` — produces an HTML report of every
+snapshot at `build/reports/mugshot/<variant>`.
 
-For more examples, check out the [sample][sample] project.
+To gate CI on your goldens:
+
+```groovy
+tasks.named("check").configure {
+  dependsOn("verifyMugshot")
+}
+```
+
+Configuration
+-------
+
+Set these in `gradle.properties`; the plugin forwards them to the test JVM.
+
+| Property | Default | Does |
+| --- | --- | --- |
+| `uk.co.fractalmotion.mugshot.differ` | `offbytwo` | image comparison: `offbytwo`, `pixelperfect`, `mssim`, `sift`, `flip`, `de2000` |
+| `uk.co.fractalmotion.mugshot.maxPercentDifferenceDefault` | `0.01` | how much difference a verification tolerates |
+| `uk.co.fractalmotion.mugshot.defaultLocale` | unset | locale for every snapshot, e.g. `fr-rFR` |
+| `uk.co.fractalmotion.mugshot.overwriteOnMaxPercentDifference` | `false` | rewrite goldens that differ within the threshold |
+
+Beyond annotations
+-------
+
+Some things the annotations do not reach. For those, drive the rule yourself:
+
+```kotlin
+class ProfileScreenTest {
+  @get:Rule
+  val mugshot = Mugshot(
+    deviceConfig = DeviceConfig.PIXEL_6,
+    theme = "android:Theme.Material.Light.NoActionBar",
+    showSystemUi = true
+  )
+
+  @Test
+  fun profile() {
+    mugshot.snapshot { MyTheme { ProfileScreen(state = sampleProfile) } }
+  }
+}
+```
+
+Reachable only this way: `unsafeUpdateConfig` to change device, theme or rendering mode
+part-way through a test; a custom `RenderExtension` to decorate every snapshot;
+`showSystemUi`, `useDeviceResolution` and `maxPercentDifference`; and Android Views, via
+`mugshot.inflate<MyView>(R.layout.my_view)` and `mugshot.snapshot(view)`. For JUnit 5, build
+the rule yourself and call `setup(TestName(...))` and `teardown()` around each test.
+
+The [sample][sample] project's `screen/` and `component/` test packages have worked examples
+of each.
 
 Git LFS
 --------
@@ -222,14 +294,14 @@ However, Mugshot does not set `LocalInspectionMode` globally to ensure that the 
 As a workaround, we recommend wrapping such a Composable in a custom Composable with a `CompositionLocalProvider` and setting `LocalInspectionMode` there.
 
 ```kotlin
- @Test
-  fun inspectionModeView() {
-    mugshot.snapshot(
-      CompositionLocalProvider(LocalInspectionMode provides true) {
-        YourComposable()
-      }
-    )
+@Mugshot
+@Preview
+@Composable
+internal fun MapPreview() {
+  CompositionLocalProvider(LocalInspectionMode provides true) {
+    YourComposable()
   }
+}
 ```
 
 Releases

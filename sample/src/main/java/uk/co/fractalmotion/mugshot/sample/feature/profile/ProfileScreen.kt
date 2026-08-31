@@ -19,6 +19,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import uk.co.fractalmotion.mugshot.annotations.Mugshot
+import uk.co.fractalmotion.mugshot.annotations.MugshotLightDark
+import uk.co.fractalmotion.mugshot.annotations.MugshotLocales
 import uk.co.fractalmotion.mugshot.sample.R
 import uk.co.fractalmotion.mugshot.sample.designsystem.component.MugshotCard
 import uk.co.fractalmotion.mugshot.sample.designsystem.component.MugshotHeroCard
@@ -162,6 +164,8 @@ private fun ProfileStat(value: String, label: String, modifier: Modifier = Modif
 }
 
 @Mugshot
+@MugshotLightDark
+@MugshotLocales("ar", "en-rXA")
 @Preview
 @Composable
 internal fun ProfileScreenPreview() {

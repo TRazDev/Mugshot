@@ -1,0 +1,4 @@
+public final class uk/co/fractalmotion/mugshot/preview/junit/MugshotPreviewRulesKt {
+	public static final fun newMugshot (Luk/co/fractalmotion/mugshot/preview/runtime/MugshotPreviewConfig;)Luk/co/fractalmotion/mugshot/Mugshot;
+}
+
