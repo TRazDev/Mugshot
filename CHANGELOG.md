@@ -6,6 +6,17 @@ down, under "Upstream Paparazzi history".
 
 ## [Unreleased]
 
+## [3.0.2] - 2026-09-01
+
+### Fixed
+* Mugshot tasks failed when Gradle's configuration cache was enabled, with
+  `Querying the mapped value of and(property 'static', property 'all') before task
+  ':<module>:generateMugshot<Variant>PreviewTests' has completed is not supported`. Resolving the
+  snapshot directory zipped the unit test source set's `static` and `all` directories, and `all`
+  carries the generated-test task as a producer, so serialising the task graph read it before that
+  task had run. The fallback to `all` is now reached only when `static` is empty, as its
+  documentation always claimed. Consumers no longer need `org.gradle.configuration-cache=false`.
+
 ## [3.0.1] - 2026-08-31
 
 ### Added
@@ -563,7 +574,8 @@ As of this release, consumers must build on Java 11 environments.
 
 
 
-[Unreleased]: https://github.com/TRazDev/Mugshot/compare/3.0.1...HEAD
+[Unreleased]: https://github.com/TRazDev/Mugshot/compare/3.0.2...HEAD
+[3.0.2]: https://github.com/TRazDev/Mugshot/releases/tag/3.0.2
 [3.0.1]: https://github.com/TRazDev/Mugshot/releases/tag/3.0.1
 [2.0.0-alpha05]: https://github.com/cashapp/paparazzi/releases/tag/2.0.0-alpha05
 [2.0.0-alpha04]: https://github.com/cashapp/paparazzi/releases/tag/2.0.0-alpha04

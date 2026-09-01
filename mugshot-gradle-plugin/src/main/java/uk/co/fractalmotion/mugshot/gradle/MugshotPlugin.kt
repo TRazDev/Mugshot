@@ -582,7 +582,13 @@ public class MugshotPlugin @Inject constructor(
     val projectDirectory = layout.projectDirectory
     // Kotlin Multiplatform's androidHostTest registers no static dirs, and never receives a
     // generated one either, so falling back to `all` there is safe.
-    return sources.static.zip(sources.all) { static, all -> static.ifEmpty { all } }.map { dirs ->
+    // `flatMap` rather than `zip`: `all` carries `generateMugshot<Variant>PreviewTests` as a
+    // producer task, and querying it while the configuration cache serialises this task's
+    // registered input/output properties fails before that task has run. Reaching for it only
+    // when `static` is empty keeps the common path free of that dependency.
+    return sources.static.flatMap { static ->
+      if (static.isEmpty()) sources.all else providerFactory.provider { static }
+    }.map { dirs ->
       val sourceSetRoot = dirs.firstOrNull()?.asFile?.parentFile
         ?: error("No source dirs registered for ${testVariant.name}")
       projectDirectory.dir(sourceSetRoot.path).dir("snapshots")
