@@ -110,4 +110,28 @@ class BuildCacheTest : MugshotPluginTestCase() {
     // https://docs.gradle.org/current/userguide/configuration_cache.html
     fixtureRoot.runBuild("testDebug", "--configuration-cache")
   }
+
+  /**
+   * The Mugshot tasks, rather than `testDebug`, under the configuration cache.
+   *
+   * `testDebug` is neither a record nor a verify run, so the snapshot directory -- resolved from
+   * the unit test source set, which `generateMugshot<Variant>PreviewTests` contributes a generated
+   * directory to -- is never read. Only the Mugshot tasks register it as a task input or output,
+   * and serialising those properties resolves it before the generating task has run. Reaching for
+   * the source set's `all` directories on that path fails with
+   * "Querying the mapped value of and(property 'static', property 'all') before task ... has
+   * completed is not supported".
+   *
+   * The fixture applies KSP, without which the plugin registers no generated-test task and there
+   * is no producer to trip over.
+   */
+  @Test
+  fun configurationCacheWorksWithMugshotTasks() {
+    val fixtureRoot = fixture("configuration-cache-preview-tests")
+    File(fixtureRoot, "src/test/snapshots").registerForDeletionOnExit()
+
+    fixtureRoot.runBuild("recordMugshotDebug", "--configuration-cache")
+    fixtureRoot.runBuild("verifyMugshotDebug", "--configuration-cache")
+    fixtureRoot.runBuild("deleteDebugMugshotSnapshots", "--configuration-cache")
+  }
 }

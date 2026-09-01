@@ -1,0 +1,29 @@
+plugins {
+  id 'com.android.library'
+  id 'org.jetbrains.kotlin.plugin.compose'
+  id 'com.google.devtools.ksp'
+  id 'uk.co.fractalmotion.mugshot'
+}
+
+android {
+  namespace = 'uk.co.fractalmotion.mugshot.plugin.test'
+  compileSdk = libs.versions.compileSdk.get() as int
+  defaultConfig {
+    minSdk = libs.versions.minSdk.get() as int
+  }
+  compileOptions {
+    sourceCompatibility = libs.versions.javaTarget.get()
+    targetCompatibility = libs.versions.javaTarget.get()
+  }
+  buildFeatures {
+    compose = true
+  }
+}
+
+// KSP is what makes the plugin register `generateMugshot<Variant>PreviewTests`, whose generated
+// source directory is the one that broke configuration cache serialisation. Without KSP applied
+// there is no producer task and the regression cannot reproduce.
+dependencies {
+  implementation libs.composeUi.material
+  implementation libs.composeUi.uiToolingPreview
+}
