@@ -182,6 +182,28 @@ class PreviewProcessorProviderTest {
   }
 
   @Test
+  fun bcp47LocaleQualifiersInferRtl() {
+    val result = compile(
+      """
+      @Mugshot
+      @MugshotLocales("b+ar+u+nu+arab")
+      @Preview
+      @Composable
+      fun SamplePreview() = Unit
+      """
+    )
+
+    assertThat(result.exitCode).isEqualTo(KotlinCompilation.ExitCode.OK)
+
+    // Android's BCP 47 qualifier form separates subtags with '+', and is the only way to pin a
+    // numbering system so digit shapes do not follow the host JDK's CLDR data. Reading the
+    // language subtag as everything before the first '-' left it unrecognised, rendering Arabic
+    // left to right.
+    val generated = previewsFile.readText().replace(Regex("\\s+"), " ")
+    assertThat(generated).contains("""locale = "b+ar+u+nu+arab", rtl = true,""")
+  }
+
+  @Test
   fun renderingModeAxes() {
     val shrink = compile(
       """
