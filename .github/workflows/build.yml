@@ -71,7 +71,11 @@ jobs:
         uses: gradle/actions/setup-gradle@v5
 
       - name: Run All Tests
-        run: ./gradlew check
+        # Signing is only needed to publish to Maven Central, which release.yml does with the
+        # key in its environment. The plugin tests resolve Mugshot from a local repository, and
+        # publishing there pulls in the signing tasks once the version is not a SNAPSHOT, so a
+        # release preparation branch would otherwise fail here for want of a key.
+        run: ./gradlew check -PRELEASE_SIGNING_ENABLED=false
 
       - name: Upload Test Failures
         if: failure()
