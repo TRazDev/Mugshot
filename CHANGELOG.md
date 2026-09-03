@@ -6,6 +6,12 @@ down, under "Upstream Paparazzi history".
 
 ## [Unreleased]
 
+## [3.1.1] - 2026-09-03
+
+No library changes. Build and release tooling only: the documentation site is gone,
+releases are tagged and published from `main` automatically, and snapshots are
+published on every merge.
+
 ## [3.1.0] - 2026-09-03
 
 ### Fixed
@@ -584,7 +590,8 @@ As of this release, consumers must build on Java 11 environments.
 
 
 
-[Unreleased]: https://github.com/TRazDev/Mugshot/compare/3.1.0...HEAD
+[Unreleased]: https://github.com/TRazDev/Mugshot/compare/3.1.1...HEAD
+[3.1.1]: https://github.com/TRazDev/Mugshot/releases/tag/3.1.1
 [3.1.0]: https://github.com/TRazDev/Mugshot/releases/tag/3.1.0
 [3.0.2]: https://github.com/TRazDev/Mugshot/releases/tag/3.0.2
 [3.0.1]: https://github.com/TRazDev/Mugshot/releases/tag/3.0.1
