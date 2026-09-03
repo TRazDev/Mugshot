@@ -1,6 +1,8 @@
 Mugshot
 ========
 
+[![Maven Central](https://img.shields.io/maven-central/v/uk.co.fractalmotion.mugshot/mugshot?label=Maven%20Central)](https://central.sonatype.com/artifact/uk.co.fractalmotion.mugshot/mugshot)
+
 ![Mugshot](.github/images/logo.webp)
 An Android library to render your application screens without a physical device or emulator.
 
