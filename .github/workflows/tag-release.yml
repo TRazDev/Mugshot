@@ -27,36 +27,35 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Check for a release commit
+      - name: Check for a release version
         id: check
         run: |
           set -euo pipefail
 
-          subject="$(git log -1 --pretty=%s)"
-          # Squash and merge commits gain a " (#123)" suffix.
-          version="$(printf '%s' "$subject" | sed -nE 's/^Prepare version ([0-9][0-9A-Za-z.-]*)( \(#[0-9]+\))?$/\1/p')"
+          # gradle.properties is the source of truth, not the commit subject. Squash
+          # merges, merge commits and direct pushes all produce different subjects, and
+          # none of them should decide whether a release happens.
+          version="$(sed -nE 's/^VERSION_NAME=(.*)$/\1/p' gradle.properties)"
 
-          if [ -z "$version" ]; then
-            echo "Not a release commit: $subject"
+          case "$version" in
+            ""|*-SNAPSHOT)
+              echo "Nothing to release, VERSION_NAME is '$version'"
+              echo "release=false" >> "$GITHUB_OUTPUT"
+              exit 0
+              ;;
+          esac
+
+          # main sits on a release version from the moment the preparation lands until
+          # the next development version does, so other pushes land in that window and
+          # must not fail.
+          if git rev-parse -q --verify "refs/tags/$version" >/dev/null; then
+            echo "$version is already tagged"
             echo "release=false" >> "$GITHUB_OUTPUT"
             exit 0
           fi
 
-          echo "Release commit for version $version"
+          echo "Releasing $version"
           failed=0
-
-          declared="$(sed -nE 's/^VERSION_NAME=(.*)$/\1/p' gradle.properties)"
-          if [ "$declared" != "$version" ]; then
-            echo "::error::VERSION_NAME is '$declared' but the commit prepares '$version'"
-            failed=1
-          fi
-
-          case "$version" in
-            *-SNAPSHOT)
-              echo "::error::Refusing to tag a SNAPSHOT version"
-              failed=1
-              ;;
-          esac
 
           if ! grep -q "^## \[$version\] - " CHANGELOG.md; then
             echo "::error::CHANGELOG.md has no dated section for $version"
@@ -65,11 +64,6 @@ jobs:
 
           if ! grep -q "$version" README.md; then
             echo "::error::README.md still shows an older version in its install snippets"
-            failed=1
-          fi
-
-          if git rev-parse -q --verify "refs/tags/$version" >/dev/null; then
-            echo "::error::Tag $version already exists"
             failed=1
           fi
 
