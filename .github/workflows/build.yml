@@ -3,12 +3,6 @@ name: build
 on:
   pull_request: {}
 
-  push:
-    branches:
-      - '**'
-    tags-ignore:
-      - '**'
-
 env:
   GRADLE_OPTS: "-Dorg.gradle.jvmargs=-Xmx4g -Dorg.gradle.daemon=false -Dkotlin.incremental=false"
 
