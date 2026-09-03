@@ -6,6 +6,8 @@ down, under "Upstream Paparazzi history".
 
 ## [Unreleased]
 
+## [3.1.0] - 2026-09-03
+
 ### Fixed
 * `@MugshotLocales` did not infer right-to-left layout from Android's BCP 47 locale qualifiers.
   The language subtag was read as everything before the first `-`, so a `b+`-prefixed qualifier
@@ -582,7 +584,8 @@ As of this release, consumers must build on Java 11 environments.
 
 
 
-[Unreleased]: https://github.com/TRazDev/Mugshot/compare/3.0.2...HEAD
+[Unreleased]: https://github.com/TRazDev/Mugshot/compare/3.1.0...HEAD
+[3.1.0]: https://github.com/TRazDev/Mugshot/releases/tag/3.1.0
 [3.0.2]: https://github.com/TRazDev/Mugshot/releases/tag/3.0.2
 [3.0.1]: https://github.com/TRazDev/Mugshot/releases/tag/3.0.1
 [2.0.0-alpha05]: https://github.com/cashapp/paparazzi/releases/tag/2.0.0-alpha05
