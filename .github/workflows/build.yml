@@ -3,6 +3,12 @@ name: build
 on:
   pull_request: {}
 
+  # Only main. PR branches are covered by pull_request, and a second trigger here
+  # would run every job twice for one push.
+  push:
+    branches:
+      - main
+
 env:
   GRADLE_OPTS: "-Dorg.gradle.jvmargs=-Xmx4g -Dorg.gradle.daemon=false -Dkotlin.incremental=false"
 
@@ -35,11 +41,7 @@ jobs:
         uses: gradle/actions/setup-gradle@v5
 
       - name: Run All Tests
-        # Signing is only needed to publish to Maven Central, which release.yml does with the
-        # key in its environment. The plugin tests resolve Mugshot from a local repository, and
-        # publishing there pulls in the signing tasks once the version is not a SNAPSHOT, so a
-        # release preparation branch would otherwise fail here for want of a key.
-        run: ./gradlew check -PRELEASE_SIGNING_ENABLED=false
+        run: ./gradlew check
 
       - name: Upload Test Failures
         if: failure()
@@ -54,7 +56,7 @@ jobs:
 
   publish:
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/master'
+    if: github.ref == 'refs/heads/main'
     needs:
       - build
 
@@ -71,7 +73,20 @@ jobs:
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v5
 
-      - name: Publish Artifacts
+      # A release preparation commit carries a non-SNAPSHOT version, and releasing it is
+      # release.yml's job. Publishing here as well would race it for the same coordinates.
+      - name: Check for a snapshot version
+        id: version
+        run: |
+          set -euo pipefail
+          version="$(sed -nE 's/^VERSION_NAME=(.*)$/\1/p' gradle.properties)"
+          case "$version" in
+            *-SNAPSHOT) echo "snapshot=true" >> "$GITHUB_OUTPUT" ;;
+            *) echo "Skipping, $version is not a snapshot" ; echo "snapshot=false" >> "$GITHUB_OUTPUT" ;;
+          esac
+
+      - name: Publish Snapshot
+        if: steps.version.outputs.snapshot == 'true'
         run: ./gradlew publishMavenPublicationToMavenCentralRepository mugshot-gradle-plugin:publishAllPublicationsToMavenCentralRepository
         env:
           ORG_GRADLE_PROJECT_mavenCentralUsername: ${{ secrets.SONATYPE_CENTRAL_USERNAME }}

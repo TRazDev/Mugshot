@@ -7,20 +7,35 @@
     3. Add a link URL at the bottom to ensure the impending release header link works.
     4. Update the `Unreleased` link URL to compare this new version...HEAD
  3. Update `README.md` with the new version.
- 4. `git commit -am "Prepare version X.Y.Z"` (where X.Y.Z is the new version)
- 5. `git tag -a X.Y.Z -m "X.Y.Z"` (where X.Y.Z is the new version)
- 6. Update `VERSION_NAME` in `gradle.properties` to the next SNAPSHOT version.
- 7. `git commit -am "Prepare next development version"`
- 8. `git push && git push --tags`
+ 4. Open a pull request titled `Prepare version X.Y.Z` and merge it once it is green.
 
-This will trigger a GitHub Action workflow which will create a GitHub release and upload the release artifacts to Maven Central.
+Merging is the last manual step. `tag-release.yml` sees the `Prepare version X.Y.Z`
+commit land on `main`, checks that
+
+ * `VERSION_NAME` matches the version in the commit subject,
+ * the version is not a SNAPSHOT,
+ * `CHANGELOG.md` has a dated section for it,
+ * `README.md` mentions it,
+ * and the tag does not already exist,
+
+then tags the merge commit and calls `release.yml`, which publishes to Maven Central
+and creates the GitHub release from the changelog section. If any check fails nothing
+is tagged, so a mistake costs a follow-up commit rather than a burnt version number.
+
+The deployment is staged rather than published: `SONATYPE_AUTOMATIC_RELEASE` is
+`false`, so it waits in the Central Portal until you press Publish. Maven Central is
+immutable, and this is the last point at which a release can still be dropped.
+
+Afterwards, set `VERSION_NAME` to the next SNAPSHOT version and open a pull request
+titled `Prepare next development version`. Every merge to `main` publishes that
+snapshot to the Central snapshots repository, which keeps the publishing path
+exercised between releases.
 
 ## Internal Releasing
 
 1. Update `VERSION_NAME` in `gradle.properties` to the internal release (non-SNAPSHOT) version. [2.0.0-internal01] Ensure that the name doesn't collide with an already released version.
-2. Update `RELEASE_SIGNING_ENABLED` in `gradle.properties` to `false`.
-3. Check that the internal variables are configured correctly:
+2. Check that the internal variables are configured correctly:
    1. `internalUrl` is set in `~/.gradle/gradle.properties` to the internal repository URL.
    2. Check `internalUsername` and `internalPassword` are set in `~/.gradle/gradle.properties` to the internal repository credentials.
-4. Run `./gradlew publishMavenPublicationToInternalRepository mugshot-gradle-plugin:publishAllPublicationsToInternalRepository --no-parallel` to publish the internal release.
+3. Run `./gradlew publishMavenPublicationToInternalRepository mugshot-gradle-plugin:publishAllPublicationsToInternalRepository --no-parallel` to publish the internal release.
    * *Note* if gradle publish fails with `403` error, ensure the `VERSION_NAME` in step 1 is unique and isn't already published.

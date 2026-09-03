@@ -1,0 +1,100 @@
+name: tag release
+
+# Tags a release once its preparation commit reaches main, so the tag can never
+# point at the wrong commit or carry a version the repository does not agree with.
+on:
+  push:
+    branches:
+      - main
+
+env:
+  GRADLE_OPTS: "-Dorg.gradle.jvmargs=-Xmx4g -Dorg.gradle.daemon=false -Dkotlin.incremental=false"
+
+jobs:
+  tag:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+
+    outputs:
+      release: ${{ steps.check.outputs.release }}
+      version: ${{ steps.check.outputs.version }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Check for a release commit
+        id: check
+        run: |
+          set -euo pipefail
+
+          subject="$(git log -1 --pretty=%s)"
+          # Squash and merge commits gain a " (#123)" suffix.
+          version="$(printf '%s' "$subject" | sed -nE 's/^Prepare version ([0-9][0-9A-Za-z.-]*)( \(#[0-9]+\))?$/\1/p')"
+
+          if [ -z "$version" ]; then
+            echo "Not a release commit: $subject"
+            echo "release=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          echo "Release commit for version $version"
+          failed=0
+
+          declared="$(sed -nE 's/^VERSION_NAME=(.*)$/\1/p' gradle.properties)"
+          if [ "$declared" != "$version" ]; then
+            echo "::error::VERSION_NAME is '$declared' but the commit prepares '$version'"
+            failed=1
+          fi
+
+          case "$version" in
+            *-SNAPSHOT)
+              echo "::error::Refusing to tag a SNAPSHOT version"
+              failed=1
+              ;;
+          esac
+
+          if ! grep -q "^## \[$version\] - " CHANGELOG.md; then
+            echo "::error::CHANGELOG.md has no dated section for $version"
+            failed=1
+          fi
+
+          if ! grep -q "$version" README.md; then
+            echo "::error::README.md still shows an older version in its install snippets"
+            failed=1
+          fi
+
+          if git rev-parse -q --verify "refs/tags/$version" >/dev/null; then
+            echo "::error::Tag $version already exists"
+            failed=1
+          fi
+
+          if [ "$failed" -ne 0 ]; then
+            exit 1
+          fi
+
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+          echo "release=true" >> "$GITHUB_OUTPUT"
+
+      - name: Create tag
+        if: steps.check.outputs.release == 'true'
+        env:
+          VERSION: ${{ steps.check.outputs.version }}
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git tag -a "$VERSION" -m "$VERSION"
+          git push origin "$VERSION"
+
+  release:
+    needs: tag
+    if: needs.tag.outputs.release == 'true'
+    uses: ./.github/workflows/release.yml
+    with:
+      tag: ${{ needs.tag.outputs.version }}
+    secrets: inherit
