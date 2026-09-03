@@ -94,6 +94,11 @@ jobs:
   release:
     needs: tag
     if: needs.tag.outputs.release == 'true'
+    # A called workflow cannot ask for more than its caller was granted, and this
+    # repository defaults workflow tokens to read only. Without this the run fails
+    # to start at all, because release.yml needs contents: write to publish.
+    permissions:
+      contents: write
     uses: ./.github/workflows/release.yml
     with:
       tag: ${{ needs.tag.outputs.version }}
