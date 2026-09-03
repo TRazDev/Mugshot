@@ -78,10 +78,6 @@ dependencies {
 }
 
 dokka {
-  dokkaPublications.html {
-    outputDirectory.set(rootProject.file("docs/api"))
-  }
-
   dokkaSourceSets.named("main").configure {
     reportUndocumented = false
     skipDeprecated = true
