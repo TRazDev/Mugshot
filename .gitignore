@@ -16,8 +16,4 @@ generated
 # Kotlin
 .kotlin
 
-# Mkdocs files
-docs/api
-docs/changelog.md
-docs/index.md
 site/

@@ -3,17 +3,6 @@
   extends: [
     'config:recommended',
   ],
-  "constraints": {
-    "python": "=3.14.5"
-  },
-  "ignorePaths": [
-    ".github/workflows/requirements.in",
-  ],
-  "pip-compile": {
-    "fileMatch": [
-      ".github/workflows/requirements.in"
-    ]
-  },
   "gradle-wrapper": {
     description: "Update Gradle wrapper to non-stable versions",
     ignoreUnstable: false,

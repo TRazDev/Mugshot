@@ -362,9 +362,8 @@ See the License for the specific language governing permissions and
 limitations under the License.
 ```
 
- [mugshot]: https://trazdev.github.io/Mugshot/
  [sample]: https://github.com/TRazDev/Mugshot/tree/main/sample
  [lfs]: https://git-lfs.github.com/
  [upstream]: https://github.com/cashapp/paparazzi
- [changelog]: https://trazdev.github.io/Mugshot/changelog/
+ [changelog]: https://github.com/TRazDev/Mugshot/blob/main/CHANGELOG.md
  [snap]: https://central.sonatype.com/service/rest/repository/browse/maven-snapshots/uk/co/fractalmotion/mugshot/
