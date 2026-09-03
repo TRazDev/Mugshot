@@ -165,7 +165,7 @@ private fun ProfileStat(value: String, label: String, modifier: Modifier = Modif
 
 @Mugshot
 @MugshotLightDark
-@MugshotLocales("ar", "en-rXA")
+@MugshotLocales("b+ar+u+nu+arab", "en-rXA")
 @Preview
 @Composable
 internal fun ProfileScreenPreview() {

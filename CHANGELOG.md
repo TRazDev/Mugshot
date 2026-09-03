@@ -6,6 +6,14 @@ down, under "Upstream Paparazzi history".
 
 ## [Unreleased]
 
+### Fixed
+* `@MugshotLocales` did not infer right-to-left layout from Android's BCP 47 locale qualifiers.
+  The language subtag was read as everything before the first `-`, so a `b+`-prefixed qualifier
+  such as `b+ar+u+nu+arab` was never matched against the right-to-left languages and rendered
+  left to right. That form matters because it is the only way to pin a locale's numbering system:
+  without it, digit shapes in formatted strings come from the host JDK's CLDR data and change
+  between JDK releases, so the same preview yields different goldens on different JDKs.
+
 ## [3.0.2] - 2026-09-01
 
 ### Fixed

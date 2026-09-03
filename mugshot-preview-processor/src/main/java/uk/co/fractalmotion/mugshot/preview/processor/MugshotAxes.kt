@@ -41,7 +41,21 @@ internal val DEFAULT_FONT_SCALES: List<Float> = listOf(1f, 1.5f, 2f)
  */
 private val RTL_LANGUAGES = setOf("ar", "dv", "fa", "he", "iw", "ps", "sd", "ug", "ur", "yi")
 
-internal fun isRtlLocale(tag: String): Boolean = tag.substringBefore('-').lowercase() in RTL_LANGUAGES
+internal fun isRtlLocale(tag: String): Boolean = languageSubtagOf(tag) in RTL_LANGUAGES
+
+/**
+ * The language subtag of an Android locale qualifier.
+ *
+ * Handles both qualifier forms. The common one separates subtags with `-`, as in `ar` or
+ * `ar-rXB`. The BCP 47 form Android writes as `b+ar+u+nu+arab` separates them with `+`, and is
+ * the only way to pin a numbering system -- without which digit shapes come from the host JDK's
+ * CLDR data and change between JDK releases. Splitting on `-` alone left that form unrecognised,
+ * so an Arabic preview requested through it rendered left-to-right.
+ */
+private fun languageSubtagOf(tag: String): String {
+  val withoutBcp47Prefix = tag.removePrefix("b+").removePrefix("B+")
+  return withoutBcp47Prefix.substringBefore('-').substringBefore('+').lowercase()
+}
 
 /** One rendering configuration, ready to be emitted as a `MugshotPreviewConfig`. */
 internal data class AxisCombination(

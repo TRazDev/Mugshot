@@ -110,6 +110,10 @@ subprojects {
   spotless {
     kotlin {
       target("src/**/*.kt")
+      // The Gradle plugin's TestKit fixtures live under src/test/projects/, so their build
+      // output lands inside the target above. Generated Kotlin is not ours to format, and
+      // whether it is present depends on whether the tests have run.
+      targetExclude("src/test/projects/**/build/**")
       ktlint(libs.ktlint.core.get().version)
         .setEditorConfigPath(rootProject.file(".editorconfig"))
     }
