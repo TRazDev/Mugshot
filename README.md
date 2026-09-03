@@ -308,7 +308,7 @@ buildscript {
     google()
   }
   dependencies {
-    classpath 'uk.co.fractalmotion.mugshot:mugshot-gradle-plugin:3.1.0'
+    classpath 'uk.co.fractalmotion.mugshot:mugshot-gradle-plugin:3.1.1'
   }
 }
 
@@ -318,7 +318,7 @@ apply plugin: 'uk.co.fractalmotion.mugshot'
 Using the plugins DSL:
 ```groovy
 plugins {
-  id 'uk.co.fractalmotion.mugshot' version '3.1.0'
+  id 'uk.co.fractalmotion.mugshot' version '3.1.1'
 }
 ```
 
