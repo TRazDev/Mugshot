@@ -89,7 +89,7 @@ private fun pseudolocalizeString(
   val pseudoText = original.value?.pseudoLocalize(method)
   val pseudoItem = when (original) {
     is BasicTextValueResourceItem -> {
-      val pseudoRawXml = (original as? BasicTextValueResourceItem)?.rawXmlValue?.pseudoLocalize(method)
+      val pseudoRawXml = original.rawXmlValue?.pseudoLocalize(method)
       BasicTextValueResourceItem(
         type = original.type,
         name = original.name,

@@ -149,7 +149,7 @@ internal abstract class MultiResourceRepository internal constructor(displayName
             }
           cachedMaps.put(namespace, resourceType, map)
         }
-        map!!.putAll(items)
+        map.putAll(items)
         if (repository is LocalResourceRepository) {
           resourceNames.put(repository, resourceType, items.keySet().toSet())
         }
