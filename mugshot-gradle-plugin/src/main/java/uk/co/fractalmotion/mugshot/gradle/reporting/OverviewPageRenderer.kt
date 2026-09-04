@@ -12,6 +12,8 @@ internal class OverviewPageRenderer : PageRenderer<AllTestResults>() {
         "Packages",
         object : ErroringAction<SimpleHtmlWriter>() {
           @Throws(IOException::class)
+          // Gradle's ErroringAction calls this parameter 'thing'. The name here says what it is.
+          @Suppress("PARAMETER_NAME_CHANGED_ON_OVERRIDE")
           override fun doExecute(writer: SimpleHtmlWriter) {
             renderPackages(writer)
           }
@@ -22,6 +24,8 @@ internal class OverviewPageRenderer : PageRenderer<AllTestResults>() {
       "Classes",
       object : ErroringAction<SimpleHtmlWriter>() {
         @Throws(IOException::class)
+        // Gradle's ErroringAction calls this parameter 'thing'. The name here says what it is.
+        @Suppress("PARAMETER_NAME_CHANGED_ON_OVERRIDE")
         public override fun doExecute(writer: SimpleHtmlWriter) {
           renderClasses(writer)
         }
