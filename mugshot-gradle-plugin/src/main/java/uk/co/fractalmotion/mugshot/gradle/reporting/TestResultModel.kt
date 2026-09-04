@@ -15,7 +15,6 @@ internal abstract class TestResultModel {
       TestResult.ResultType.SUCCESS -> "success"
       TestResult.ResultType.FAILURE -> "failures"
       TestResult.ResultType.SKIPPED -> "skipped"
-      else -> throw IllegalStateException()
     }
 
   val formattedResultType: String
@@ -23,7 +22,6 @@ internal abstract class TestResultModel {
       TestResult.ResultType.SUCCESS -> "passed"
       TestResult.ResultType.FAILURE -> "failed"
       TestResult.ResultType.SKIPPED -> "ignored"
-      else -> throw IllegalStateException()
     }
 
   companion object {

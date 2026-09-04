@@ -28,7 +28,7 @@ class PixelPerfectTest {
   fun `compare similar images using black actual and alpha expected`() {
     val expected = BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB)
     val actual = BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB)
-    expected.setRGB(0, 0, 0x00000000.toInt())
+    expected.setRGB(0, 0, 0x00000000)
     actual.setRGB(0, 0, 0xFF000000.toInt())
     val result = PixelPerfect.compare(expected, actual)
     assertThat(result).isInstanceOf(Differ.DiffResult.Different::class.java)
