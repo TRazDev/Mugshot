@@ -5,7 +5,7 @@ import androidx.annotation.StringRes
 
 /** Storefront state, including the empty and loading cases the screen has to draw. */
 internal data class StorefrontUiState(
-  @StringRes val categories: List<Int>,
+  @param:StringRes val categories: List<Int>,
   val selectedCategory: Int,
   val promoDiscountPercent: Int,
   val products: List<Product>,
@@ -13,9 +13,9 @@ internal data class StorefrontUiState(
 )
 
 internal data class Product(
-  @StringRes val nameRes: Int,
-  @StringRes val detailRes: Int,
-  @DrawableRes val icon: Int,
+  @param:StringRes val nameRes: Int,
+  @param:StringRes val detailRes: Int,
+  @param:DrawableRes val icon: Int,
   val price: String,
   val status: ProductStatus,
   val paletteIndex: Int,

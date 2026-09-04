@@ -4,7 +4,7 @@ import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 
 internal data class SmartHomeUiState(
-  @StringRes val rooms: List<Int>,
+  @param:StringRes val rooms: List<Int>,
   val selectedRoom: Int,
   val temperatureCelsius: Int,
   val targetCelsius: Int,
@@ -15,8 +15,8 @@ internal data class SmartHomeUiState(
 )
 
 internal data class SmartDevice(
-  @StringRes val nameRes: Int,
-  @DrawableRes val icon: Int,
+  @param:StringRes val nameRes: Int,
+  @param:DrawableRes val icon: Int,
   val detail: String,
   val on: Boolean,
   val paletteIndex: Int

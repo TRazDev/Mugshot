@@ -11,9 +11,9 @@ import androidx.annotation.StringRes
  * locale and pseudolocale goldens identical to the default one.
  */
 internal data class ProfileUiState(
-  @StringRes val nameRes: Int,
-  @StringRes val initialsRes: Int,
-  @StringRes val taglineRes: Int,
+  @param:StringRes val nameRes: Int,
+  @param:StringRes val initialsRes: Int,
+  @param:StringRes val taglineRes: Int,
   val followers: String,
   val following: String,
   val streak: String,
@@ -23,14 +23,14 @@ internal data class ProfileUiState(
 )
 
 internal data class Achievement(
-  @DrawableRes val icon: Int,
-  @StringRes val titleRes: Int,
-  @StringRes val detailRes: Int,
+  @param:DrawableRes val icon: Int,
+  @param:StringRes val titleRes: Int,
+  @param:StringRes val detailRes: Int,
   val paletteIndex: Int
 )
 
 internal data class ProfileSetting(
-  @StringRes val titleRes: Int,
-  @StringRes val detailRes: Int,
+  @param:StringRes val titleRes: Int,
+  @param:StringRes val detailRes: Int,
   val enabled: Boolean
 )
