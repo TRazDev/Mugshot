@@ -6,6 +6,21 @@ down, under "Upstream Paparazzi history".
 
 ## [Unreleased]
 
+### Removed
+* **Breaking:** the `mssim`, `sift`, `flip` and `de2000` image differs are gone, leaving `offbytwo`
+  (the default) and `pixelperfect`. Setting `uk.co.fractalmotion.mugshot.differ` to a removed value
+  now fails with `Unknown differ type` rather than falling back silently.
+
+  The four measured worse on the job they were being asked to do. Against a 600x1000 golden with an
+  80x20 block painted into it, a change nobody could miss, `flip` reported Identical and `mssim`,
+  `sift` and `de2000` reported Similar, so none of them would have failed a build. Only the two
+  that survive reported Different. They were also 8 to 30 times slower: 82ms to 260ms per
+  comparison against 9ms.
+
+  `sift` had two further defects. It reported two identical images as different whenever they held
+  no detectable features, so any flat colour or blank screen failed against itself, and it ran out
+  of heap on a full screen render.
+
 ## [3.1.1] - 2026-09-03
 
 No library changes. Build and release tooling only: the documentation site is gone,
