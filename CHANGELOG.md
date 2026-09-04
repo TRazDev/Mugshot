@@ -6,6 +6,11 @@ down, under "Upstream Paparazzi history".
 
 ## [Unreleased]
 
+### Added
+* `mugshot-preview-lints` is published. It was built and tested on every run but its publish plugin
+  was commented out, so nobody could depend on it. Add it with `lintChecks` to have a `@Mugshot`
+  preview that cannot produce a golden reported as a lint error rather than skipped in silence.
+
 ### Removed
 * **Breaking:** the `mssim`, `sift`, `flip` and `de2000` image differs are gone, leaving `offbytwo`
   (the default) and `pixelperfect`. Setting `uk.co.fractalmotion.mugshot.differ` to a removed value
