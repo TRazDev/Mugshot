@@ -121,6 +121,27 @@ Images are indexed (`_0`, `_1`, …) rather than named after the value, because 
 An annotated function must be `@Composable`, must carry a `@Preview`, must not be `private`,
 and must take no parameters other than a single `@PreviewParameter`.
 
+A preview that breaks one of those rules is skipped. There is no test file to fail, so the build
+stays green and no image appears. The lint checks turn that silence into a message. They ship
+from 3.1.2, which is why the version below is ahead of the ones above:
+
+```groovy
+dependencies {
+  lintChecks 'uk.co.fractalmotion.mugshot:mugshot-preview-lints:3.1.2'
+}
+```
+
+| Check | Severity | Reports |
+| --- | --- | --- |
+| `ComposableAnnotationNotFound` | error | `@Mugshot` on a function that is not `@Composable` |
+| `PreviewAnnotationNotFound` | error | `@Mugshot` with no `@Preview`, including one reached through a multi-preview annotation |
+| `PrivatePreviewDetected` | error | `@Mugshot` on a private composable, which the generated test cannot call |
+| `MugshotPreviewArgumentsIgnored` | warning | `@Preview` setting configuration Mugshot does not read |
+
+The warning is the one worth having even when everything works. Setting `device`, `uiMode`,
+`locale` or `fontScale` on `@Preview` changes what the IDE renders while the golden stays the
+same, so your preview and your test drift apart with nothing to say so.
+
 Two things that surprise people:
 
 - **`@Preview`'s own arguments are ignored.** Mugshot takes its configuration from the
