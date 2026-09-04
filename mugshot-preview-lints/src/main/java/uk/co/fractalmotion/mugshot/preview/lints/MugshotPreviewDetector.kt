@@ -13,6 +13,7 @@ import com.android.tools.lint.detector.api.Scope
 import com.android.tools.lint.detector.api.Severity
 import com.android.tools.lint.detector.api.SourceCodeScanner
 import com.intellij.psi.PsiAnnotation
+import org.jetbrains.uast.UAnnotation
 import org.jetbrains.uast.UElement
 import org.jetbrains.uast.UMethod
 import org.jetbrains.uast.UastVisibility
@@ -39,28 +40,28 @@ public class MugshotPreviewDetector : Detector(), SourceCodeScanner {
       ?: throw IllegalStateException("Expected annotated method given declared target type")
 
     val annotatedMethodName = annotatedMethod.name
-    val hasComposable = annotatedMethod.annotations.any { it.qualifiedName == COMPOSABLE_ANNOTATION }
+    val hasComposable = annotatedMethod.uAnnotations.any { it.qualifiedName == COMPOSABLE_ANNOTATION }
     if (!hasComposable) {
       context.report(
         issue = COMPOSABLE_NOT_DETECTED,
         scope = element,
         location = context.getLocation(element),
-        message = "$annotatedMethodName is not annotated with @Composable."
+        message = "$annotatedMethodName is not annotated with @Composable"
       )
     }
 
-    if (!context.containsPreview(annotatedMethod.annotations)) {
+    if (!context.containsPreview(annotatedMethod.uAnnotations)) {
       context.report(
         issue = PREVIEW_NOT_DETECTED,
         scope = element,
         location = context.getLocation(element),
-        message = "$annotatedMethodName is not annotated with @Preview."
+        message = "$annotatedMethodName is not annotated with @Preview"
       )
     }
 
-    val ignoredArguments = annotatedMethod.annotations
+    val ignoredArguments = annotatedMethod.uAnnotations
       .filter { it.qualifiedName == PREVIEW_ANNOTATION }
-      .flatMap { it.parameterList.attributes.asList() }
+      .flatMap { it.attributeValues }
       .mapNotNull { it.name }
       .filter { it in IGNORED_PREVIEW_ARGUMENTS }
       .distinct()
@@ -92,6 +93,23 @@ public class MugshotPreviewDetector : Detector(), SourceCodeScanner {
    * annotations would reject a function the processor is perfectly happy to generate from. The
    * visited set breaks the cycle an annotation applied to itself would otherwise create.
    */
+  private fun JavaContext.containsPreview(
+    annotations: List<UAnnotation>,
+    visited: MutableSet<String> = mutableSetOf()
+  ): Boolean =
+    annotations.any { annotation ->
+      val qualifiedName = annotation.qualifiedName
+      when {
+        qualifiedName == null -> false
+        qualifiedName == PREVIEW_ANNOTATION -> true
+        !visited.add(qualifiedName) -> false
+        else -> {
+          val declaration = evaluator.findClass(qualifiedName)
+          declaration != null && containsPreview(declaration.annotations, visited)
+        }
+      }
+    }
+
   private fun JavaContext.containsPreview(
     annotations: Array<out PsiAnnotation>,
     visited: MutableSet<String> = mutableSetOf()
@@ -167,8 +185,8 @@ public class MugshotPreviewDetector : Detector(), SourceCodeScanner {
       briefDescription = "@Preview arguments are ignored by Mugshot",
       explanation = "Mugshot takes its configuration from the @Mugshot annotations rather than " +
         "from @Preview, so configuration set on @Preview changes what the IDE renders without " +
-        "changing the golden image. Use @MugshotDevices, @MugshotLightDark, @MugshotFontScales, " +
-        "@MugshotLocales, @MugshotShrink or @MugshotFullScreen instead.",
+        "changing the golden image. Use `@MugshotDevices`, `@MugshotLightDark`, " +
+        "`@MugshotFontScales`, `@MugshotLocales`, `@MugshotShrink` or `@MugshotFullScreen` instead.",
       category = Category.CUSTOM_LINT_CHECKS,
       priority = 5,
       severity = Severity.WARNING,
