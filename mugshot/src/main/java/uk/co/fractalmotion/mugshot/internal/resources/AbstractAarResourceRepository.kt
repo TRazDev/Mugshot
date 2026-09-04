@@ -95,7 +95,8 @@ internal abstract class AbstractAarResourceRepository internal constructor(
     resourceName: String
   ): List<ResourceItem> {
     val map = getResourcesInternal(namespace, resourceType)
-    return map[resourceName] ?: emptyList()
+    // ListMultimap.get returns an empty list for an absent key rather than null.
+    return map[resourceName]
   }
 
   override fun getResources(
