@@ -952,13 +952,13 @@ internal abstract class RepositoryLoader<T : LoadableResourceRepository>(
         val folderType =
           ResourceFolderType.getFolderType(folderName) ?: return null
         val qualifier = FolderConfiguration.getQualifier(folderName)
-        val config = folderConfigCache.computeIfAbsent(
-          qualifier
-        ) { qualifierString: String? ->
-          FolderConfiguration.getConfigForQualifierString(
-            qualifierString
-          )
-        } ?: return null
+        // Not computeIfAbsent: the cache holds non-null values, so Kotlin reads its result as
+        // non-null and reports the null check below as redundant. It is not. The parser returns
+        // null for a qualifier it cannot read, and this is where such a folder gets skipped.
+        val config = folderConfigCache[qualifier]
+          ?: FolderConfiguration.getConfigForQualifierString(qualifier)
+            ?.also { folderConfigCache[qualifier] = it }
+          ?: return null
         config.normalizeByRemovingRedundantVersionQualifier()
         val resourceType: ResourceType?
         val isIdGenerating: Boolean
