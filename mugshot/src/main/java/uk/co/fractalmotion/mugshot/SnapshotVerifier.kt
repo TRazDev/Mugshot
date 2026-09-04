@@ -19,12 +19,8 @@ import uk.co.fractalmotion.mugshot.Differ
 import uk.co.fractalmotion.mugshot.SnapshotHandler.FrameHandler
 import uk.co.fractalmotion.mugshot.internal.ImageUtils
 import uk.co.fractalmotion.mugshot.internal.WebpCodec
-import uk.co.fractalmotion.mugshot.internal.differs.DeltaE2000
-import uk.co.fractalmotion.mugshot.internal.differs.Flip
-import uk.co.fractalmotion.mugshot.internal.differs.Mssim
 import uk.co.fractalmotion.mugshot.internal.differs.OffByTwo
 import uk.co.fractalmotion.mugshot.internal.differs.PixelPerfect
-import uk.co.fractalmotion.mugshot.internal.differs.Sift
 import java.awt.image.BufferedImage
 import java.awt.image.BufferedImage.TYPE_INT_ARGB
 import java.io.File
@@ -93,10 +89,6 @@ internal fun determineDiffer() =
     when (differ) {
       "offbytwo" -> OffByTwo
       "pixelperfect" -> PixelPerfect
-      "mssim" -> Mssim
-      "sift" -> Sift
-      "flip" -> Flip
-      "de2000" -> DeltaE2000
       null, "", "default" -> OffByTwo
       else -> error("Unknown differ type '$differ'.")
     }
