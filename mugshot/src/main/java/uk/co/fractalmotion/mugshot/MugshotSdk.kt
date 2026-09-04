@@ -153,6 +153,9 @@ public class MugshotSdk @JvmOverloads constructor(
     logger.assertNoErrors()
   }
 
+  // LayoutInflater returns View. Only the caller knows which subclass the layout inflates to,
+  // so this cast is theirs to get right and cannot be checked here.
+  @Suppress("UNCHECKED_CAST")
   public fun <V : View> inflate(@LayoutRes layoutId: Int): V = layoutInflater.inflate(layoutId, null) as V
 
   public fun snapshot(composable: @Composable () -> Unit) {

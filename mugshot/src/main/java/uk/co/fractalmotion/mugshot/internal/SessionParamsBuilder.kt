@@ -85,7 +85,7 @@ internal data class SessionParamsBuilder(
           .toTypedArray()
       ),
       ResourceReference(
-        ResourceNamespace.fromBoolean(!isProjectTheme),
+        if (isProjectTheme) ResourceNamespace.RES_AUTO else ResourceNamespace.ANDROID,
         ResourceType.STYLE,
         themeName
       )
@@ -108,6 +108,9 @@ internal data class SessionParamsBuilder(
     }
     result.setRtlSupport(supportsRtl)
 
+    // The map holds Key<*> to Any, so each key's type argument is already lost. Pairing was
+    // enforced by plusFlag when the entry went in.
+    @Suppress("UNCHECKED_CAST")
     for ((key, value) in flags) {
       result.setFlag(key as Key<Any>, value)
     }
