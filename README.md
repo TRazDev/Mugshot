@@ -142,15 +142,12 @@ The warning is the one worth having even when everything works. Setting `device`
 `locale` or `fontScale` on `@Preview` changes what the IDE renders while the golden stays the
 same, so your preview and your test drift apart with nothing to say so.
 
-Two things that surprise people:
+One thing that surprises people: **`@Preview`'s own arguments are ignored.** Mugshot takes its
+configuration from the annotations above, so setting `device`, `uiMode`, `locale` or `fontScale`
+on `@Preview` changes what the IDE renders without changing the golden.
 
-- **`@Preview`'s own arguments are ignored.** Mugshot takes its configuration from the
-  annotations above, so setting `device`, `uiMode`, `locale` or `fontScale` on `@Preview`
-  changes what the IDE renders without changing the golden.
-- **A `@MugshotFullScreen` preview must not scroll itself.** That mode measures with an
-  unbounded height so it can draw the whole screen at once, which `Modifier.verticalScroll`
-  and `Scaffold` both reject. Either the app scrolls the content or the renderer expands to
-  fit it.
+[LIMITATIONS.md](LIMITATIONS.md) covers what Mugshot does not do and where its rendering differs
+from a device.
 
 ### Where the images go
 
@@ -273,47 +270,6 @@ if [[ is running snapshot tests ]]; then
   git lfs install --local
   git lfs pull
 fi
-```
-
-Jetifier
---------
-
-If using Jetifier to migrate off Support libraries, add the following to your `gradle.properties` to
-exclude bundled Android dependencies.
-
-```properties
-android.jetifier.ignorelist=android-base-common,common
-```
-
-Lottie
---------
-
-When taking screenshots of Lottie animations, you need to force Lottie to not run on a background thread, otherwise Mugshot can throw exceptions [#494](https://github.com/cashapp/paparazzi/issues/494), [#630](https://github.com/cashapp/paparazzi/issues/630).
-
-```kotlin
-@Before
-fun setup() {
-    LottieTask.EXECUTOR = Executor(Runnable::run)
-}
-```
-
-LocalInspectionMode
---------
-Some Composables -- such as `GoogleMap()` -- check for `LocalInspectionMode` to short-circuit to a `@Preview`-safe Composable.
-
-However, Mugshot does not set `LocalInspectionMode` globally to ensure that the snapshot represents the true production output, similar to how it overrides `View.isInEditMode` for legacy views.
-
-As a workaround, we recommend wrapping such a Composable in a custom Composable with a `CompositionLocalProvider` and setting `LocalInspectionMode` there.
-
-```kotlin
-@Mugshot
-@Preview
-@Composable
-internal fun MapPreview() {
-  CompositionLocalProvider(LocalInspectionMode provides true) {
-    YourComposable()
-  }
-}
 ```
 
 Releases

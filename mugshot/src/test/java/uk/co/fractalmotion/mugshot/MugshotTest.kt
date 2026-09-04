@@ -22,15 +22,12 @@ import android.animation.ValueAnimator
 import android.graphics.Canvas
 import android.graphics.Color
 import android.os.SystemClock
-import android.view.Choreographer
-import android.view.Choreographer.CALLBACK_ANIMATION
 import android.view.View
 import android.view.animation.LinearInterpolator
 import android.widget.Button
 import android.widget.TextView
 import com.android.internal.lang.System_Delegate
 import com.google.common.truth.Truth.assertThat
-import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 import java.util.concurrent.TimeUnit
@@ -126,28 +123,6 @@ class MugshotTest {
     )
     assertThat(AnimationHandler.getAnimationCount()).isEqualTo(0)
     log.clear()
-  }
-
-  @Test
-  @Ignore
-  fun frameCallbacksExecutedAfterLayout() {
-    val log = mutableListOf<String>()
-
-    val view = object : View(mugshot.context) {
-      override fun onAttachedToWindow() {
-        super.onAttachedToWindow()
-        Choreographer.getInstance()
-          .postCallback(
-            CALLBACK_ANIMATION,
-            { log += "view width=$width height=$height" },
-            false
-          )
-      }
-    }
-
-    mugshot.snapshot(view)
-
-    assertThat(log).containsExactly("view width=1080 height=1776")
   }
 
   @Test
