@@ -95,7 +95,7 @@ class MugshotPreviewDetectorTest {
       .run()
       .expect(
         """
-        src/test/test.kt:6: Error: SamplePreview is not annotated with @Composable. [ComposableAnnotationNotFound]
+        src/test/test.kt:6: Error: SamplePreview is not annotated with @Composable [ComposableAnnotationNotFound]
         @Mugshot
         ~~~~~~~~
         1 errors, 0 warnings
@@ -127,7 +127,7 @@ class MugshotPreviewDetectorTest {
       .run()
       .expect(
         """
-        src/test/test.kt:6: Error: SamplePreview is not annotated with @Preview. [PreviewAnnotationNotFound]
+        src/test/test.kt:6: Error: SamplePreview is not annotated with @Preview [PreviewAnnotationNotFound]
         @Mugshot
         ~~~~~~~~
         1 errors, 0 warnings
@@ -263,7 +263,7 @@ class MugshotPreviewDetectorTest {
       .run()
       .expect(
         """
-        src/test/Cyclic.kt:9: Error: SamplePreview is not annotated with @Preview. [PreviewAnnotationNotFound]
+        src/test/Cyclic.kt:9: Error: SamplePreview is not annotated with @Preview [PreviewAnnotationNotFound]
         @Mugshot
         ~~~~~~~~
         1 errors, 0 warnings
@@ -406,5 +406,65 @@ class MugshotPreviewDetectorTest {
       annotation class Mugshot
       """
     ).indented()
+  }
+
+  @Test
+  fun `a source retained multi preview is followed`() {
+    lint()
+      .files(
+        kotlin(
+          """
+          package test
+
+          import androidx.compose.runtime.Composable
+          import androidx.compose.ui.tooling.preview.Preview
+          import uk.co.fractalmotion.mugshot.annotations.Mugshot
+
+          @Retention(AnnotationRetention.SOURCE)
+          @Preview
+          annotation class SourceRetainedPreviews
+
+          @Mugshot
+          @SourceRetainedPreviews
+          @Composable
+          fun SamplePreview() {}
+          """
+        ).indented(),
+        *COMPOSE_SOURCES.toTypedArray(),
+        MUGSHOT_ANNOTATION
+      )
+      .detector(MugshotPreviewDetector())
+      .skipTestModes(TestMode.SUPPRESSIBLE)
+      .run()
+      .expectClean()
+  }
+
+  @Test
+  fun `a typealiased Composable is recognised`() {
+    lint()
+      .files(
+        kotlin(
+          """
+          package test
+
+          import androidx.compose.runtime.Composable
+          import androidx.compose.ui.tooling.preview.Preview
+          import uk.co.fractalmotion.mugshot.annotations.Mugshot
+
+          typealias Drawable = Composable
+
+          @Mugshot
+          @Preview
+          @Drawable
+          fun SamplePreview() {}
+          """
+        ).indented(),
+        *COMPOSE_SOURCES.toTypedArray(),
+        MUGSHOT_ANNOTATION
+      )
+      .detector(MugshotPreviewDetector())
+      .skipTestModes(TestMode.SUPPRESSIBLE)
+      .run()
+      .expectClean()
   }
 }
