@@ -411,7 +411,8 @@ class PreviewProcessorProviderTest {
         sources = listOf(source) + COMPOSE_SOURCES + RUNTIME_SOURCE
         verbose = false
         // Needed for the PreviewParameterProvider stub, which uses @JvmDefaultWithCompatibility.
-        kotlincArguments = listOf("-Xjvm-default=all")
+        // no-compatibility is what -Xjvm-default=all became when the flag was renamed.
+        kotlincArguments = listOf("-jvm-default=no-compatibility")
 
         configureKsp {
           allWarningsAsErrors = true
