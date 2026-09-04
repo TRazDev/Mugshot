@@ -15,7 +15,6 @@ buildscript {
     classpath libs.plugin.ksp
     classpath libs.plugin.android
     classpath libs.plugin.mavenPublish
-    classpath libs.plugin.dokka
     classpath libs.plugin.spotless
     classpath libs.plugin.buildConfig
     classpath libs.plugin.poko

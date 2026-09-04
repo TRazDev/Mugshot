@@ -1,10 +1,7 @@
 import com.android.build.gradle.internal.publishing.AndroidArtifacts
-import org.jetbrains.dokka.gradle.engine.parameters.KotlinPlatform
-import org.jetbrains.dokka.gradle.engine.parameters.VisibilityModifier
 
 apply plugin: 'org.jetbrains.kotlin.jvm'
 apply plugin: 'org.jetbrains.kotlin.plugin.compose'
-apply plugin: 'org.jetbrains.dokka'
 apply plugin: 'com.vanniktech.maven.publish'
 apply plugin: 'dev.drewhamilton.poko'
 apply plugin: 'aar2jar'
@@ -75,32 +72,6 @@ dependencies {
   layoutlibResources libs.tools.layoutlib.resources
 
   testImplementation libs.truth
-}
-
-dokka {
-  dokkaSourceSets.named("main").configure {
-    reportUndocumented = false
-    skipDeprecated = true
-    jdkVersion = libs.versions.javaTarget.get() as int
-    documentedVisibilities(VisibilityModifier.Public)
-    skipEmptyPackages = true
-    analysisPlatform = KotlinPlatform.JVM
-
-    externalDocumentationLinks.register("docs") {
-      url("https://developer.android.com/reference/")
-    }
-
-    sourceLink {
-      localDirectory.set(file("src/main/java"))
-      remoteUrl("https://github.com/TRazDev/Mugshot/tree/main/mugshot/src/main/java")
-      remoteLineSuffix.set("#L")
-    }
-
-    perPackageOption {
-      matchingRegex = /app\.cash\.mugshot\.internal(\..*)?/
-      suppress = true
-    }
-  }
 }
 
 def generateTestConfig = tasks.register("generateTestConfig") {
