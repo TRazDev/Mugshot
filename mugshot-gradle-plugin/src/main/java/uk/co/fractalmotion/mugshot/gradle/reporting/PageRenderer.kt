@@ -41,6 +41,8 @@ internal abstract class PageRenderer<T : CompositeTestResults> : TabbedPageRende
         "Failed tests",
         object : ErroringAction<SimpleHtmlWriter>() {
           @Throws(IOException::class)
+          // Gradle's ErroringAction calls this parameter 'thing'. The name here says what it is.
+          @Suppress("PARAMETER_NAME_CHANGED_ON_OVERRIDE")
           public override fun doExecute(element: SimpleHtmlWriter) {
             renderFailures(element)
           }
@@ -82,6 +84,8 @@ internal abstract class PageRenderer<T : CompositeTestResults> : TabbedPageRende
         "Ignored tests",
         object : ErroringAction<SimpleHtmlWriter>() {
           @Throws(IOException::class)
+          // Gradle's ErroringAction calls this parameter 'thing'. The name here says what it is.
+          @Suppress("PARAMETER_NAME_CHANGED_ON_OVERRIDE")
           public override fun doExecute(htmlWriter: SimpleHtmlWriter) {
             renderIgnoredTests(htmlWriter)
           }

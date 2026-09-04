@@ -134,6 +134,8 @@ internal class ClassPageRenderer(
       "Tests",
       object : ErroringAction<SimpleHtmlWriter>() {
         @Throws(IOException::class)
+        // Gradle's ErroringAction calls this parameter 'thing'. The name here says what it is.
+        @Suppress("PARAMETER_NAME_CHANGED_ON_OVERRIDE")
         public override fun doExecute(htmlWriter: SimpleHtmlWriter) {
           renderTests(htmlWriter)
         }
@@ -164,6 +166,8 @@ internal class ClassPageRenderer(
         "Standard output",
         object : ErroringAction<SimpleHtmlWriter>() {
           @Throws(IOException::class)
+          // Gradle's ErroringAction calls this parameter 'thing'. The name here says what it is.
+          @Suppress("PARAMETER_NAME_CHANGED_ON_OVERRIDE")
           override fun doExecute(htmlWriter: SimpleHtmlWriter) {
             val codeId = "class-stdout"
             htmlWriter
@@ -185,6 +189,8 @@ internal class ClassPageRenderer(
         "Standard error",
         object : ErroringAction<SimpleHtmlWriter>() {
           @Throws(Exception::class)
+          // Gradle's ErroringAction calls this parameter 'thing'. The name here says what it is.
+          @Suppress("PARAMETER_NAME_CHANGED_ON_OVERRIDE")
           override fun doExecute(htmlWriter: SimpleHtmlWriter) {
             val codeId = "class-stderr"
             htmlWriter

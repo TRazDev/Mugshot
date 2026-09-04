@@ -77,6 +77,8 @@ internal class PackagePageRenderer : PageRenderer<PackageTestResults>() {
       "Classes",
       object : ErroringAction<SimpleHtmlWriter>() {
         @Throws(IOException::class)
+        // Gradle's ErroringAction calls this parameter 'thing'. The name here says what it is.
+        @Suppress("PARAMETER_NAME_CHANGED_ON_OVERRIDE")
         public override fun doExecute(htmlWriter: SimpleHtmlWriter) {
           renderClasses(htmlWriter)
         }
