@@ -14,20 +14,20 @@ internal data class HealthUiState(
 )
 
 internal data class ActivityRing(
-  @StringRes val labelRes: Int,
+  @param:StringRes val labelRes: Int,
   val progress: Float,
   val value: String
 )
 
 internal data class HealthMetric(
-  @StringRes val labelRes: Int,
-  @StringRes val supportingRes: Int,
-  @DrawableRes val icon: Int,
+  @param:StringRes val labelRes: Int,
+  @param:StringRes val supportingRes: Int,
+  @param:DrawableRes val icon: Int,
   val value: String,
   val supportingArg: Int? = null
 )
 
 internal data class SleepStage(
-  @StringRes val labelRes: Int,
+  @param:StringRes val labelRes: Int,
   val fraction: Float
 )
