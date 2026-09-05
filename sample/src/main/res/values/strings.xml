@@ -79,9 +79,10 @@
   <string name="storefront_detail_free_delivery">Free delivery</string>
   <string name="storefront_detail_warranty">2 year warranty</string>
   <string name="storefront_detail_returns">60 day returns</string>
-  <string name="storefront_rating">
-    <xliff:g id="rating" example="4.8">%1$s</xliff:g> · <xliff:g id="reviews" example="312">%2$d</xliff:g> reviews
-  </string>
+  <plurals name="storefront_rating">
+    <item quantity="one"><xliff:g id="rating" example="4.8">%1$s</xliff:g> · <xliff:g id="reviews" example="1">%2$d</xliff:g> review</item>
+    <item quantity="other"><xliff:g id="rating" example="4.8">%1$s</xliff:g> · <xliff:g id="reviews" example="312">%2$d</xliff:g> reviews</item>
+  </plurals>
 
   <!-- Smart home -->
   <string name="smarthome_title">Home</string>

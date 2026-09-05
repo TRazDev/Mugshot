@@ -9,6 +9,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import uk.co.fractalmotion.mugshot.annotations.Mugshot
@@ -58,7 +59,12 @@ internal fun ProductDetailScreen(product: Product, modifier: Modifier = Modifier
         ProductStatusChip(status = product.status)
       }
       Text(
-        text = stringResource(R.string.storefront_rating, product.rating, product.reviewCount),
+        text = pluralStringResource(
+          R.plurals.storefront_rating,
+          product.reviewCount,
+          product.rating,
+          product.reviewCount
+        ),
         style = MaterialTheme.typography.labelMedium,
         color = MaterialTheme.colorScheme.onSurfaceVariant
       )
