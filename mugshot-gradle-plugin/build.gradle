@@ -68,7 +68,11 @@ tasks.withType(Test).configureEach {
   // The TestKit suites are split across several classes so they can run in parallel; Gradle
   // distributes tests by class. Each fork drives its own nested Gradle build (0.5-1.5 GB a piece),
   // so this is deliberately well below the core count -- raise it only with memory measured.
-  maxParallelForks = 4
+  // Windows locks a file while one process reads it, so parallel forks sharing the single
+  // TestKit cache under build/tmp/test/work collide on transform outputs and wrapper
+  // distributions. Giving each fork its own cache is not an option: the shared one is 16 GB,
+  // and four copies would not fit on a CI runner.
+  maxParallelForks = System.getProperty('os.name').toLowerCase().contains('windows') ? 1 : 4
 
   // These are referenced with relative paths in src/test/projects/test.settings.gradle.
   // They need to be declared on the Test task to make sure it runs with the new files.
