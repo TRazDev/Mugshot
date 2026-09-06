@@ -40,13 +40,13 @@ internal object OffByTwo : Differ {
         }
 
         if (expectedRgb == actualRgb) {
-          deltaImage.setRGB(expectedWidth + x, y, 0x00808080)
+          deltaImage.setRGB(expectedWidth + x, y, DeltaColors.UNCHANGED)
           continue
         }
 
         // If the pixels have no opacity, don't delta colors at all
         if (expectedRgb and -0x1000000 == 0 && actualRgb and -0x1000000 == 0) {
-          deltaImage.setRGB(expectedWidth + x, y, 0x00808080)
+          deltaImage.setRGB(expectedWidth + x, y, DeltaColors.UNCHANGED)
           continue
         }
 
@@ -55,21 +55,14 @@ internal object OffByTwo : Differ {
         val deltaG = (actualRgb and 0x00FF00).ushr(8) - (expectedRgb and 0x00FF00).ushr(8)
         val deltaB = (actualRgb and 0x0000FF) - (expectedRgb and 0x0000FF)
 
-        val newR = 128 + deltaR and 0xFF
-        val newG = 128 + deltaG and 0xFF
-        val newB = 128 + deltaB and 0xFF
-        val avgAlpha =
-          ((expectedRgb and -0x1000000).ushr(24) + (actualRgb and -0x1000000).ushr(24)) / 2 shl 24
-        val newRGB = avgAlpha or (newR shl 16) or (newG shl 8) or newB
-
         if (abs(deltaR) <= 2 && abs(deltaG) <= 2 && abs(deltaB) <= 2 && abs(deltaA) <= 2) {
           similarPixels++
-          deltaImage.setRGB(expectedWidth + x, y, 0xFF0000FF.toInt())
+          deltaImage.setRGB(expectedWidth + x, y, DeltaColors.UNCHANGED)
           continue
         }
 
         differentPixels++
-        deltaImage.setRGB(expectedWidth + x, y, newRGB)
+        deltaImage.setRGB(expectedWidth + x, y, DeltaColors.DIFFERENT)
 
         delta += abs(deltaR).toLong()
         delta += abs(deltaG).toLong()
