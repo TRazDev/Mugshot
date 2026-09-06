@@ -12,6 +12,11 @@ import androidx.compose.runtime.Composable
  */
 public class MugshotPreviewCase(
   public val snapshotName: String,
+  /**
+   * Where the preview is declared, in the shape of a stack frame, e.g.
+   * `com.example.feature.profile.ProfileScreen(ProfileScreen.kt:31) [Dark_Default]`. A failure
+   * quotes this so it points at the screen rather than at the generated test.
+   */
   public val source: String,
   public val config: MugshotPreviewConfig,
   private val frames: () -> List<@Composable () -> Unit>

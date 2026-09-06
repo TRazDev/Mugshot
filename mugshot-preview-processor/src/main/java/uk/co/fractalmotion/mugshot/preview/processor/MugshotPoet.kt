@@ -4,6 +4,7 @@ import com.google.devtools.ksp.getConstructors
 import com.google.devtools.ksp.getVisibility
 import com.google.devtools.ksp.processing.KSPLogger
 import com.google.devtools.ksp.symbol.ClassKind
+import com.google.devtools.ksp.symbol.FileLocation
 import com.google.devtools.ksp.symbol.KSAnnotation
 import com.google.devtools.ksp.symbol.KSClassDeclaration
 import com.google.devtools.ksp.symbol.KSFunctionDeclaration
@@ -67,9 +68,10 @@ internal class MugshotPoet(
     val source = function.sourceName()
 
     axes.combinations().forEach { combination ->
+      val suffix = axes.suffix(combination)
       addCase(
-        snapshotName = baseName + axes.suffix(combination),
-        source = source,
+        snapshotName = baseName + suffix,
+        source = source + suffix.variantLabel(),
         combination = combination,
         frames = frames
       )
@@ -198,14 +200,26 @@ internal class MugshotPoet(
     (argumentOf(name) as? List<*>)?.mapNotNull { it as? String }.orEmpty()
 
   /**
-   * The declaring file as a fully qualified name, e.g. `com.example.feature.profile.ProfileScreen`.
+   * The preview's declaration in the shape of a stack frame, e.g.
+   * `com.example.feature.profile.ProfileScreen(ProfileScreen.kt:31)`.
    *
    * Named so a failure points at the screen rather than at the generated test, which is the same
-   * class for every preview in the module. It is the file, not the composable: a file holds the
-   * screen and its previews together, and its name is what a reader recognises.
+   * class for every preview in the module. The `(File.kt:line)` tail is the form an IDE turns into
+   * a link, which is the only reason the line number is carried at all.
    */
-  private fun KSFunctionDeclaration.sourceName(): String =
-    with(containingFile!!) { "${packageName.asString()}.${fileName.removeSuffix(".kt")}" }
+  private fun KSFunctionDeclaration.sourceName(): String {
+    val file = containingFile!!
+    val qualifiedFile = "${file.packageName.asString()}.${file.fileName.removeSuffix(".kt")}"
+    val line = (location as? FileLocation)?.lineNumber
+    return if (line == null) {
+      "$qualifiedFile(${file.fileName})"
+    } else {
+      "$qualifiedFile(${file.fileName}:$line)"
+    }
+  }
+
+  /** The axis suffix as a readable tag, e.g. `_Dark_Default` becomes ` [Dark_Default]`. */
+  private fun String.variantLabel(): String = if (isEmpty()) "" else " [${removePrefix("_")}]"
 
   private fun KSFunctionDeclaration.snapshotName(namespace: String) =
     buildList {

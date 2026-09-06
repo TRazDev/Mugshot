@@ -63,7 +63,7 @@ class PreviewProcessorProviderTest {
         add(
           uk.co.fractalmotion.mugshot.preview.runtime.MugshotPreviewCase(
             snapshotName = "SamplePreview_SamplePreview",
-            source = "test.SamplePreview",
+            source = "test.SamplePreview(SamplePreview.kt:21)",
             config = uk.co.fractalmotion.mugshot.preview.runtime.MugshotPreviewConfig(
               device = uk.co.fractalmotion.mugshot.preview.runtime.MugshotPreviewDevice.DEFAULT,
               nightMode = false,
