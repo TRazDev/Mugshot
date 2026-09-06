@@ -62,7 +62,7 @@ class PreviewProcessorProviderTest {
       internal val mugshotPreviewCases: List<uk.co.fractalmotion.mugshot.preview.runtime.MugshotPreviewCase> = buildList {
         add(
           uk.co.fractalmotion.mugshot.preview.runtime.MugshotPreviewCase(
-            snapshotName = "SamplePreview_SamplePreview",
+            snapshotName = "SamplePreview.SamplePreview",
             source = "test.SamplePreview(SamplePreview.kt:21)",
             config = uk.co.fractalmotion.mugshot.preview.runtime.MugshotPreviewConfig(
               device = uk.co.fractalmotion.mugshot.preview.runtime.MugshotPreviewDevice.DEFAULT,
@@ -94,7 +94,7 @@ class PreviewProcessorProviderTest {
 
     assertThat(result.exitCode).isEqualTo(KotlinCompilation.ExitCode.OK)
     // @Preview arguments are not the source of truth; the matrix comes from Mugshot annotations.
-    assertThat(snapshotNames()).containsExactly("SamplePreview_SamplePreview")
+    assertThat(snapshotNames()).containsExactly("SamplePreview.SamplePreview")
   }
 
   @Test
@@ -111,8 +111,8 @@ class PreviewProcessorProviderTest {
 
     assertThat(result.exitCode).isEqualTo(KotlinCompilation.ExitCode.OK)
     assertThat(snapshotNames()).containsExactly(
-      "SamplePreview_SamplePreview_Light",
-      "SamplePreview_SamplePreview_Dark"
+      "SamplePreview.SamplePreview.Light",
+      "SamplePreview.SamplePreview.Dark"
     ).inOrder()
     assertThat(previewsFile.readText()).contains("nightMode = true")
   }
@@ -132,10 +132,10 @@ class PreviewProcessorProviderTest {
 
     assertThat(result.exitCode).isEqualTo(KotlinCompilation.ExitCode.OK)
     assertThat(snapshotNames()).containsExactly(
-      "SamplePreview_SamplePreview_Phone_Light",
-      "SamplePreview_SamplePreview_Phone_Dark",
-      "SamplePreview_SamplePreview_Tablet_Light",
-      "SamplePreview_SamplePreview_Tablet_Dark"
+      "SamplePreview.SamplePreview.Phone.Light",
+      "SamplePreview.SamplePreview.Phone.Dark",
+      "SamplePreview.SamplePreview.Tablet.Light",
+      "SamplePreview.SamplePreview.Tablet.Dark"
     ).inOrder()
   }
 
@@ -153,8 +153,8 @@ class PreviewProcessorProviderTest {
 
     assertThat(result.exitCode).isEqualTo(KotlinCompilation.ExitCode.OK)
     assertThat(snapshotNames()).hasSize(24)
-    assertThat(snapshotNames().first()).isEqualTo("SamplePreview_SamplePreview_Phone_Light_Font100")
-    assertThat(snapshotNames().last()).isEqualTo("SamplePreview_SamplePreview_Landscape_Dark_Font200")
+    assertThat(snapshotNames().first()).isEqualTo("SamplePreview.SamplePreview.Phone.Light.Font100")
+    assertThat(snapshotNames().last()).isEqualTo("SamplePreview.SamplePreview.Landscape.Dark.Font200")
   }
 
   @Test
@@ -171,9 +171,9 @@ class PreviewProcessorProviderTest {
 
     assertThat(result.exitCode).isEqualTo(KotlinCompilation.ExitCode.OK)
     assertThat(snapshotNames()).containsExactly(
-      "SamplePreview_SamplePreview_Default",
-      "SamplePreview_SamplePreview_ar",
-      "SamplePreview_SamplePreview_en-rXA"
+      "SamplePreview.SamplePreview.Default",
+      "SamplePreview.SamplePreview.ar",
+      "SamplePreview.SamplePreview.en-rXA"
     ).inOrder()
 
     // Arabic is right to left; the accent pseudolocale is not.
@@ -248,8 +248,8 @@ class PreviewProcessorProviderTest {
 
     assertThat(result.exitCode).isEqualTo(KotlinCompilation.ExitCode.OK)
     assertThat(snapshotNames()).containsExactly(
-      "SamplePreview_SamplePreview_WearRound",
-      "SamplePreview_SamplePreview_WearSquare"
+      "SamplePreview.SamplePreview.WearRound",
+      "SamplePreview.SamplePreview.WearSquare"
     ).inOrder()
   }
 
@@ -270,8 +270,8 @@ class PreviewProcessorProviderTest {
 
     assertThat(result.exitCode).isEqualTo(KotlinCompilation.ExitCode.OK)
     assertThat(snapshotNames()).containsExactly(
-      "SamplePreview_SamplePreview_Light",
-      "SamplePreview_SamplePreview_Dark"
+      "SamplePreview.SamplePreview.Light",
+      "SamplePreview.SamplePreview.Dark"
     ).inOrder()
   }
 

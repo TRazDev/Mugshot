@@ -7,6 +7,12 @@ down, under "Upstream Paparazzi history".
 ## [Unreleased]
 
 ### Changed
+* **Breaking:** a generated preview's snapshot is named after the file and function that declare
+  it, e.g. `MugshotChipCatalog.MugshotChipCatalogPreview.Light`, rather than after its package
+  path with underscores. The name is both the golden image's filename and what the test runner
+  reports, so this shortens the line a run prints as well. Re-record with `recordMugshot*` and
+  delete the goldens under the old names; the processor fails the build if two previews would
+  now share a name.
 * A test run is quiet. The framework's log priority was discarded and every message logged at
   info, so each render put its verbose and debug lines in front of whoever ran the tests; the
   priority is now mapped to a matching level. The framework's own resources carry duplicate style
