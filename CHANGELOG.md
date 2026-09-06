@@ -13,10 +13,11 @@ down, under "Upstream Paparazzi history".
 * A failed snapshot is reported as three labelled images, the golden, the difference between them,
   and this run's render, rather than one combined image behind a toggle. The report link points
   at the test report, which is where those images now appear.
-* The difference image marks a changed pixel in flat ruby red and leaves everything else
-  transparent. It used to shade each pixel by how far every colour channel had moved, which
-  encoded the direction and size of the change but was hard to read, and wrapped around to
-  near-grey on the largest changes. Pixels that differ by little enough to pass are no longer marked either, since
+* The difference image marks a changed pixel in flat ruby red and leaves everything else white.
+  It used to shade each pixel by how far every colour channel had moved, which encoded the
+  direction and size of the change but was hard to read, and wrapped around to near-grey on the
+  largest changes. The white background replaces a transparent one, which blended into the page
+  and left no way to see where the render ended. Pixels that differ by little enough to pass are no longer marked either, since
   they are not something to act on.
 
 ### Added

@@ -185,9 +185,9 @@ there with three images side by side: the golden, the difference between them, a
 rendered. The same images are written to `build/mugshot/failures` for CI to collect, along
 with a single combined image the console error links to.
 
-In the difference image, **ruby red** marks a pixel the two renders disagree on. Everything else
-is transparent, so the report's grid shows through: a pixel that matches, and a pixel that
-differs by little enough to pass, look the same, because neither is something to act on.
+In the difference image, **ruby red** marks a pixel the two renders disagree on and everything
+else is white, so the edges of the render stay visible. A pixel that matches and a pixel that
+differs by little enough to pass look the same, because neither is something to act on.
 
 To gate CI on your goldens:
 

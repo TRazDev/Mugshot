@@ -11,8 +11,11 @@ internal object DeltaColors {
   /**
    * Nothing to show here: the renders agree, both left the pixel transparent, or they differ by
    * little enough that the differ lets it pass.
+   *
+   * Opaque white rather than transparent, so the delta image has visible edges. Left transparent
+   * it blends into the page and there is no way to tell where the render ends.
    */
-  const val UNCHANGED: Int = 0x00808080
+  const val UNCHANGED: Int = 0xFFFFFFFF.toInt()
 
   /**
    * The two renders disagree here by more than the differ allows.
