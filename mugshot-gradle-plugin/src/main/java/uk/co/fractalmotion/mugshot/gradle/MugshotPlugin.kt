@@ -37,6 +37,7 @@ import org.gradle.api.artifacts.type.ArtifactTypeDefinition.ARTIFACT_TYPE_ATTRIB
 import org.gradle.api.file.Directory
 import org.gradle.api.file.FileCollection
 import org.gradle.api.internal.artifacts.transform.UnzipTransform
+import org.gradle.api.internal.project.ProjectInternal
 import org.gradle.api.internal.tasks.testing.report.TestReporter
 import org.gradle.api.logging.LogLevel.LIFECYCLE
 import org.gradle.api.provider.Provider
@@ -50,7 +51,7 @@ import org.gradle.api.tasks.SourceSet.TEST_SOURCE_SET_NAME
 import org.gradle.api.tasks.options.Option
 import org.gradle.api.tasks.testing.AbstractTestTask
 import org.gradle.api.tasks.testing.Test
-import org.gradle.api.tasks.testing.logging.TestLogEvent
+import org.gradle.internal.logging.text.StyledTextOutputFactory
 import org.gradle.internal.operations.BuildOperationExecutor
 import org.gradle.internal.operations.BuildOperationRunner
 import org.gradle.internal.os.OperatingSystem
@@ -261,11 +262,14 @@ public class MugshotPlugin @Inject constructor(
 
         if (project.reportsReadableTestNames()) {
           test.addTestListener(
-            ReadableTestNameListener(buildDirectory.dir("generated/ksp/${variant.name}/resources"))
+            ReadableTestNameListener(
+              buildDirectory.dir("generated/ksp/${variant.name}/resources"),
+              (project as ProjectInternal).services.get(StyledTextOutputFactory::class.java)
+            )
           )
-          // The listener reports what passed, so Gradle is left to report what failed. Set here
-          // rather than at configuration time so a build's own testLogging cannot land after it.
-          test.doFirst { test.testLogging.events = setOf(TestLogEvent.FAILED) }
+          // The listener reports every result, so Gradle is left reporting none. Set here rather
+          // than at configuration time so a build's own testLogging cannot land after it.
+          test.doFirst { test.testLogging.events = emptySet() }
         }
 
         test.inputs.property("mugshot.test.record", isRecordRun)

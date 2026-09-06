@@ -5,9 +5,11 @@ import org.gradle.api.provider.Provider
 import org.gradle.api.tasks.testing.TestDescriptor
 import org.gradle.api.tasks.testing.TestListener
 import org.gradle.api.tasks.testing.TestResult
+import org.gradle.internal.logging.text.StyledTextOutput
+import org.gradle.internal.logging.text.StyledTextOutputFactory
 
 /**
- * Reports a passing preview by name.
+ * Reports a preview by name.
  *
  * Gradle names a generated preview test after the golden image, which is a flat string repeated
  * twice in the same line:
@@ -21,14 +23,14 @@ import org.gradle.api.tasks.testing.TestResult
  * So the processor writes the pairing out, and this reads it back:
  *
  * ```
- * designsystem.catalog.MugshotChipCatalog.MugshotChipCatalogPreview [Light] PASSED
+ * MugshotGeneratedPreviewTest > designsystem.catalog.MugshotChipCatalog.MugshotChipCatalogPreview [Light] PASSED
  * ```
  *
- * Failures are left to Gradle, which already prints them with the assertion that explains them.
  * A test that is not a generated preview keeps its own name.
  */
 internal class ReadableTestNameListener(
-  private val generatedResources: Provider<Directory>
+  private val generatedResources: Provider<Directory>,
+  private val outputFactory: StyledTextOutputFactory
 ) : TestListener {
   private val displayNames: Map<String, String> by lazy { readDisplayNames() }
 
@@ -39,20 +41,33 @@ internal class ReadableTestNameListener(
   override fun beforeTest(testDescriptor: TestDescriptor): Unit = Unit
 
   override fun afterTest(testDescriptor: TestDescriptor, result: TestResult) {
-    val outcome = when (result.resultType) {
-      // Gradle's own lines read PASSED rather than SUCCESS, and this replaces those.
-      TestResult.ResultType.SUCCESS -> "PASSED"
-      TestResult.ResultType.SKIPPED -> "SKIPPED"
-      TestResult.ResultType.FAILURE -> return
+    val output = outputFactory.create(ReadableTestNameListener::class.java)
+    output.println()
+    output.text(displayNameOf(testDescriptor))
+    output.text(" ")
+
+    // The same words and colours Gradle's own reporting uses, so a build that turns this on does
+    // not have to learn a second vocabulary.
+    when (result.resultType) {
+      TestResult.ResultType.SUCCESS -> output.withStyle(StyledTextOutput.Style.SuccessHeader).text("PASSED")
+      TestResult.ResultType.SKIPPED -> output.withStyle(StyledTextOutput.Style.Info).text("SKIPPED")
+      TestResult.ResultType.FAILURE -> output.withStyle(StyledTextOutput.Style.FailureHeader).text("FAILED")
     }
-    println("${displayNameOf(testDescriptor)} $outcome")
+    output.println()
+
+    // Gradle prints the exception under a failure, and this replaces Gradle's line, so it has to
+    // print it too. Indented four, which is where Gradle puts it.
+    result.exceptions.forEach { failure ->
+      output.withStyle(StyledTextOutput.Style.Failure)
+        .println(failure.toString().prependIndent("    "))
+    }
   }
 
   private fun displayNameOf(descriptor: TestDescriptor): String {
-    val snapshotName = descriptor.name.substringAfter("snapshot[", "").substringBeforeLast("]", "")
-    displayNames[snapshotName]?.let { return it }
     val className = descriptor.className?.substringAfterLast('.').orEmpty()
-    return if (className.isEmpty()) descriptor.name else "$className.${descriptor.name}"
+    val snapshotName = descriptor.name.substringAfter("snapshot[", "").substringBeforeLast("]", "")
+    val name = displayNames[snapshotName] ?: descriptor.name
+    return if (className.isEmpty()) name else "$className > $name"
   }
 
   /**
