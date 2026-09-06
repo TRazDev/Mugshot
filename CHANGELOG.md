@@ -6,6 +6,8 @@ down, under "Upstream Paparazzi history".
 
 ## [Unreleased]
 
+## [3.2.0] - 2026-09-06
+
 ### Changed
 * **Breaking:** a generated preview's snapshot is named after the file and function that declare
   it, e.g. `MugshotChipCatalog.MugshotChipCatalogPreview.Light`, rather than after its package
@@ -13,14 +15,18 @@ down, under "Upstream Paparazzi history".
   reports, so this shortens the line a run prints as well. Re-record with `recordMugshot*` and
   delete the goldens under the old names; the processor fails the build if two previews would
   now share a name.
+* **Breaking:** the standalone snapshot gallery is gone, and `HtmlReportWriter` with it. It was
+  written only by `recordMugshot*`, so `verifyMugshot*` printed a link to a report that did not
+  exist. Recording now uses `SnapshotRecorder`, which writes goldens and nothing else.
+* **Breaking:** `Mugshot.snapshot` takes a `source` between `name` and the composable, and
+  `MugshotPreviewCase` takes a `source` after `snapshotName`. Kotlin callers of `snapshot { }` and
+  `snapshot("label") { }` are unaffected, but anything compiled against an earlier version needs
+  recompiling.
 * A test run is quiet. The framework's log priority was discarded and every message logged at
   info, so each render put its verbose and debug lines in front of whoever ran the tests; the
   priority is now mapped to a matching level. The framework's own resources carry duplicate style
   definitions, and those are no longer warned about. The Byte Buddy agent Mugshot attaches is
   declared, so the JVM stops warning that an agent was loaded dynamically.
-* **Breaking:** the standalone snapshot gallery is gone, and `HtmlReportWriter` with it. It was
-  written only by `recordMugshot*`, so `verifyMugshot*` printed a link to a report that did not
-  exist. Recording now uses `SnapshotRecorder`, which writes goldens and nothing else.
 * A failed snapshot is reported as three labelled images, the golden, the difference between them,
   and this run's render, rather than one combined image behind a toggle. The report link points
   at the test report, which is where those images now appear.
@@ -29,10 +35,6 @@ down, under "Upstream Paparazzi history".
   generated test class, which is the same for every preview in a module. The `(File.kt:line)` tail
   is the shape an IDE turns into a link. Hand-written tests are unchanged: they render an arbitrary
   composable, so there is no screen to name, and the message still uses the snapshot's name.
-* **Breaking:** `Mugshot.snapshot` takes a `source` between `name` and the composable, and
-  `MugshotPreviewCase` takes a `source` after `snapshotName`. Kotlin callers of `snapshot { }` and
-  `snapshot("label") { }` are unaffected, but anything compiled against an earlier version needs
-  recompiling.
 * A failure from a hand-written test names the test as a qualified name, e.g.
   `com.example.screen.ScreenSnapshotTest.profile`, rather than the golden image's filename. A test
   renders an arbitrary composable, so there is no screen to name and the test itself is the most
@@ -48,16 +50,14 @@ down, under "Upstream Paparazzi history".
   It used to shade each pixel by how far every colour channel had moved, which encoded the
   direction and size of the change but was hard to read, and wrapped around to near-grey on the
   largest changes. The white background replaces a transparent one, which blended into the page
-  and left no way to see where the render ended. Pixels that differ by little enough to pass are no longer marked either, since
-  they are not something to act on.
+  and left no way to see where the render ended. Pixels that differ by little enough to pass are
+  no longer marked either, since they are not something to act on.
 
 ### Added
 * Verification writes `reference-` and `diff-` images alongside the render in
   `build/mugshot/failures`, so CI can collect the panels individually. The combined image the
   console error links to is still written, with its labels, since nothing else identifies the
   panels when it is opened on its own.
-
-### Added
 * `mugshot-preview-lints` is published. It was built and tested on every run but its publish plugin
   was commented out, so nobody could depend on it. Add it with `lintChecks` to have a `@Mugshot`
   preview that cannot produce a golden reported as a lint error rather than skipped in silence.
@@ -66,13 +66,11 @@ down, under "Upstream Paparazzi history".
 * **Breaking:** the `mssim`, `sift`, `flip` and `de2000` image differs are gone, leaving `offbytwo`
   (the default) and `pixelperfect`. Setting `uk.co.fractalmotion.mugshot.differ` to a removed value
   now fails with `Unknown differ type` rather than falling back silently.
-
   The four measured worse on the job they were being asked to do. Against a 600x1000 golden with an
   80x20 block painted into it, a change nobody could miss, `flip` reported Identical and `mssim`,
   `sift` and `de2000` reported Similar, so none of them would have failed a build. Only the two
   that survive reported Different. They were also 8 to 30 times slower: 82ms to 260ms per
   comparison against 9ms.
-
   `sift` had two further defects. It reported two identical images as different whenever they held
   no detectable features, so any flat colour or blank screen failed against itself, and it ran out
   of heap on a full screen render.
@@ -661,7 +659,8 @@ As of this release, consumers must build on Java 11 environments.
 
 
 
-[Unreleased]: https://github.com/TRazDev/Mugshot/compare/3.1.1...HEAD
+[Unreleased]: https://github.com/TRazDev/Mugshot/compare/3.2.0...HEAD
+[3.2.0]: https://github.com/TRazDev/Mugshot/releases/tag/3.2.0
 [3.1.1]: https://github.com/TRazDev/Mugshot/releases/tag/3.1.1
 [3.1.0]: https://github.com/TRazDev/Mugshot/releases/tag/3.1.0
 [3.0.2]: https://github.com/TRazDev/Mugshot/releases/tag/3.0.2

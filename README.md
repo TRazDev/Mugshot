@@ -122,12 +122,11 @@ An annotated function must be `@Composable`, must carry a `@Preview`, must not b
 and must take no parameters other than a single `@PreviewParameter`.
 
 A preview that breaks one of those rules is skipped. There is no test file to fail, so the build
-stays green and no image appears. The lint checks turn that silence into a message. They ship
-from 3.1.2, which is why the version below is ahead of the ones above:
+stays green and no image appears. The lint checks turn that silence into a message:
 
 ```groovy
 dependencies {
-  lintChecks 'uk.co.fractalmotion.mugshot:mugshot-preview-lints:3.1.2'
+  lintChecks 'uk.co.fractalmotion.mugshot:mugshot-preview-lints:3.2.0'
 }
 ```
 
@@ -290,7 +289,7 @@ buildscript {
     google()
   }
   dependencies {
-    classpath 'uk.co.fractalmotion.mugshot:mugshot-gradle-plugin:3.1.1'
+    classpath 'uk.co.fractalmotion.mugshot:mugshot-gradle-plugin:3.2.0'
   }
 }
 
@@ -300,7 +299,7 @@ apply plugin: 'uk.co.fractalmotion.mugshot'
 Using the plugins DSL:
 ```groovy
 plugins {
-  id 'uk.co.fractalmotion.mugshot' version '3.1.1'
+  id 'uk.co.fractalmotion.mugshot' version '3.2.0'
 }
 ```
 
