@@ -22,6 +22,17 @@ internal class MugshotPoet(
   private val logger: KSPLogger,
   private val namespace: String
 ) {
+  /**
+   * Each case's snapshot name against the name a person would recognise it by.
+   *
+   * The snapshot name is flat because it becomes a filename, e.g.
+   * `feature_profile_ProfileScreen_ProfileScreenPreview_Dark`. Nothing downstream can turn that
+   * back into `feature.profile.ProfileScreen.ProfileScreenPreview [Dark]`, because only this
+   * processor knows where the path ends and the function and the axes begin. So the pairing is
+   * recorded here and written out for the Gradle plugin to read.
+   */
+  val previewNames: MutableMap<String, String> = LinkedHashMap()
+
   fun buildFiles(functions: Sequence<KSFunctionDeclaration>): List<FileSpec> =
     listOf(
       FileSpec.scriptBuilder("MugshotPreviews", namespace)
@@ -66,11 +77,14 @@ internal class MugshotPoet(
     val axes = function.resolveAxes()
     val baseName = function.snapshotName(namespace)
     val source = function.sourceName()
+    val displayName = function.displayName(namespace)
 
     axes.combinations().forEach { combination ->
       val suffix = axes.suffix(combination)
+      val snapshotName = baseName + suffix
+      previewNames[snapshotName] = displayName + suffix.variantLabel()
       addCase(
-        snapshotName = baseName + suffix,
+        snapshotName = snapshotName,
         source = source + suffix.variantLabel(),
         combination = combination,
         frames = frames
@@ -217,6 +231,18 @@ internal class MugshotPoet(
       "$qualifiedFile(${file.fileName}:$line)"
     }
   }
+
+  /**
+   * The preview as a person would name it, e.g. `feature.profile.ProfileScreen.ProfileScreenPreview`.
+   *
+   * The same parts as [snapshotName], joined with dots and relative to the module's namespace,
+   * which is the shape a Kotlin declaration is written in.
+   */
+  private fun KSFunctionDeclaration.displayName(namespace: String): String =
+    with(containingFile!!) {
+      val relative = "${packageName.asString()}.${fileName.removeSuffix(".kt")}".removePrefix("$namespace.")
+      "$relative.${this@displayName.simpleName.asString()}"
+    }
 
   /** The axis suffix as a readable tag, e.g. `_Dark_Default` becomes ` [Dark_Default]`. */
   private fun String.variantLabel(): String = if (isEmpty()) "" else " [${removePrefix("_")}]"

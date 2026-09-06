@@ -50,6 +50,7 @@ import org.gradle.api.tasks.SourceSet.TEST_SOURCE_SET_NAME
 import org.gradle.api.tasks.options.Option
 import org.gradle.api.tasks.testing.AbstractTestTask
 import org.gradle.api.tasks.testing.Test
+import org.gradle.api.tasks.testing.logging.TestLogEvent
 import org.gradle.internal.operations.BuildOperationExecutor
 import org.gradle.internal.operations.BuildOperationRunner
 import org.gradle.internal.os.OperatingSystem
@@ -257,6 +258,15 @@ public class MugshotPlugin @Inject constructor(
         // lines about a dynamically loaded agent every run. The attach is deliberate, so say so
         // rather than making everyone read the warning.
         test.jvmArgs("-XX:+EnableDynamicAgentLoading")
+
+        if (project.reportsReadableTestNames()) {
+          test.addTestListener(
+            ReadableTestNameListener(buildDirectory.dir("generated/ksp/${variant.name}/resources"))
+          )
+          // The listener reports what passed, so Gradle is left to report what failed. Set here
+          // rather than at configuration time so a build's own testLogging cannot land after it.
+          test.doFirst { test.testLogging.events = setOf(TestLogEvent.FAILED) }
+        }
 
         test.inputs.property("mugshot.test.record", isRecordRun)
         test.inputs.property("mugshot.test.verify", isVerifyRun)
@@ -619,6 +629,16 @@ public class MugshotPlugin @Inject constructor(
 
   private fun Project.isInternal(): Boolean =
     providers.gradleProperty("uk.co.fractalmotion.mugshot.internal").orNull == "true"
+
+  /**
+   * Whether to report each preview by name as it finishes.
+   *
+   * Off by default. Gradle prints nothing per test unless a build asks it to, so switching this on
+   * for everyone would add output to builds that never wanted any. A build that does want it opts
+   * in, and gets a line naming the preview rather than the flat snapshot name twice over.
+   */
+  private fun Project.reportsReadableTestNames(): Boolean =
+    providers.gradleProperty("uk.co.fractalmotion.mugshot.readableTestNames").orNull == "true"
 
   private fun Project.overwriteOnMaxPercentDifferenceProvider(): Provider<String> =
     providers.gradleProperty("uk.co.fractalmotion.mugshot.overwriteOnMaxPercentDifference")

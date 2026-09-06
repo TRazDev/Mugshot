@@ -208,6 +208,18 @@ Set these in `gradle.properties`; the plugin forwards them to the test JVM.
 | `uk.co.fractalmotion.mugshot.maxPercentDifferenceDefault` | `0.01` | how much difference a verification tolerates |
 | `uk.co.fractalmotion.mugshot.defaultLocale` | unset | locale for every snapshot, e.g. `fr-rFR` |
 | `uk.co.fractalmotion.mugshot.overwriteOnMaxPercentDifference` | `false` | rewrite goldens that differ within the threshold |
+| `uk.co.fractalmotion.mugshot.readableTestNames` | `false` | report a passing preview by name rather than by golden filename |
+
+With `readableTestNames` on, a passing preview is reported as
+
+```
+designsystem.catalog.MugshotChipCatalog.MugshotChipCatalogPreview [Light] PASSED
+```
+
+rather than as the golden's filename, which Gradle prints twice in the same line. Failures are
+left alone: Gradle already prints those with the assertion that explains them. It is off by
+default because Gradle reports nothing per test unless a build asks it to, and switching it on
+here would add output to a build that never wanted any.
 
 Beyond annotations
 -------

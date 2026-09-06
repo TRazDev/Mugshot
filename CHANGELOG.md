@@ -7,6 +7,11 @@ down, under "Upstream Paparazzi history".
 ## [Unreleased]
 
 ### Changed
+* A build can ask for a passing preview to be reported by name, with
+  `uk.co.fractalmotion.mugshot.readableTestNames=true`. Gradle names these tests after the golden
+  image and prints that flat name twice in a line; the processor now records what each snapshot
+  should be shown as, and the plugin reads it back. Off by default, since Gradle reports nothing
+  per test unless a build asks it to.
 * A test run is quiet. The framework's log priority was discarded and every message logged at
   info, so each render put its verbose and debug lines in front of whoever ran the tests; the
   priority is now mapped to a matching level. The framework's own resources carry duplicate style

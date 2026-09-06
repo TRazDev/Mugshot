@@ -51,12 +51,35 @@ public class PreviewProcessor(
     // Generated unconditionally, even with nothing to snapshot: the Gradle plugin always writes a
     // test that reads mugshotPreviewCases, and that test has to compile in a module which has not
     // annotated anything yet.
-    MugshotPoet(logger, namespace).buildFiles(functions.asSequence()).forEach { file ->
+    val poet = MugshotPoet(logger, namespace)
+    poet.buildFiles(functions.asSequence()).forEach { file ->
       logger.log("writing file: ${file.packageName}.${file.name}.kt")
       file.writeTo(environment.codeGenerator, dependencies)
     }
+    writePreviewNames(namespace, dependencies, poet.previewNames)
 
     return functions.filterNot { it.validate() }
+  }
+
+  /**
+   * Records what each snapshot is called against what it should be shown as.
+   *
+   * The Gradle plugin reads this off the test runtime classpath to report a preview by name. It
+   * cannot work the name out for itself: a snapshot name is flat because it becomes a filename,
+   * and only this processor knows which underscores separate the path, the function and the axes.
+   */
+  private fun writePreviewNames(namespace: String, dependencies: Dependencies, names: Map<String, String>) {
+    environment.codeGenerator
+      .createNewFile(dependencies, namespace, PREVIEW_NAMES_FILE, "txt")
+      .bufferedWriter()
+      .use { writer ->
+        names.forEach { (snapshotName, displayName) ->
+          writer.write(snapshotName)
+          writer.write("\t")
+          writer.write(displayName)
+          writer.newLine()
+        }
+      }
   }
 
   /**
@@ -117,5 +140,8 @@ public class PreviewProcessor(
 
   private companion object {
     private const val NAMESPACE_OPTION = "uk.co.fractalmotion.mugshot.preview.namespace"
+
+    /** Read by the Gradle plugin off the test runtime classpath. Keep the name in step there. */
+    private const val PREVIEW_NAMES_FILE = "mugshotPreviewNames"
   }
 }
