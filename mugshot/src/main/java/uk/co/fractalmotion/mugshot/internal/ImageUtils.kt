@@ -62,13 +62,13 @@ internal object ImageUtils {
     val imageHeight = image.height
 
     val imageName = getName(relativePath)
+    val snapshotName = imageName.removeSuffix(".${WebpCodec.EXTENSION}")
     var error = when {
-      percentDifference > maxPercentDifferent -> "Images differ (by %f%%)".format(percentDifference)
-      abs(goldenImageWidth - imageWidth) >= 2 ->
-        "Widths differ too much for $imageName: ${goldenImageWidth}x$goldenImageHeight vs ${imageWidth}x$imageHeight"
+      percentDifference > maxPercentDifferent ->
+        "$snapshotName differs by %.3f%%".format(percentDifference)
 
-      abs(goldenImageHeight - imageHeight) >= 2 ->
-        "Heights differ too much for $imageName: ${goldenImageWidth}x$goldenImageHeight vs ${imageWidth}x$imageHeight"
+      abs(goldenImageWidth - imageWidth) >= 2 || abs(goldenImageHeight - imageHeight) >= 2 ->
+        "$snapshotName is ${imageWidth}x$imageHeight, golden is ${goldenImageWidth}x$goldenImageHeight"
 
       else -> null
     }
@@ -114,8 +114,10 @@ internal object ImageUtils {
         }
       }
       deltaOutput.writeBytes(WebpCodec.encode(deltaImage))
-      error += " - see details in file://" + deltaOutput.path + "\n"
-      val actualOutput = File(failureDir, getName(relativePath))
+
+      // The report reads this one back as the "New" panel, so it is written whether or not the
+      // message mentions it.
+      val actualOutput = File(failureDir, imageName)
       if (actualOutput.exists()) {
         val deleted = actualOutput.delete()
         if (!deleted) {
@@ -123,10 +125,11 @@ internal object ImageUtils {
         }
       }
       WebpCodec.encodeTo(actualOutput, image)
-      error += "Thumbnail for current rendering stored at file://" + actualOutput.path
-      error += "\nRun the following command to accept the changes:\n"
-      error += "mv ${actualOutput.absolutePath} ${File(relativePath).absolutePath}"
-      println(error)
+
+      // Only what is needed to act on the failure: what changed, the golden to update, and the
+      // image showing where it changed. Anything longer stops being read.
+      error += "\n  golden: file://${File(relativePath).absolutePath}"
+      error += "\n  diff:   file://${deltaOutput.absolutePath}"
       throw AssertionError(error)
     }
   }

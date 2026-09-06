@@ -13,6 +13,9 @@ down, under "Upstream Paparazzi history".
 * A failed snapshot is reported as three labelled images, the golden, the difference between them,
   and this run's render, rather than one combined image behind a toggle. The report link points
   at the test report, which is where those images now appear.
+* The failure message is three lines: what failed and by how much, the golden to update, and the
+  difference image. It used to add the rendered image's path, a `mv` command, and a copy of itself
+  on standard output, which buried the part worth reading.
 * The difference image marks a changed pixel in flat ruby red and leaves everything else white.
   It used to shade each pixel by how far every colour channel had moved, which encoded the
   direction and size of the change but was hard to read, and wrapped around to near-grey on the
