@@ -51,7 +51,8 @@ internal object ImageUtils {
     image: BufferedImage,
     maxPercentDifferent: Double,
     failureDir: File,
-    differ: Differ
+    differ: Differ,
+    source: String? = null
   ) {
     val (deltaImage, percentDifference) = compareImages(goldenImage, image, differ)
 
@@ -62,13 +63,15 @@ internal object ImageUtils {
     val imageHeight = image.height
 
     val imageName = getName(relativePath)
+    // What failed, named the way a reader recognises it: the screen's own file when the caller
+    // knows it, and otherwise the snapshot, which names the test that took it.
+    val snapshotName = source ?: imageName.removeSuffix(".${WebpCodec.EXTENSION}")
     var error = when {
-      percentDifference > maxPercentDifferent -> "Images differ (by %f%%)".format(percentDifference)
-      abs(goldenImageWidth - imageWidth) >= 2 ->
-        "Widths differ too much for $imageName: ${goldenImageWidth}x$goldenImageHeight vs ${imageWidth}x$imageHeight"
+      percentDifference > maxPercentDifferent ->
+        "$snapshotName differs by %.3f%%".format(percentDifference)
 
-      abs(goldenImageHeight - imageHeight) >= 2 ->
-        "Heights differ too much for $imageName: ${goldenImageWidth}x$goldenImageHeight vs ${imageWidth}x$imageHeight"
+      abs(goldenImageWidth - imageWidth) >= 2 || abs(goldenImageHeight - imageHeight) >= 2 ->
+        "$snapshotName is ${imageWidth}x$imageHeight, golden is ${goldenImageWidth}x$goldenImageHeight"
 
       else -> null
     }
@@ -114,8 +117,10 @@ internal object ImageUtils {
         }
       }
       deltaOutput.writeBytes(WebpCodec.encode(deltaImage))
-      error += " - see details in file://" + deltaOutput.path + "\n"
-      val actualOutput = File(failureDir, getName(relativePath))
+
+      // The report reads this one back as the "New" panel, so it is written whether or not the
+      // message mentions it.
+      val actualOutput = File(failureDir, imageName)
       if (actualOutput.exists()) {
         val deleted = actualOutput.delete()
         if (!deleted) {
@@ -123,11 +128,16 @@ internal object ImageUtils {
         }
       }
       WebpCodec.encodeTo(actualOutput, image)
-      error += "Thumbnail for current rendering stored at file://" + actualOutput.path
-      error += "\nRun the following command to accept the changes:\n"
-      error += "mv ${actualOutput.absolutePath} ${File(relativePath).absolutePath}"
-      println(error)
-      throw AssertionError(error)
+
+      // Only what is needed to act on the failure: what changed, the golden to update, and the
+      // image showing where it changed. Anything longer stops being read.
+      error += "\n  golden: file://${File(relativePath).absolutePath}"
+      error += "\n  diff:   file://${deltaOutput.absolutePath}"
+
+      // Thrown without a stack. Every snapshot failure produces the same fifty frames of JUnit
+      // and Gradle plumbing, which bury the three lines above and say nothing the message does
+      // not: the snapshot names the test, and the report already lists which test failed.
+      throw AssertionError(error).apply { stackTrace = emptyArray() }
     }
   }
 

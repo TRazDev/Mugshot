@@ -163,9 +163,9 @@ public final class uk/co/fractalmotion/mugshot/Mugshot : org/junit/rules/TestRul
 	public final fun snapshot (Landroid/view/View;)V
 	public final fun snapshot (Landroid/view/View;Ljava/lang/String;)V
 	public final fun snapshot (Landroid/view/View;Ljava/lang/String;J)V
-	public final fun snapshot (Ljava/lang/String;Lkotlin/jvm/functions/Function2;)V
+	public final fun snapshot (Ljava/lang/String;Ljava/lang/String;Lkotlin/jvm/functions/Function2;)V
 	public static synthetic fun snapshot$default (Luk/co/fractalmotion/mugshot/Mugshot;Landroid/view/View;Ljava/lang/String;JILjava/lang/Object;)V
-	public static synthetic fun snapshot$default (Luk/co/fractalmotion/mugshot/Mugshot;Ljava/lang/String;Lkotlin/jvm/functions/Function2;ILjava/lang/Object;)V
+	public static synthetic fun snapshot$default (Luk/co/fractalmotion/mugshot/Mugshot;Ljava/lang/String;Ljava/lang/String;Lkotlin/jvm/functions/Function2;ILjava/lang/Object;)V
 	public final fun teardown ()V
 	public final fun unsafeUpdateConfig (Luk/co/fractalmotion/mugshot/DeviceConfig;Ljava/lang/String;Lcom/android/ide/common/rendering/api/SessionParams$RenderingMode;)V
 	public static synthetic fun unsafeUpdateConfig$default (Luk/co/fractalmotion/mugshot/Mugshot;Luk/co/fractalmotion/mugshot/DeviceConfig;Ljava/lang/String;Lcom/android/ide/common/rendering/api/SessionParams$RenderingMode;ILjava/lang/Object;)V

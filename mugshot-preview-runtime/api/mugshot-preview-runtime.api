@@ -1,9 +1,10 @@
 public final class uk/co/fractalmotion/mugshot/preview/runtime/MugshotPreviewCase {
 	public static final field $stable I
-	public fun <init> (Ljava/lang/String;Luk/co/fractalmotion/mugshot/preview/runtime/MugshotPreviewConfig;Lkotlin/jvm/functions/Function0;)V
+	public fun <init> (Ljava/lang/String;Ljava/lang/String;Luk/co/fractalmotion/mugshot/preview/runtime/MugshotPreviewConfig;Lkotlin/jvm/functions/Function0;)V
 	public final fun frames ()Ljava/util/List;
 	public final fun getConfig ()Luk/co/fractalmotion/mugshot/preview/runtime/MugshotPreviewConfig;
 	public final fun getSnapshotName ()Ljava/lang/String;
+	public final fun getSource ()Ljava/lang/String;
 	public fun toString ()Ljava/lang/String;
 }
 

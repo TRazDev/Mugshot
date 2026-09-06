@@ -181,9 +181,13 @@ Each task has an anchor form that covers every variant and a per-variant form
 ```
 
 Every run writes an HTML report to `build/reports/tests/<testTask>`. A failed snapshot appears
-there with three images side by side: the golden, what this run rendered, and the difference
-between them. The same images are written to `build/mugshot/failures` for CI to collect, along
+there with three images side by side: the golden, the difference between them, and what this run
+rendered. The same images are written to `build/mugshot/failures` for CI to collect, along
 with a single combined image the console error links to.
+
+In the difference image, **ruby red** marks a pixel the two renders disagree on and everything
+else is white, so the edges of the render stay visible. A pixel that matches and a pixel that
+differs by little enough to pass look the same, because neither is something to act on.
 
 To gate CI on your goldens:
 

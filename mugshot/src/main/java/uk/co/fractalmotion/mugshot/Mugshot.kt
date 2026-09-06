@@ -104,8 +104,14 @@ public class Mugshot @JvmOverloads constructor(
 
   public fun <V : View> inflate(@LayoutRes layoutId: Int): V = sdk.inflate(layoutId)
 
-  public fun snapshot(name: String? = null, composable: @Composable () -> Unit) {
-    createFrameHandler(name).use { handler ->
+  /**
+   * [source] names what is being rendered and appears in the failure message. Generated preview
+   * tests pass their declaration in the shape of a stack frame, e.g.
+   * `com.example.feature.profile.ProfileScreen(ProfileScreen.kt:31)`, so an IDE links it. A
+   * hand-written test leaves it null and the message falls back to the snapshot's own name.
+   */
+  public fun snapshot(name: String? = null, source: String? = null, composable: @Composable () -> Unit) {
+    createFrameHandler(name, source).use { handler ->
       frameHandler = handler
       sdk.snapshot(composable)
     }
@@ -125,8 +131,8 @@ public class Mugshot @JvmOverloads constructor(
     renderingMode: RenderingMode? = null
   ): Unit = sdk.unsafeUpdateConfig(deviceConfig, theme, renderingMode)
 
-  private fun createFrameHandler(name: String? = null): SnapshotHandler.FrameHandler {
-    val snapshot = Snapshot(name, testName!!, Date())
+  private fun createFrameHandler(name: String? = null, source: String? = null): SnapshotHandler.FrameHandler {
+    val snapshot = Snapshot(name, testName!!, Date(), file = source)
     return snapshotHandler.newFrameHandler(snapshot)
   }
 

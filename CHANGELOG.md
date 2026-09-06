@@ -7,12 +7,43 @@ down, under "Upstream Paparazzi history".
 ## [Unreleased]
 
 ### Changed
+* A test run is quiet. The framework's log priority was discarded and every message logged at
+  info, so each render put its verbose and debug lines in front of whoever ran the tests; the
+  priority is now mapped to a matching level. The framework's own resources carry duplicate style
+  definitions, and those are no longer warned about. The Byte Buddy agent Mugshot attaches is
+  declared, so the JVM stops warning that an agent was loaded dynamically.
 * **Breaking:** the standalone snapshot gallery is gone, and `HtmlReportWriter` with it. It was
   written only by `recordMugshot*`, so `verifyMugshot*` printed a link to a report that did not
   exist. Recording now uses `SnapshotRecorder`, which writes goldens and nothing else.
-* A failed snapshot is reported as three labelled images, the golden, this run's render, and the
-  difference between them, rather than one combined image behind a toggle. The report link points
+* A failed snapshot is reported as three labelled images, the golden, the difference between them,
+  and this run's render, rather than one combined image behind a toggle. The report link points
   at the test report, which is where those images now appear.
+* A failure from a generated preview names the screen's own declaration, e.g.
+  `com.example.feature.profile.ProfileScreen(ProfileScreen.kt:31) [Dark_Default]`, rather than the
+  generated test class, which is the same for every preview in a module. The `(File.kt:line)` tail
+  is the shape an IDE turns into a link. Hand-written tests are unchanged: they render an arbitrary
+  composable, so there is no screen to name, and the message still uses the snapshot's name.
+* **Breaking:** `Mugshot.snapshot` takes a `source` between `name` and the composable, and
+  `MugshotPreviewCase` takes a `source` after `snapshotName`. Kotlin callers of `snapshot { }` and
+  `snapshot("label") { }` are unaffected, but anything compiled against an earlier version needs
+  recompiling.
+* A failure from a hand-written test names the test as a qualified name, e.g.
+  `com.example.screen.ScreenSnapshotTest.profile`, rather than the golden image's filename. A test
+  renders an arbitrary composable, so there is no screen to name and the test itself is the most
+  specific thing there is.
+* The report drops the exception class and the source location from a snapshot failure. The
+  location is there so a console can turn it into a link, which a page cannot do, and the class is
+  the same on every one. Other failures keep both.
+* The failure message is three lines: what failed and by how much, the golden to update, and the
+  difference image. It used to add the rendered image's path, a `mv` command, and a copy of itself
+  on standard output, which buried the part worth reading. It is also thrown without a stack,
+  since every snapshot failure carried the same frames of JUnit and Gradle plumbing.
+* The difference image marks a changed pixel in flat ruby red and leaves everything else white.
+  It used to shade each pixel by how far every colour channel had moved, which encoded the
+  direction and size of the change but was hard to read, and wrapped around to near-grey on the
+  largest changes. The white background replaces a transparent one, which blended into the page
+  and left no way to see where the render ended. Pixels that differ by little enough to pass are no longer marked either, since
+  they are not something to act on.
 
 ### Added
 * Verification writes `reference-` and `diff-` images alongside the render in
