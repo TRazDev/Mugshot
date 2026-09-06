@@ -7,6 +7,11 @@ down, under "Upstream Paparazzi history".
 ## [Unreleased]
 
 ### Changed
+* A test run is quiet. The framework's log priority was discarded and every message logged at
+  info, so each render put its verbose and debug lines in front of whoever ran the tests; the
+  priority is now mapped to a matching level. The framework's own resources carry duplicate style
+  definitions, and those are no longer warned about. The Byte Buddy agent Mugshot attaches is
+  declared, so the JVM stops warning that an agent was loaded dynamically.
 * **Breaking:** the standalone snapshot gallery is gone, and `HtmlReportWriter` with it. It was
   written only by `recordMugshot*`, so `verifyMugshot*` printed a link to a report that did not
   exist. Recording now uses `SnapshotRecorder`, which writes goldens and nothing else.

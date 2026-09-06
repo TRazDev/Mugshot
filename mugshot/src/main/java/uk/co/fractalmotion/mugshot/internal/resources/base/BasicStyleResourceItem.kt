@@ -57,7 +57,9 @@ internal class BasicStyleResourceItem(
         if (previouslyDefined == null) {
           tableBuilder.put(attr.namespace, attr.name, styleItem)
         } else if (previouslyDefined != styleItem) {
-          LOG.warning("Conflicting definitions of \"${styleItem.attrName}\" in style \"$name\"")
+          // Not a warning: as the comment above says, the framework's own resources carry these
+          // duplicates, so there is nothing for anyone reading the build output to do about them.
+          LOG.fine { "Conflicting definitions of \"${styleItem.attrName}\" in style \"$name\"" }
         }
       }
     }

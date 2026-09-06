@@ -51,7 +51,9 @@ subprojects {
   // jvmArgs '-Xcheck:jni'
   tasks.withType(Test).configureEach {
     testLogging {
-      events "passed", "failed", "skipped", "standardOut", "standardError"
+      // Standard streams are off: layoutlib and the framework log heavily during a render, and
+      // the result buries the one line per test that says whether it passed.
+      events "passed", "failed", "skipped"
       exceptionFormat = "full"
       showExceptions = true
       showStackTraces = true

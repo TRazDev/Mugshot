@@ -27,6 +27,12 @@ import java.util.logging.Logger.getLogger
 /**
  * This logger delegates to java.util.Logging.
  */
+private const val ANDROID_LOG_VERBOSE = 2
+private const val ANDROID_LOG_DEBUG = 3
+private const val ANDROID_LOG_WARN = 5
+private const val ANDROID_LOG_ERROR = 6
+private const val ANDROID_LOG_ASSERT = 7
+
 internal class MugshotLogger : ILayoutLog, ILogger {
   private val logger: Logger = getLogger(Mugshot::class.java.name)
   private val errors = mutableListOf<Throwable>()
@@ -69,9 +75,25 @@ internal class MugshotLogger : ILayoutLog, ILogger {
     logger.log(Level.WARNING, "$tag: $message")
   }
 
+  /**
+   * A message from the Android framework, carrying the priority the framework gave it.
+   *
+   * The priority is the one `android.util.Log` uses. Logging it all at [Level.INFO] would put
+   * every verbose and debug line the platform emits, of which there are many per render, in front
+   * of anyone running their tests.
+   */
   override fun logAndroidFramework(priority: Int, tag: String?, message: String?) {
-    logger.log(Level.INFO, "$tag [$priority]: $message")
+    logger.log(levelOf(priority), "$tag [$priority]: $message")
   }
+
+  private fun levelOf(priority: Int): Level =
+    when (priority) {
+      ANDROID_LOG_VERBOSE -> Level.FINER
+      ANDROID_LOG_DEBUG -> Level.FINE
+      ANDROID_LOG_WARN -> Level.WARNING
+      ANDROID_LOG_ERROR, ANDROID_LOG_ASSERT -> Level.SEVERE
+      else -> Level.INFO
+    }
 
   fun assertNoErrors() {
     when (errors.size) {

@@ -89,14 +89,15 @@ class VerifyModeTest : MugshotPluginTestCase() {
     assertThat(testTask).isNotNull()
     assertThat(testTask!!.outcome).isEqualTo(TaskOutcome.FAILED)
 
-    // The report has no standard output section: the failure message is thrown, not also printed.
+    // The report has neither a standard output nor a standard error section. The failure message
+    // is thrown rather than also printed, and the framework's verbose and debug logging no longer
+    // reaches stderr.
     val simpleTestHtmlFile = File(testReportDir, "uk.co.fractalmotion.mugshot.plugin.test.SimpleTest.html")
     var htmlText = simpleTestHtmlFile.readText()
     assertThat(htmlText).contains("<img")
     assertThat(htmlText).contains("delta-uk.co.fractalmotion.mugshot.plugin.test_SimpleTest_compose.webp")
     assertThat(htmlText).contains("Failed tests")
     assertThat(htmlText).contains("Tests")
-    assertThat(htmlText).contains("Standard error")
 
     val testParamInjectorTestHtmlFile =
       File(testReportDir, "uk.co.fractalmotion.mugshot.plugin.test.TestParameterInjectorTest.html")
@@ -105,7 +106,6 @@ class VerifyModeTest : MugshotPluginTestCase() {
     assertThat(htmlText).contains("delta-uk.co.fractalmotion.mugshot.plugin.test_TestParameterInjectorTest_compose[darkMode=false,fontScale=1.0].webp")
     assertThat(htmlText).contains("Failed tests")
     assertThat(htmlText).contains("Tests")
-    assertThat(htmlText).contains("Standard error")
   }
 
   @Test

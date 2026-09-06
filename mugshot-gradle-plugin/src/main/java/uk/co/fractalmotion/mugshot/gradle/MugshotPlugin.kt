@@ -253,6 +253,11 @@ public class MugshotPlugin @Inject constructor(
         pathSystemProperties.put("mugshot.artifacts.cache.dir", gradleUserHomeDir.path)
         test.jvmArgumentProviders.add(MugshotSystemPropertiesArgumentProvider(pathSystemProperties))
 
+        // Mugshot attaches a Byte Buddy agent to patch Build.VERSION, and the JVM warns four
+        // lines about a dynamically loaded agent every run. The attach is deliberate, so say so
+        // rather than making everyone read the warning.
+        test.jvmArgs("-XX:+EnableDynamicAgentLoading")
+
         test.inputs.property("mugshot.test.record", isRecordRun)
         test.inputs.property("mugshot.test.verify", isVerifyRun)
         test.inputs.property("mugshot.gradleProperties", mugshotGradlePropertiesProvider)
