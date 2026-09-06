@@ -65,11 +65,13 @@ public abstract class GeneratePreviewTestTask : DefaultTask() {
       public fun snapshot() {
         val frames = case.frames()
         if (frames.size == 1) {
-          mugshot.snapshot { frames.single()() }
+          mugshot.snapshot(source = case.source) { frames.single()() }
         } else {
           // A @PreviewParameter preview: one image per value, indexed because a value's toString
           // is not safe in a filename.
-          frames.forEachIndexed { index, frame -> mugshot.snapshot(name = "${'$'}index") { frame() } }
+          frames.forEachIndexed { index, frame ->
+            mugshot.snapshot(name = "${'$'}index", source = case.source) { frame() }
+          }
         }
       }
 

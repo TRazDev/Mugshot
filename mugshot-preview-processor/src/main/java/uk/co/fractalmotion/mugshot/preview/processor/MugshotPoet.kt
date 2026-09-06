@@ -64,10 +64,12 @@ internal class MugshotPoet(
     val frames = frames(function, previewParameter) ?: return
     val axes = function.resolveAxes()
     val baseName = function.snapshotName(namespace)
+    val source = function.sourceName()
 
     axes.combinations().forEach { combination ->
       addCase(
         snapshotName = baseName + axes.suffix(combination),
+        source = source,
         combination = combination,
         frames = frames
       )
@@ -108,12 +110,18 @@ internal class MugshotPoet(
     return "{ $RUNTIME.parameterizedFrames($instance.values, $limit) { $qualifiedName(it) } }"
   }
 
-  private fun CodeBlock.Builder.addCase(snapshotName: String, combination: AxisCombination, frames: String) {
+  private fun CodeBlock.Builder.addCase(
+    snapshotName: String,
+    source: String,
+    combination: AxisCombination,
+    frames: String
+  ) {
     addStatement("add(")
     indent()
     addStatement("%L.MugshotPreviewCase(", RUNTIME)
     indent()
     addStatement("snapshotName = %S,", snapshotName)
+    addStatement("source = %S,", source)
     addStatement("config = %L.MugshotPreviewConfig(", RUNTIME)
     indent()
     addStatement("device = %L.MugshotPreviewDevice.%L,", RUNTIME, combination.device)
@@ -188,6 +196,16 @@ internal class MugshotPoet(
 
   private fun KSAnnotation.stringList(name: String): List<String> =
     (argumentOf(name) as? List<*>)?.mapNotNull { it as? String }.orEmpty()
+
+  /**
+   * The declaring file as a fully qualified name, e.g. `com.example.feature.profile.ProfileScreen`.
+   *
+   * Named so a failure points at the screen rather than at the generated test, which is the same
+   * class for every preview in the module. It is the file, not the composable: a file holds the
+   * screen and its previews together, and its name is what a reader recognises.
+   */
+  private fun KSFunctionDeclaration.sourceName(): String =
+    with(containingFile!!) { "${packageName.asString()}.${fileName.removeSuffix(".kt")}" }
 
   private fun KSFunctionDeclaration.snapshotName(namespace: String) =
     buildList {

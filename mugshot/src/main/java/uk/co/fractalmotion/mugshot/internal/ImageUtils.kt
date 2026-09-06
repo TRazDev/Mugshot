@@ -51,7 +51,8 @@ internal object ImageUtils {
     image: BufferedImage,
     maxPercentDifferent: Double,
     failureDir: File,
-    differ: Differ
+    differ: Differ,
+    source: String? = null
   ) {
     val (deltaImage, percentDifference) = compareImages(goldenImage, image, differ)
 
@@ -62,7 +63,9 @@ internal object ImageUtils {
     val imageHeight = image.height
 
     val imageName = getName(relativePath)
-    val snapshotName = imageName.removeSuffix(".${WebpCodec.EXTENSION}")
+    // What failed, named the way a reader recognises it: the screen's own file when the caller
+    // knows it, and otherwise the snapshot, which names the test that took it.
+    val snapshotName = source ?: imageName.removeSuffix(".${WebpCodec.EXTENSION}")
     var error = when {
       percentDifference > maxPercentDifferent ->
         "$snapshotName differs by %.3f%%".format(percentDifference)

@@ -63,6 +63,7 @@ class PreviewProcessorProviderTest {
         add(
           uk.co.fractalmotion.mugshot.preview.runtime.MugshotPreviewCase(
             snapshotName = "SamplePreview_SamplePreview",
+            source = "test.SamplePreview",
             config = uk.co.fractalmotion.mugshot.preview.runtime.MugshotPreviewConfig(
               device = uk.co.fractalmotion.mugshot.preview.runtime.MugshotPreviewDevice.DEFAULT,
               nightMode = false,
@@ -519,6 +520,7 @@ class PreviewProcessorProviderTest {
 
       class MugshotPreviewCase(
         val snapshotName: String,
+        val source: String,
         val config: MugshotPreviewConfig,
         private val frames: () -> List<@Composable () -> Unit>
       ) {

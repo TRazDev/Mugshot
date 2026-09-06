@@ -12,6 +12,7 @@ import androidx.compose.runtime.Composable
  */
 public class MugshotPreviewCase(
   public val snapshotName: String,
+  public val source: String,
   public val config: MugshotPreviewConfig,
   private val frames: () -> List<@Composable () -> Unit>
 ) {

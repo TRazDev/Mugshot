@@ -63,7 +63,8 @@ public class SnapshotVerifier @JvmOverloads constructor(
           goldenImage = goldenImage,
           maxPercentDifferent = maxPercentDifference,
           failureDir = failureDir,
-          differ = differ
+          differ = differ,
+          source = snapshot.file
         )
       }
 

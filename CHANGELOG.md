@@ -13,6 +13,14 @@ down, under "Upstream Paparazzi history".
 * A failed snapshot is reported as three labelled images, the golden, the difference between them,
   and this run's render, rather than one combined image behind a toggle. The report link points
   at the test report, which is where those images now appear.
+* A failure from a generated preview names the screen's own file, e.g.
+  `com.example.feature.profile.ProfileScreen`, rather than the generated test class, which is the
+  same for every preview in a module. Hand-written tests are unchanged: they render an arbitrary
+  composable, so there is no screen to name, and the message still uses the snapshot's name.
+* **Breaking:** `Mugshot.snapshot` takes a `source` between `name` and the composable, and
+  `MugshotPreviewCase` takes a `source` after `snapshotName`. Kotlin callers of `snapshot { }` and
+  `snapshot("label") { }` are unaffected, but anything compiled against an earlier version needs
+  recompiling.
 * The failure message is three lines: what failed and by how much, the golden to update, and the
   difference image. It used to add the rendered image's path, a `mv` command, and a copy of itself
   on standard output, which buried the part worth reading. It is also thrown without a stack,
