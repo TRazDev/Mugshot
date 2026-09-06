@@ -199,10 +199,13 @@ class RecordModeTest : MugshotPluginTestCase() {
   @Test
   fun similarImagesProduceUniqueSnapshots() {
     val fixtureRoot = fixture("similar-images")
+    val snapshotsDir = File(fixtureRoot, "src/test/snapshots/images")
+    // This fixture's goldens are checked in, and recording rewrites them. Restore them afterwards
+    // so a test run leaves the working tree clean.
+    snapshotsDir.listFiles()!!.forEach { it.registerForRestoreOnExit() }
 
     fixtureRoot.runBuild("recordMugshotDebug")
 
-    val reportsDir = File(fixtureRoot, "build/reports/mugshot/debug/images")
-    assertThat(reportsDir.listFiles()!!).hasLength(3)
+    assertThat(snapshotsDir.listFiles()!!).hasLength(3)
   }
 }

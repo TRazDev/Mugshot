@@ -60,9 +60,11 @@ import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import uk.co.fractalmotion.mugshot.gradle.instrumentation.ResourcesCompatVisitorFactory
 import uk.co.fractalmotion.mugshot.gradle.reporting.DiffImage
 import uk.co.fractalmotion.mugshot.gradle.reporting.MugshotTestReporter
+import uk.co.fractalmotion.mugshot.gradle.reporting.ReportImage
 import uk.co.fractalmotion.mugshot.gradle.utils.artifactViewFor
 import uk.co.fractalmotion.mugshot.gradle.utils.capitalize
 import uk.co.fractalmotion.mugshot.gradle.utils.relativize
+import java.io.File
 import java.util.Locale
 import javax.inject.Inject
 import kotlin.io.encoding.Base64
@@ -151,8 +153,6 @@ public class MugshotPlugin @Inject constructor(
       val projectDirectory = project.layout.projectDirectory
       val buildDirectory = project.layout.buildDirectory
       val gradleUserHomeDir = project.gradle.gradleUserHomeDir
-      val reportOutputDir =
-        project.extensions.getByType(ReportingExtension::class.java).baseDirectory.dir("mugshot/${variant.name}")
 
       // AGP < 9 does not fully initialize ASM instrumentation for Android KMP variants, causing
       // `lateinit property visitorFactory has not been initialized` during configuration.
@@ -250,7 +250,6 @@ public class MugshotPlugin @Inject constructor(
         )
         pathSystemProperties.put("mugshot.project.dir", projectDirectory.toString())
         pathSystemProperties.put("mugshot.build.dir", buildDirectory.map { it.toString() })
-        pathSystemProperties.put("mugshot.report.dir", reportOutputDir.map { it.toString() })
         pathSystemProperties.put("mugshot.artifacts.cache.dir", gradleUserHomeDir.path)
         test.jvmArgumentProviders.add(MugshotSystemPropertiesArgumentProvider(pathSystemProperties))
 
@@ -294,7 +293,6 @@ public class MugshotPlugin @Inject constructor(
           .withPropertyName("mugshot.snapshots.output.dir")
           .optional()
 
-        test.outputs.dir(reportOutputDir).withPropertyName("mugshot.report.dir")
         test.outputs.dir(failureDir)
           .withPropertyName("mugshot.failures.dir")
           .optional()
@@ -316,8 +314,9 @@ public class MugshotPlugin @Inject constructor(
           test.systemProperties["mugshot.failures.dir"] = failureDir.get().asFile.absolutePath
         }
 
+        val htmlReportLocation = test.reports.html.outputLocation
         test.doLast {
-          val uri = reportOutputDir.get().asFile.toPath().resolve("index.html").toUri()
+          val uri = htmlReportLocation.get().asFile.toPath().resolve("index.html").toUri()
           test.logger.log(LIFECYCLE, "See the Mugshot report at: $uri")
         }
       }
@@ -327,6 +326,28 @@ public class MugshotPlugin @Inject constructor(
     }
   }
 
+  /**
+   * Splits a golden's file name into the test class and method it belongs to.
+   *
+   * Golden names are `<package>_<Class>_<method>[<label>].<ext>`, written by the verifier and
+   * recorded nowhere else, so the report has to read them back rather than look them up.
+   */
+  private fun testKeyOf(fileName: String): Pair<String, String> {
+    val segments = fileName.split("_", limit = 3)
+    return "${segments[0]}.${segments[1]}" to segments[2].substringBeforeLast('.')
+  }
+
+  private fun reportImage(file: File, name: String): ReportImage? {
+    if (!file.exists()) return null
+    return ReportImage(
+      name = name,
+      mimeType = if (file.extension == "png") "image/png" else "image/webp",
+      base64EncodedImage =
+      @OptIn(ExperimentalEncodingApi::class)
+      Base64.encode(file.readBytes())
+    )
+  }
+
   private fun createDiffRegistryFactory(
     failureDirProperty: Provider<Directory>,
     isVerifyRun: Provider<Boolean>
@@ -334,23 +355,19 @@ public class MugshotPlugin @Inject constructor(
     {
       val failureDir = failureDirProperty.get().asFile
       if (isVerifyRun.get() && failureDir.exists()) {
-        failureDir.listFiles()
-          ?.filter { it.name.startsWith("delta-") }
-          ?.associate { diff ->
-            // TODO: read from failure diff metadata file instead of brittle parsing
-            val nameSegments = diff.name.split("_", limit = 3)
-            val testClassPackage = nameSegments[0].replace("delta-", "")
-            val testClass = "$testClassPackage.${nameSegments[1]}"
-            val testMethodWithLabel = nameSegments[2].substringBeforeLast('.')
-
-            Pair(testClass, testMethodWithLabel) to DiffImage(
-              path = diff.path,
-              mimeType = if (diff.extension == "png") "image/png" else "image/webp",
-              base64EncodedImage =
-              @OptIn(ExperimentalEncodingApi::class)
-              Base64.encode(diff.readBytes())
+        // The verifier writes the render under the snapshot's own name and the other panels under
+        // prefixes, so the render is every file that carries no prefix.
+        failureDir.listFiles().orEmpty()
+          .filter { file -> PANEL_PREFIXES.none { file.name.startsWith(it) } }
+          .associate { actual ->
+            val name = actual.name
+            testKeyOf(name) to DiffImage(
+              reference = reportImage(File(failureDir, "reference-$name"), "Reference"),
+              actual = reportImage(actual, "New"),
+              diff = reportImage(File(failureDir, "diff-$name"), "Diff")
             )
-          } ?: emptyMap()
+          }
+          .filterValues { !it.isEmpty }
       } else {
         emptyMap()
       }
@@ -639,5 +656,6 @@ internal class MugshotSystemPropertiesArgumentProvider(
 private const val DEFAULT_COMPILE_SDK_VERSION = 36
 private const val ANDROID_KOTLIN_MULTIPLATFORM_LIBRARY_PLUGIN = "com.android.kotlin.multiplatform.library"
 private const val KSP_PLUGIN = "com.google.devtools.ksp"
+private val PANEL_PREFIXES = listOf("reference-", "diff-", "delta-")
 private const val PREVIEW_NAMESPACE_OPTION = "uk.co.fractalmotion.mugshot.preview.namespace"
 private const val KOTLIN_MULTIPLATFORM_PLUGIN = "org.jetbrains.kotlin.multiplatform"

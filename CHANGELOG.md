@@ -6,6 +6,20 @@ down, under "Upstream Paparazzi history".
 
 ## [Unreleased]
 
+### Changed
+* **Breaking:** the standalone snapshot gallery is gone, and `HtmlReportWriter` with it. It was
+  written only by `recordMugshot*`, so `verifyMugshot*` printed a link to a report that did not
+  exist. Recording now uses `SnapshotRecorder`, which writes goldens and nothing else.
+* A failed snapshot is reported as three labelled images, the golden, this run's render, and the
+  difference between them, rather than one combined image behind a toggle. The report link points
+  at the test report, which is where those images now appear.
+
+### Added
+* Verification writes `reference-` and `diff-` images alongside the render in
+  `build/mugshot/failures`, so CI can collect the panels individually. The combined image the
+  console error links to is still written, with its labels, since nothing else identifies the
+  panels when it is opened on its own.
+
 ### Added
 * `mugshot-preview-lints` is published. It was built and tested on every run but its publish plugin
   was commented out, so nobody could depend on it. Add it with `lintChecks` to have a `@Mugshot`

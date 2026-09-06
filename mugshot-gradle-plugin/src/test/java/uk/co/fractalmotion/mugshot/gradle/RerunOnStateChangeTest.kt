@@ -12,31 +12,6 @@ import java.io.File
 @Suppress("ktlint:standard:max-line-length")
 class RerunOnStateChangeTest : MugshotPluginTestCase() {
   @Test
-  fun rerunOnReportDeletion() {
-    val fixtureRoot = fixture("rerun-report")
-    val reportDir = File(fixtureRoot, "build/reports/mugshot/debug").registerForDeletionOnExit()
-    val reportHtml = File(reportDir, "index.html")
-    assertThat(reportHtml.exists()).isFalse()
-
-    File(fixtureRoot, "src/test/snapshots").registerForDeletionOnExit()
-
-    // Take 1
-    val firstRunResult = fixtureRoot.runBuild("recordMugshotDebug") { forwardOutput() }
-
-    firstRunResult.assertTaskSucceeded(":testDebugUnitTest")
-    assertThat(reportHtml.exists()).isTrue()
-
-    // Remove report
-    reportDir.deleteRecursively()
-
-    // Take 2
-    val secondRunResult = fixtureRoot.runBuild("recordMugshotDebug")
-
-    secondRunResult.assertTaskSucceeded(":testDebugUnitTest") // not UP-TO-DATE
-    assertThat(reportHtml.exists()).isTrue()
-  }
-
-  @Test
   fun rerunOnSnapshotDeletion() {
     val fixtureRoot = fixture("rerun-snapshots")
 

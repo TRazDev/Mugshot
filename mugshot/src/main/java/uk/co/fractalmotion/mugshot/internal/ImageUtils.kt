@@ -74,8 +74,21 @@ internal object ImageUtils {
     }
 
     if (error != null) {
-      val deltaWidth = max(goldenImageWidth, imageWidth)
-      if (deltaWidth > 80) {
+      // The differ builds one wide image: reference, then the pixel difference, then the render.
+      // The report shows them as three labelled columns, so they are written out separately here
+      // and the label images that used to be composited into the pixels are gone.
+      val diffWidth = max(goldenImageWidth, imageWidth)
+      writeFailureImage(failureDir, "reference-$imageName", goldenImage)
+      writeFailureImage(
+        failureDir,
+        "diff-$imageName",
+        deltaImage.copyOfRegion(goldenImageWidth, diffWidth)
+      )
+
+      // The panels above are what the HTML report lays out under its own column headings. The
+      // combined image below is what the console error links to, so it keeps the labels drawn
+      // into the pixels: opened on its own, nothing else says which panel is which.
+      if (diffWidth > 80) {
         /**
          * AWT uses native text rendering under the hood, making it extremely difficult to get
          * consistent cross-platform label text rendering, due to antialiasing, etc. This can
@@ -83,14 +96,6 @@ internal object ImageUtils {
          *
          * As a workaround, we instead use text images pre-rendered on MacOSX 14 with the default
          * font=Dialog, size=12 and composite them into the delta image here.
-         *
-         * We use that original font's ascent to offset the labels, which is determined by running
-         * the following on MacOSX 14:
-         *
-         * ```
-         * val z = BufferedImage(1, 1, TYPE_INT_ARGB)
-         * val MAC_OSX_FONT_DIALOG_SIZE_12_ASCENT = z.graphics.fontMetrics.ascent
-         * ```
          */
         val g = deltaImage.graphics
         val yOffset = 20 - MAC_OSX_FONT_DIALOG_SIZE_12_ASCENT
@@ -98,7 +103,7 @@ internal object ImageUtils {
         val expectedLabel = ImageIO.read(myClassLoader.getResourceAsStream("expected_label.webp"))
         g.drawImage(expectedLabel, 10, yOffset, null)
         val actualLabel = ImageIO.read(myClassLoader.getResourceAsStream("actual_label.webp"))
-        g.drawImage(actualLabel, goldenImageWidth + deltaWidth + 10, yOffset, null)
+        g.drawImage(actualLabel, goldenImageWidth + diffWidth + 10, yOffset, null)
       }
 
       val deltaOutput = File(failureDir, "delta-$imageName")
@@ -269,3 +274,29 @@ internal object ImageUtils {
 }
 
 private const val MAC_OSX_FONT_DIALOG_SIZE_12_ASCENT: Int = 12
+
+/** Writes one panel of a failure comparison, replacing any file from an earlier run. */
+private fun writeFailureImage(failureDir: File, name: String, image: BufferedImage) {
+  val output = File(failureDir, name)
+  if (output.exists() && !output.delete()) {
+    throw IllegalStateException("Unable to delete $output")
+  }
+  WebpCodec.encodeTo(output, image)
+}
+
+/**
+ * Copies a column out of the comparison image.
+ *
+ * `getSubimage` returns a view onto the original raster rather than an image starting at (0, 0),
+ * and encoding one of those writes from the wrong origin, producing a blank file.
+ */
+private fun BufferedImage.copyOfRegion(x: Int, width: Int): BufferedImage {
+  val region = BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB)
+  val graphics = region.createGraphics()
+  try {
+    graphics.drawImage(this, -x, 0, null)
+  } finally {
+    graphics.dispose()
+  }
+  return region
+}

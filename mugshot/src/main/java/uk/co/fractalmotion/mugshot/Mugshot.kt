@@ -145,7 +145,7 @@ public class Mugshot @JvmOverloads constructor(
       if (isVerifying) {
         SnapshotVerifier(maxPercentDifference)
       } else {
-        HtmlReportWriter(maxPercentDifference = maxPercentDifference)
+        SnapshotRecorder(maxPercentDifference = maxPercentDifference)
       }
   }
 }

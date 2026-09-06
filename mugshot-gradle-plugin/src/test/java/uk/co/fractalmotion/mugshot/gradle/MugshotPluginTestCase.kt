@@ -146,8 +146,6 @@ abstract class MugshotPluginTestCase {
       File(this, ".gradle").deleteRecursively()
     }
 
-  protected fun File.listFilesSorted() = listFiles()?.sortedBy { it.lastModified() }
-
   companion object {
     internal const val GRADLE_CACHE_TRANSFORMS_PATH_REGEX = "^caches/[0-9]{1,2}.[0-9]{1,2}(.[0-9])?(-rc-[0-9]{1,2})?/transforms/[0-9a-f]{32}/(workspace/)?transformed"
 

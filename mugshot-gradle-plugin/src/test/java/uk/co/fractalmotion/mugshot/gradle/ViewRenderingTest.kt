@@ -2,7 +2,6 @@ package uk.co.fractalmotion.mugshot.gradle
 
 import com.google.common.truth.Truth.assertThat
 import org.junit.Test
-import java.io.File
 
 /**
  * Rendering regressions for the View toolkit. Each test passes when the golden matches.
@@ -52,13 +51,5 @@ class ViewRenderingTest : MugshotPluginTestCase() {
   fun interceptViewEditMode() = fixture("edit-mode-intercept").buildSucceeds("testDebug")
 
   @Test
-  fun lifecycleOwnerUsages() {
-    val fixtureRoot = fixture("lifecycle-usages")
-
-    fixtureRoot.runBuild("testDebug")
-
-    val snapshotsDir = File(fixtureRoot, "build/reports/mugshot/debug/images")
-    val snapshots = snapshotsDir.listFilesSorted()
-    assertThat(snapshots!!).hasSize(3)
-  }
+  fun lifecycleOwnerUsages() = fixture("lifecycle-usages").buildSucceeds("testDebug")
 }

@@ -25,10 +25,12 @@ internal class MugshotTestReporter(
   private val diffRegistryFactory: () -> Map<Pair<String, String>, DiffImage>
 ) : TestReporter {
   init {
-    // Rather than copy SimpleHtmlWriter, let's append our desired tags to the allowlist
+    // Gradle's writer refuses any tag outside its allowlist, and the failure panels need img.
+    // Widening the allowlist rather than copying the writer, which would mean copying the report
+    // framework it belongs to.
     val declaredField = SimpleHtmlWriter::class.java.getFieldReflectively("VALID_HTML_TAGS")
     @Suppress("UNCHECKED_CAST")
-    declaredField.setStaticValue(declaredField.get(null) as Set<String> + setOf("img", "details", "summary"))
+    declaredField.setStaticValue(declaredField.get(null) as Set<String> + setOf("img"))
   }
 
   override fun generateReport(testResultsProvider: TestResultsProvider, reportDir: File) {

@@ -114,10 +114,6 @@ tasks.withType(Test).configureEach {
     project.layout.buildDirectory.dir("mugshot/failures").get().toString()
   )
   systemProperty(
-    "mugshot.report.dir",
-    project.extensions.getByType(ReportingExtension).baseDirectory.dir("mugshot").get().toString()
-  )
-  systemProperty(
     "mugshot.snapshot.dir",
     project.layout.projectDirectory.dir("src/test/snapshots").toString()
   )
