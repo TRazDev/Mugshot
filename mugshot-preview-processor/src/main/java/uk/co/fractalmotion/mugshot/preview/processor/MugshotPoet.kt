@@ -22,6 +22,15 @@ internal class MugshotPoet(
   private val logger: KSPLogger,
   private val namespace: String
 ) {
+  /**
+   * Every snapshot name built so far, against the preview that built it.
+   *
+   * A name no longer carries the package, so two previews of the same name in two files of the
+   * same name would write to one golden image, and each run would overwrite the other. That is
+   * silent and confusing, so it is reported instead.
+   */
+  private val duplicateNames = mutableMapOf<String, String>()
+
   fun buildFiles(functions: Sequence<KSFunctionDeclaration>): List<FileSpec> =
     listOf(
       FileSpec.scriptBuilder("MugshotPreviews", namespace)
@@ -64,13 +73,24 @@ internal class MugshotPoet(
 
     val frames = frames(function, previewParameter) ?: return
     val axes = function.resolveAxes()
-    val baseName = function.snapshotName(namespace)
+    val baseName = function.snapshotName()
     val source = function.sourceName()
 
     axes.combinations().forEach { combination ->
       val suffix = axes.suffix(combination)
+      // The axes join with dots too, so the whole name reads as one path.
+      val snapshotName = baseName + suffix.replace('_', '.')
+
+      val previous = duplicateNames.put(snapshotName, qualifiedName)
+      if (previous != null) {
+        logger.error(
+          "$qualifiedName and $previous both produce the snapshot '$snapshotName', so they would " +
+            "share one golden image. Rename one of the previews, or the file declaring it."
+        )
+      }
+
       addCase(
-        snapshotName = baseName + suffix,
+        snapshotName = snapshotName,
         source = source + suffix.variantLabel(),
         combination = combination,
         frames = frames
@@ -221,15 +241,19 @@ internal class MugshotPoet(
   /** The axis suffix as a readable tag, e.g. `_Dark_Default` becomes ` [Dark_Default]`. */
   private fun String.variantLabel(): String = if (isEmpty()) "" else " [${removePrefix("_")}]"
 
-  private fun KSFunctionDeclaration.snapshotName(namespace: String) =
-    buildList {
-      with(containingFile!!) {
-        add(
-          "${packageName.asString()}.${fileName.removeSuffix(".kt")}"
-            .removePrefix("$namespace.")
-            .replace(".", "_")
-        )
-      }
-      add(simpleName.asString())
-    }.joinToString("_")
+  /**
+   * What a snapshot is called, e.g. `MugshotChipCatalog.MugshotChipCatalogPreview.Light`.
+   *
+   * This is both the golden image's filename and the name the test runner reports, so it is the
+   * one string a person reads in either place. The file is included as well as the function
+   * because a module may declare the same preview name in two files; [duplicateNames] catches the
+   * case where that still collides.
+   *
+   * The package is not included. It is usually a long prefix repeated on every line and says
+   * little the file name does not.
+   */
+  private fun KSFunctionDeclaration.snapshotName(): String =
+    with(containingFile!!) {
+      "${fileName.removeSuffix(".kt")}.${this@snapshotName.simpleName.asString()}"
+    }
 }

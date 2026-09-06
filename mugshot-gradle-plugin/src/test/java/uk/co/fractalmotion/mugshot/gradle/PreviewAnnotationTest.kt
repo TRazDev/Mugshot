@@ -21,9 +21,9 @@ class PreviewAnnotationTest : MugshotPluginTestCase() {
 
     // @MugshotLightDark asks for two configurations, so one preview yields two goldens.
     val lightName =
-      "uk.co.fractalmotion.mugshot.plugin.test_MugshotGeneratedPreviewTest_snapshot[HelloPreview_HelloPreview_Light].webp"
+      "uk.co.fractalmotion.mugshot.plugin.test_MugshotGeneratedPreviewTest_snapshot[HelloPreview.HelloPreview.Light].webp"
     val darkName =
-      "uk.co.fractalmotion.mugshot.plugin.test_MugshotGeneratedPreviewTest_snapshot[HelloPreview_HelloPreview_Dark].webp"
+      "uk.co.fractalmotion.mugshot.plugin.test_MugshotGeneratedPreviewTest_snapshot[HelloPreview.HelloPreview.Dark].webp"
 
     // Compared against the directory listing rather than with File.exists(). Generated case names
     // keep the source's capitalisation, and exists() matches case-insensitively on macOS and
