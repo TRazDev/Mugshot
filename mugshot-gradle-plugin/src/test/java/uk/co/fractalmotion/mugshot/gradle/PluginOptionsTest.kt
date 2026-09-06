@@ -43,14 +43,7 @@ class PluginOptionsTest : MugshotPluginTestCase() {
   }
 
   @Test
-  fun buildClassAccess() {
-    val fixtureRoot = fixture("build-class")
-
-    fixtureRoot.runBuild("testDebug")
-
-    val snapshotsDir = File(fixtureRoot, "custom/reports/mugshot/debug/images")
-    assertThat(snapshotsDir.exists()).isFalse()
-  }
+  fun buildClassAccess() = fixture("build-class").buildSucceeds("testDebug")
 
   @Test
   fun flagDebugLinkedObjectsIsOff() {

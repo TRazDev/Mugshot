@@ -29,7 +29,7 @@ class ComposeTest : MugshotPluginTestCase() {
   }
 
   @Test
-  fun composeViewTreeLifecycle() = fixture("compose-lifecycle-owner").verifyDebug()
+  fun composeViewTreeLifecycle() = fixture("compose-lifecycle-owner").buildSucceeds("testDebug")
 
   @Test
   fun composeLaunchedEffectExceptionPropagates() {

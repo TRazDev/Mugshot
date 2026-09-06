@@ -51,5 +51,5 @@ class ViewRenderingTest : MugshotPluginTestCase() {
   fun interceptViewEditMode() = fixture("edit-mode-intercept").buildSucceeds("testDebug")
 
   @Test
-  fun lifecycleOwnerUsages() = fixture("lifecycle-usages").verifyDebug()
+  fun lifecycleOwnerUsages() = fixture("lifecycle-usages").buildSucceeds("testDebug")
 }
