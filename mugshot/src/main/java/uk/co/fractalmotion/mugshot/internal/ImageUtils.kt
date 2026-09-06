@@ -130,7 +130,11 @@ internal object ImageUtils {
       // image showing where it changed. Anything longer stops being read.
       error += "\n  golden: file://${File(relativePath).absolutePath}"
       error += "\n  diff:   file://${deltaOutput.absolutePath}"
-      throw AssertionError(error)
+
+      // Thrown without a stack. Every snapshot failure produces the same fifty frames of JUnit
+      // and Gradle plumbing, which bury the three lines above and say nothing the message does
+      // not: the snapshot names the test, and the report already lists which test failed.
+      throw AssertionError(error).apply { stackTrace = emptyArray() }
     }
   }
 
