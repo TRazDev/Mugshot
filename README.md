@@ -181,8 +181,8 @@ Each task has an anchor form that covers every variant and a per-variant form
 ```
 
 Every run writes an HTML report to `build/reports/tests/<testTask>`. A failed snapshot appears
-there with three images side by side: the golden, what this run rendered, and the difference
-between them. The same images are written to `build/mugshot/failures` for CI to collect, along
+there with three images side by side: the golden, the difference between them, and what this run
+rendered. The same images are written to `build/mugshot/failures` for CI to collect, along
 with a single combined image the console error links to.
 
 To gate CI on your goldens:

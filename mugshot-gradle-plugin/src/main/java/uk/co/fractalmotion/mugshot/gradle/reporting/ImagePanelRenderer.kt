@@ -4,15 +4,17 @@ import org.gradle.internal.html.SimpleHtmlWriter
 import org.gradle.reporting.ReportRenderer
 
 /**
- * Renders a failed snapshot as three labelled columns: the golden, what this run rendered, and the
- * difference between them.
+ * Renders a failed snapshot as three labelled columns: the golden, the difference, and what this
+ * run rendered.
+ *
+ * The difference sits in the middle so it is next to both of the images it was computed from.
  *
  * Panels that do not exist are skipped, so a snapshot with no golden yet shows the render alone
  * rather than an empty column.
  */
 internal class ImagePanelRenderer : ReportRenderer<DiffImage, SimpleHtmlWriter>() {
   override fun render(images: DiffImage, htmlWriter: SimpleHtmlWriter) {
-    val panels = listOfNotNull(images.reference, images.actual, images.diff)
+    val panels = listOfNotNull(images.reference, images.diff, images.actual)
     if (panels.isEmpty()) return
 
     // Wrapped in a span to work around a CSS problem in IE, inherited from Gradle's own report.

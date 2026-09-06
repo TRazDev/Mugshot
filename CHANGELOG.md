@@ -10,8 +10,8 @@ down, under "Upstream Paparazzi history".
 * **Breaking:** the standalone snapshot gallery is gone, and `HtmlReportWriter` with it. It was
   written only by `recordMugshot*`, so `verifyMugshot*` printed a link to a report that did not
   exist. Recording now uses `SnapshotRecorder`, which writes goldens and nothing else.
-* A failed snapshot is reported as three labelled images, the golden, this run's render, and the
-  difference between them, rather than one combined image behind a toggle. The report link points
+* A failed snapshot is reported as three labelled images, the golden, the difference between them,
+  and this run's render, rather than one combined image behind a toggle. The report link points
   at the test report, which is where those images now appear.
 
 ### Added
