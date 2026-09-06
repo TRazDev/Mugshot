@@ -3,49 +3,52 @@ package uk.co.fractalmotion.mugshot.gradle.reporting
 import org.gradle.internal.html.SimpleHtmlWriter
 import org.gradle.reporting.ReportRenderer
 
+/**
+ * Renders a failed snapshot as three labelled columns: the golden, what this run rendered, and the
+ * difference between them.
+ *
+ * Panels that do not exist are skipped, so a snapshot with no golden yet shows the render alone
+ * rather than an empty column.
+ */
 internal class ImagePanelRenderer : ReportRenderer<DiffImage, SimpleHtmlWriter>() {
-  override fun render(image: DiffImage, htmlWriter: SimpleHtmlWriter) {
-    // Wrap in a <span>, to work around CSS problem in IE
+  override fun render(images: DiffImage, htmlWriter: SimpleHtmlWriter) {
+    val panels = listOfNotNull(images.reference, images.actual, images.diff)
+    if (panels.isEmpty()) return
+
+    // Wrapped in a span to work around a CSS problem in IE, inherited from Gradle's own report.
     htmlWriter
       .startElement("span")
-      .startElement("details")
-      .startElement("summary")
-      .characters("Show failure diff")
-      .endElement()
       .startElement("table")
-      .attribute("style", "table-layout: fixed")
+      .attribute("style", "table-layout: fixed; width: 100%")
 
-    // Render a grid background to better show the diff between images with and without background
+    htmlWriter.startElement("thead").startElement("tr")
+    panels.forEach { panel ->
+      htmlWriter
+        .startElement("th")
+        .attribute("style", "width: ${100 / panels.size}%; text-align: left; padding: 0.5em 1em")
+        .characters(panel.name)
+        .endElement()
+    }
+    htmlWriter.endElement().endElement() // tr, thead
+
+    // The grid shows through anything transparent, which is how a render with no background
+    // stays distinguishable from a white one.
+    htmlWriter.startElement("tbody").attribute("class", "grid").startElement("tr")
+    panels.forEach { panel ->
+      htmlWriter
+        .startElement("td")
+        .attribute("style", "padding: 1em; vertical-align: top")
+        .startElement("img")
+        .attribute("src", panel.dataUri)
+        .attribute("style", "max-width: 100%; height: auto")
+        .attribute("alt", "${panel.name} image")
+        .endElement() // img
+        .endElement() // td
+    }
+    htmlWriter.endElement().endElement() // tr, tbody
+
     htmlWriter
-      .startElement("tbody")
-      .attribute("class", "grid")
-      .attribute("style", "width: 100%")
-
-    renderImage(image, htmlWriter)
-
-    htmlWriter
-      .endElement() // tbody
       .endElement() // table
-      .endElement() // details
       .endElement() // span
-
-    htmlWriter
-      .startElement("p")
-      .characters("")
-      .endElement()
-  }
-
-  private fun renderImage(image: DiffImage, htmlWriter: SimpleHtmlWriter) {
-    htmlWriter
-      .startElement("tr")
-      .startElement("td")
-      .attribute("style", "width: 100%; padding: 1em")
-      .startElement("img")
-      .attribute("src", "data:${image.mimeType};base64, ${image.base64EncodedImage}")
-      .attribute("style", "max-width: 100%; height: auto;")
-      .attribute("alt", image.text)
-      .endElement() // img
-      .endElement() // td
-      .endElement() // tr
   }
 }

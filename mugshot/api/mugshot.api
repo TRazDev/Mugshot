@@ -131,18 +131,6 @@ public final class uk/co/fractalmotion/mugshot/Flags {
 	public static final field INSTANCE Luk/co/fractalmotion/mugshot/Flags;
 }
 
-public final class uk/co/fractalmotion/mugshot/HtmlReportWriter : uk/co/fractalmotion/mugshot/SnapshotHandler {
-	public static final field $stable I
-	public fun <init> (D)V
-	public fun <init> (Ljava/lang/String;D)V
-	public fun <init> (Ljava/lang/String;Ljava/io/File;D)V
-	public fun <init> (Ljava/lang/String;Ljava/io/File;DLuk/co/fractalmotion/mugshot/Differ;)V
-	public fun <init> (Ljava/lang/String;Ljava/io/File;DLuk/co/fractalmotion/mugshot/Differ;Ljava/io/File;)V
-	public synthetic fun <init> (Ljava/lang/String;Ljava/io/File;DLuk/co/fractalmotion/mugshot/Differ;Ljava/io/File;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
-	public fun close ()V
-	public fun newFrameHandler (Luk/co/fractalmotion/mugshot/Snapshot;)Luk/co/fractalmotion/mugshot/SnapshotHandler$FrameHandler;
-}
-
 public final class uk/co/fractalmotion/mugshot/InstantAnimationsRule : org/junit/rules/TestRule {
 	public static final field $stable I
 	public fun <init> ()V
@@ -241,6 +229,16 @@ public abstract interface class uk/co/fractalmotion/mugshot/SnapshotHandler$Fram
 
 public final class uk/co/fractalmotion/mugshot/SnapshotHandlerKt {
 	public static final fun detectMaxPercentDifferenceDefault ()D
+}
+
+public final class uk/co/fractalmotion/mugshot/SnapshotRecorder : uk/co/fractalmotion/mugshot/SnapshotHandler {
+	public static final field $stable I
+	public fun <init> (D)V
+	public fun <init> (DLuk/co/fractalmotion/mugshot/Differ;)V
+	public fun <init> (DLuk/co/fractalmotion/mugshot/Differ;Ljava/io/File;)V
+	public synthetic fun <init> (DLuk/co/fractalmotion/mugshot/Differ;Ljava/io/File;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun close ()V
+	public fun newFrameHandler (Luk/co/fractalmotion/mugshot/Snapshot;)Luk/co/fractalmotion/mugshot/SnapshotHandler$FrameHandler;
 }
 
 public final class uk/co/fractalmotion/mugshot/SnapshotVerifier : uk/co/fractalmotion/mugshot/SnapshotHandler {

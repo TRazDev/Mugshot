@@ -20,27 +20,9 @@ class PluginOptionsTest : MugshotPluginTestCase() {
 
     assertThat(result.task(":prepareMugshotDebugResources")).isNotNull()
 
+    // The point of the fixture: intermediates follow a relocated build directory.
     val resourcesFile = File(fixtureRoot, "custom/intermediates/mugshot/debug/resources.json")
     assertThat(resourcesFile.exists()).isTrue()
-
-    val snapshotsDir = File(fixtureRoot, "custom/reports/mugshot/debug/images")
-    assertThat(snapshotsDir.exists()).isTrue()
-  }
-
-  @Test
-  fun customReportDir() {
-    val fixtureRoot = fixture("custom-report-dir")
-    fixtureRoot.resolve("custom").registerForDeletionOnExit()
-
-    val result = fixtureRoot.runBuild("testDebug") { forwardOutput() }
-
-    assertThat(result.task(":prepareMugshotDebugResources")).isNotNull()
-
-    val resourcesFile = File(fixtureRoot, "build/intermediates/mugshot/debug/resources.json")
-    assertThat(resourcesFile.exists()).isTrue()
-
-    val snapshotsDir = File(fixtureRoot, "custom/our-reports/mugshot/debug/images")
-    assertThat(snapshotsDir.exists()).isTrue()
   }
 
   @Test

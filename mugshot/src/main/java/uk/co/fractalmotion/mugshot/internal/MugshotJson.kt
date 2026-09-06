@@ -33,13 +33,6 @@ internal object MugshotJson {
     .addLast(KotlinJsonAdapterFactory())
     .build()!!
 
-  val listOfShotsAdapter: JsonAdapter<List<Snapshot>> =
-    moshi
-      .adapter<List<Snapshot>>(
-        Types.newParameterizedType(List::class.java, Snapshot::class.java)
-      )
-      .indent("  ")
-
   val listOfStringsAdapter: JsonAdapter<List<String>> =
     moshi
       .adapter<List<String>>(

@@ -180,9 +180,10 @@ Each task has an anchor form that covers every variant and a per-variant form
 ./gradlew verifyMugshotDebug --tests '*ProfileScreen*'
 ```
 
-Verification failures write a diff for each mismatch to `build/mugshot/failures`. Running
-the tests directly — `./gradlew testDebugUnitTest` — produces an HTML report of every
-snapshot at `build/reports/mugshot/<variant>`.
+Every run writes an HTML report to `build/reports/tests/<testTask>`. A failed snapshot appears
+there with three images side by side: the golden, what this run rendered, and the difference
+between them. The same images are written to `build/mugshot/failures` for CI to collect, along
+with a single combined image the console error links to.
 
 To gate CI on your goldens:
 
