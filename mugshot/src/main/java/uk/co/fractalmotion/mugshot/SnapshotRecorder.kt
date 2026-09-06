@@ -29,6 +29,15 @@ public class SnapshotRecorder @JvmOverloads constructor(
   private val overwriteOnMaxPercentDifference: Boolean =
     System.getProperty("mugshot.test.record.overwriteOnMaxPercentDifference")?.toBoolean() == true
 
+  /**
+   * Only `recordMugshot*` writes goldens.
+   *
+   * Running the test task on its own renders without recording or verifying, so goldens are left
+   * alone. Writing them there would let a plain test run quietly replace every golden.
+   */
+  private val isRecording: Boolean =
+    System.getProperty("mugshot.test.record")?.toBoolean() == true
+
   init {
     goldenImagesDirectory.mkdirs()
   }
@@ -39,6 +48,8 @@ public class SnapshotRecorder @JvmOverloads constructor(
         File(goldenImagesDirectory, snapshot.toFileName("_", WebpCodec.EXTENSION))
 
       override fun handle(image: BufferedImage) {
+        if (!isRecording) return
+
         if (!overwriteOnMaxPercentDifference || !goldenFile.exists()) {
           WebpCodec.encodeTo(goldenFile, image)
           return

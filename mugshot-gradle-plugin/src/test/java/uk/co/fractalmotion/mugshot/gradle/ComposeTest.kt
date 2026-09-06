@@ -2,7 +2,6 @@ package uk.co.fractalmotion.mugshot.gradle
 
 import com.google.common.truth.Truth.assertThat
 import org.junit.Test
-import java.io.File
 
 /**
  * Rendering and lifecycle behaviour for Jetpack Compose.
@@ -30,14 +29,7 @@ class ComposeTest : MugshotPluginTestCase() {
   }
 
   @Test
-  fun composeViewTreeLifecycle() {
-    val fixtureRoot = fixture("compose-lifecycle-owner")
-    fixtureRoot.runBuild("testDebug")
-
-    val snapshotsDir = File(fixtureRoot, "build/reports/mugshot/debug/images")
-    val snapshots = snapshotsDir.listFiles()
-    assertThat(snapshots!!).hasLength(1)
-  }
+  fun composeViewTreeLifecycle() = fixture("compose-lifecycle-owner").verifyDebug()
 
   @Test
   fun composeLaunchedEffectExceptionPropagates() {
