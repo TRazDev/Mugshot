@@ -22,6 +22,13 @@ down, under "Upstream Paparazzi history".
   `MugshotPreviewCase` takes a `source` after `snapshotName`. Kotlin callers of `snapshot { }` and
   `snapshot("label") { }` are unaffected, but anything compiled against an earlier version needs
   recompiling.
+* A failure from a hand-written test names the test as a qualified name, e.g.
+  `com.example.screen.ScreenSnapshotTest.profile`, rather than the golden image's filename. A test
+  renders an arbitrary composable, so there is no screen to name and the test itself is the most
+  specific thing there is.
+* The report drops the exception class and the source location from a snapshot failure. The
+  location is there so a console can turn it into a link, which a page cannot do, and the class is
+  the same on every one. Other failures keep both.
 * The failure message is three lines: what failed and by how much, the golden to update, and the
   difference image. It used to add the rendered image's path, a `mv` command, and a copy of itself
   on standard output, which buried the part worth reading. It is also thrown without a stack,

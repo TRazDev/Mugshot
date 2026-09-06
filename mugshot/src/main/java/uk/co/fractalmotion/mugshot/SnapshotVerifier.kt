@@ -64,7 +64,7 @@ public class SnapshotVerifier @JvmOverloads constructor(
           maxPercentDifferent = maxPercentDifference,
           failureDir = failureDir,
           differ = differ,
-          source = snapshot.file
+          source = snapshot.file ?: snapshot.qualifiedName()
         )
       }
 
@@ -84,6 +84,27 @@ public class SnapshotVerifier @JvmOverloads constructor(
       }
   }
 }
+
+/**
+ * The test that took this snapshot, as a qualified name, e.g.
+ * `com.example.screen.ScreenSnapshotTest.profile [label]`.
+ *
+ * Used when the caller did not say what it was rendering. A hand-written test renders an arbitrary
+ * composable, so the test itself is the most specific thing there is to name.
+ */
+internal fun Snapshot.qualifiedName(): String =
+  buildString {
+    append(testName.packageName)
+    append('.')
+    append(testName.className)
+    append('.')
+    append(testName.methodName)
+    if (name != null) {
+      append(" [")
+      append(name)
+      append(']')
+    }
+  }
 
 internal fun determineDiffer() =
   System.getProperty("uk.co.fractalmotion.mugshot.differ")?.lowercase().let { differ ->

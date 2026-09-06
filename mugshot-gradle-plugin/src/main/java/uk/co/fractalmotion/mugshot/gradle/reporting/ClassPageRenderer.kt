@@ -113,12 +113,15 @@ internal class ClassPageRenderer(
           imagePanelRenderer.render(diffImage, htmlWriter)
         }
 
-        val message =
+        val text =
           if (failure.message.isNullOrBlank() && !failure.stackTrace.contains(failure.message)) {
             failure.message + System.lineSeparator() + System.lineSeparator() + failure.stackTrace
           } else {
             failure.stackTrace
           }
+        // Only a snapshot failure is trimmed, and a failure is one exactly when it has panels to
+        // show. Everything else keeps its exception class, which is often the whole diagnosis.
+        val message = if (diffImage != null) text.trimSnapshotFailure() else text
         codePanelRenderer.render(
           CodePanelRenderer.Data(message, "$testId-failure"),
           htmlWriter
@@ -225,3 +228,13 @@ internal class ClassPageRenderer(
     }.getOrNull()
   }
 }
+
+/**
+ * Drops what the page does not need from a snapshot failure: the exception class, which is always
+ * the same, and the source location, which is there so a console can turn it into a link and does
+ * nothing on a page.
+ */
+private fun String.trimSnapshotFailure(): String =
+  removePrefix("java.lang.AssertionError: ").replace(SOURCE_LOCATION, "").trimEnd()
+
+private val SOURCE_LOCATION = Regex("""\([A-Za-z_][A-Za-z0-9_]*\.kt:\d+\)""")
