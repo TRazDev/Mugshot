@@ -172,6 +172,14 @@ internal class Renderer(
     return "$osLabel/lib64"
   }
 
+  /**
+   * Never called, and kept deliberately.
+   *
+   * The renderer is held for the life of the test JVM: initialising layoutlib once and reusing it
+   * is what makes a suite fast, so there is no teardown to run this from. It stays because the
+   * JVM exiting is the only thing that releases what layoutlib holds, and a future change that
+   * does want to tear a renderer down needs this to exist.
+   */
   override fun close() {
     bridge = null
 

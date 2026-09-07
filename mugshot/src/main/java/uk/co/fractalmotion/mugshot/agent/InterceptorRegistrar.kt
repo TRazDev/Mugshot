@@ -52,6 +52,7 @@ internal object InterceptorRegistrar {
     methodInterceptors.forEach { it.invoke() }
   }
 
+  /** Resets the registry between tests. Nothing in the library calls it. */
   fun clearMethodInterceptors() {
     methodInterceptors.clear()
   }
