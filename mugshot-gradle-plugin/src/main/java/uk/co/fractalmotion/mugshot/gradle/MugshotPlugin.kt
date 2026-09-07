@@ -567,7 +567,11 @@ public class MugshotPlugin @Inject constructor(
   private fun Configuration.isMainKspConfiguration(): Boolean {
     if (!name.startsWith("ksp")) return false
     val variantSuffix = name.removePrefix("ksp")
-    return variantSuffix.isNotEmpty() && !variantSuffix.endsWith("Test")
+    if (variantSuffix.isEmpty()) return false
+    // `TestFixtures` does not end in `Test`, so it read as a main compilation and the processor
+    // was added to it. The processor recognises the source set itself as well, which is the check
+    // that has to hold -- KSP's test configurations inherit the main one either way.
+    return !variantSuffix.endsWith("Test") && !variantSuffix.endsWith("TestFixtures")
   }
 
   private fun Project.mugshotDependency(artifact: String): Dependency =

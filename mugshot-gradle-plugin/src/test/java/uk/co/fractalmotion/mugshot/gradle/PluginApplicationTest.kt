@@ -98,6 +98,19 @@ class PluginApplicationTest : MugshotPluginTestCase() {
   fun robolectric() = fixture("robolectric").buildSucceeds("testDebug")
 
   /**
+   * A module with Kotlin test fixtures still compiles.
+   *
+   * `debugTestFixtures` is not named like a test source set, so the catalogue was generated into
+   * the fixtures compilation, whose classpath never carries the annotations -- the plugin puts
+   * those on main only. The build then failed in `compileDebugTestFixturesKotlin` with
+   * `Unresolved reference 'uk'`, naming the fixtures rather than Mugshot.
+   */
+  @Test
+  fun testFixturesDoNotGetTheCatalogue() {
+    fixture("test-fixtures-previews").buildSucceeds("assembleDebug", "compileDebugTestFixturesKotlin")
+  }
+
+  /**
    * Robolectric survives a module that also has generated screenshot tests.
    *
    * The two cannot share a JVM: layoutlib and Robolectric both claim the `android.*` classes, and
