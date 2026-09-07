@@ -874,7 +874,7 @@ public class DeviceConfig(
     internal fun loadProperties(path: File): Map<String, String> {
       val p = Properties()
       val map = Maps.newHashMap<String, String>()
-      p.load(FileInputStream(path))
+      FileInputStream(path).use { p.load(it) }
       for (key in p.stringPropertyNames()) {
         map[key] = p.getProperty(key)
       }
@@ -887,7 +887,16 @@ public class DeviceConfig(
 
       val xmlPullParser = XmlPullParserFactory.newInstance()
         .newPullParser()
-      xmlPullParser.setInput(FileInputStream(path), null)
+      return FileInputStream(path).use { input ->
+        xmlPullParser.setInput(input, null)
+        readEnumMap(xmlPullParser, map)
+      }
+    }
+
+    private fun readEnumMap(
+      xmlPullParser: org.xmlpull.v1.XmlPullParser,
+      map: MutableMap<String, MutableMap<String, Int>>
+    ): Map<String, Map<String, Int>> {
       var eventType = xmlPullParser.eventType
       var attr: String? = null
       while (eventType != XmlPullParser.END_DOCUMENT) {
