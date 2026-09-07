@@ -17,7 +17,6 @@ import java.io.IOException
 import java.nio.file.Path
 import java.nio.file.attribute.BasicFileAttributes
 import java.util.TreeSet
-import java.util.logging.Logger
 import java.util.zip.ZipEntry
 import java.util.zip.ZipFile
 
@@ -225,7 +224,17 @@ internal class FrameworkResourceRepository private constructor(
           repository.freezeResources()
         }
       } catch (e: Exception) {
-        LOG.severe("Failed to load resources from $resourceDirectoryOrFile: $e")
+        // Not logged and carried on with. Without the framework resource table every attribute
+        // and style Android defines is missing, `populatePublicResourcesMap` and
+        // `freezeResources` never run, and the repository is left half built. Rendering against
+        // that produces a wrong image, and `recordMugshot*` would write it down as the expected
+        // one. The code above raises this deliberately when the default language table is
+        // absent; discarding it turned a broken setup into a quietly wrong screenshot.
+        throw IOException(
+          "Failed to load Android framework resources from $resourceDirectoryOrFile. " +
+            "Snapshots cannot render without them.",
+          e
+        )
       }
     }
 
@@ -334,7 +343,6 @@ internal class FrameworkResourceRepository private constructor(
     private const val RESOURCES_TABLE_PREFIX = "resources_"
     private const val RESOURCE_TABLE_SUFFIX = ".bin"
     private const val COMPILED_9PNG_EXTENSION = ".compiled.9.png"
-    private val LOG = Logger.getLogger(FrameworkResourceRepository::class.java.name)
 
     /**
      * Creates an Android framework resource repository.

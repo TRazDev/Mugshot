@@ -126,7 +126,13 @@ internal open class AarSourceResourceRepository(
             rTxtIds = computeIds(symbolTable)
             return true
           } catch (e: Exception) {
-            LOG.warning("Failed to load id resources from $rDotTxt: $e")
+            // Left as a warning rather than raised. An AAR with no R.txt at all is normal and
+            // reaches the same empty state silently, so failing only on a corrupt one would be
+            // inconsistent. The message says what it costs.
+            LOG.warning(
+              "Failed to read id resources from $rDotTxt: $e. Ids declared by this library will " +
+                "not resolve, and layouts referencing them may not render as expected."
+            )
           }
         }
       } else {
@@ -146,7 +152,9 @@ internal open class AarSourceResourceRepository(
             }
           } catch (e: Exception) {
             LOG.warning(
-              "Failed to load id resources from $FN_RESOURCE_TEXT in $resourceDirectoryOrFile: $e"
+              "Failed to read id resources from $FN_RESOURCE_TEXT in $resourceDirectoryOrFile: " +
+                "$e. Ids declared by this library will not resolve, and layouts referencing them " +
+                "may not render as expected."
             )
           }
         }
