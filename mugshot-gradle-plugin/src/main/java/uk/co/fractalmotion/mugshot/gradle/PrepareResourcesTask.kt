@@ -73,7 +73,14 @@ public abstract class PrepareResourcesTask : DefaultTask() {
       buildList {
         add(mainPackage)
         artifactFiles.files.forEach { file ->
-          add(file.useLines { lines -> lines.first() })
+          // `first()` on an empty file throws NoSuchElementException, which says nothing about
+          // which of a project's dependencies produced it.
+          val packageName = file.useLines { lines -> lines.firstOrNull() }
+          checkNotNull(packageName) {
+            "Expected a package name in $file, which is empty. This file comes from an Android " +
+              "dependency; the dependency is likely broken or was packaged incorrectly."
+          }
+          add(packageName)
         }
       }
     } else {
