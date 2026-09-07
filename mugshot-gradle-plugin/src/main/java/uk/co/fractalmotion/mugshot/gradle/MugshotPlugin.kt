@@ -228,7 +228,39 @@ public class MugshotPlugin @Inject constructor(
         project.providers.gradlePropertiesPrefixedBy("uk.co.fractalmotion.mugshot")
       val failureDir = buildDirectory.dir("mugshot/failures/${variant.name}")
       val testTaskProvider = testTasks.withType(Test::class.java)
-      testTaskProvider.configureEach { test ->
+
+      // Screenshot tests can be given a task of their own, so that `verifyMugshot` stops dragging
+      // the module's whole unit test suite along and layoutlib stops sharing a JVM with whatever
+      // else the module tests -- Robolectric instruments the same `android.*` classes and the two
+      // cannot coexist. Only the generated preview test moves: a hand-written test carries no
+      // marker this side of the JVM, so there is no way to recognise one here.
+      val isolateTests = project.providers
+        .gradleProperty("uk.co.fractalmotion.mugshot.isolateTests")
+        .map { it.toBoolean() }
+        .getOrElse(false)
+
+      val isolatedTestProvider = if (isolateTests) {
+        project.tasks.register("mugshotTest$variantSlug", Test::class.java) { test ->
+          test.group = VERIFICATION_GROUP
+          test.description = "Runs generated Mugshot screenshot tests for variant '${variant.name}'"
+          test.testClassesDirs =
+            project.files(project.provider { testTaskProvider.single().testClassesDirs })
+          test.classpath = project.files(project.provider { testTaskProvider.single().classpath })
+          test.filter.includeTestsMatching("*${GeneratePreviewTestTask.TEST_CLASS_NAME}")
+        }
+      } else {
+        null
+      }
+
+      // Left to the isolated task rather than run twice, and kept out of a plain `test` run so a
+      // module's own tests are not sharing a JVM with layoutlib.
+      if (isolateTests) {
+        testTaskProvider.configureEach { test ->
+          test.filter.excludeTestsMatching("*${GeneratePreviewTestTask.TEST_CLASS_NAME}")
+        }
+      }
+
+      val configureMugshotTest: (Test) -> Unit = { test ->
         val localResourceDirs = sources.localResourceDirs ?: providerFactory.provider { emptyList() }
         val localAssetDirs = sources.localAssetDirs ?: providerFactory.provider { emptyList() }
 
@@ -326,8 +358,14 @@ public class MugshotPlugin @Inject constructor(
         }
       }
 
-      recordTaskProvider.configure { it.dependsOn(testTaskProvider) }
-      verifyTaskProvider.configure { it.dependsOn(testTaskProvider) }
+      testTaskProvider.configureEach(configureMugshotTest)
+      isolatedTestProvider?.configure(configureMugshotTest)
+
+      // The isolated task runs the generated test; the unit test task still runs hand-written
+      // ones, so both remain wired when isolation is off and only the former when it is on.
+      val screenshotTests = isolatedTestProvider ?: testTaskProvider
+      recordTaskProvider.configure { it.dependsOn(screenshotTests) }
+      verifyTaskProvider.configure { it.dependsOn(screenshotTests) }
     }
   }
 
