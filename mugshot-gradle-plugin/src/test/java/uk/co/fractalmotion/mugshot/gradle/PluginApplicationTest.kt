@@ -2,6 +2,7 @@ package uk.co.fractalmotion.mugshot.gradle
 
 import com.google.common.truth.Truth.assertThat
 import org.junit.Test
+import java.io.File
 
 /**
  * Applying the plugin to the module types and test frameworks it supports.
@@ -95,4 +96,39 @@ class PluginApplicationTest : MugshotPluginTestCase() {
 
   @Test
   fun robolectric() = fixture("robolectric").buildSucceeds("testDebug")
+
+  /**
+   * A module with Kotlin test fixtures still compiles.
+   *
+   * `debugTestFixtures` is not named like a test source set, so the catalogue was generated into
+   * the fixtures compilation, whose classpath never carries the annotations -- the plugin puts
+   * those on main only. The build then failed in `compileDebugTestFixturesKotlin` with
+   * `Unresolved reference 'uk'`, naming the fixtures rather than Mugshot.
+   */
+  @Test
+  fun testFixturesDoNotGetTheCatalogue() {
+    fixture("test-fixtures-previews").buildSucceeds("assembleDebug", "compileDebugTestFixturesKotlin")
+  }
+
+  /**
+   * Robolectric survives a module that also has generated screenshot tests.
+   *
+   * The two cannot share a JVM: layoutlib and Robolectric both claim the `android.*` classes, and
+   * whichever loses fails with an `UnsatisfiedLinkError` naming the other's tests. Isolation moves
+   * the generated test to a task of its own, leaving `testDebug` a JVM layoutlib never enters.
+   *
+   * The [robolectric] fixture cannot catch this: it has no snapshot test, so nothing there ever
+   * loads layoutlib in the first place.
+   */
+  @Test
+  fun robolectricCoexistsWithIsolatedPreviewTests() {
+    val fixtureRoot = fixture("robolectric-isolated-previews")
+    File(fixtureRoot, "src/test/snapshots").registerForDeletionOnExit()
+
+    val record = fixtureRoot.runBuild("recordMugshotDebug")
+    record.assertTaskSucceeded(":mugshotTestDebug")
+
+    // The screenshot test is excluded here, so this is the run that used to fail.
+    fixtureRoot.buildSucceeds("testDebug")
+  }
 }

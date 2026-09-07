@@ -228,7 +228,48 @@ public class MugshotPlugin @Inject constructor(
         project.providers.gradlePropertiesPrefixedBy("uk.co.fractalmotion.mugshot")
       val failureDir = buildDirectory.dir("mugshot/failures/${variant.name}")
       val testTaskProvider = testTasks.withType(Test::class.java)
-      testTaskProvider.configureEach { test ->
+
+      // Screenshot tests can be given a task of their own, so that `verifyMugshot` stops dragging
+      // the module's whole unit test suite along and layoutlib stops sharing a JVM with whatever
+      // else the module tests -- Robolectric instruments the same `android.*` classes and the two
+      // cannot coexist. Only the generated preview test moves: a hand-written test carries no
+      // marker this side of the JVM, so there is no way to recognise one here.
+      val isolateTests = project.providers
+        .gradleProperty("uk.co.fractalmotion.mugshot.isolateTests")
+        .map { it.toBoolean() }
+        .getOrElse(true)
+
+      val isolatedTestProvider = if (isolateTests) {
+        project.tasks.register("mugshotTest$variantSlug", Test::class.java) { test ->
+          test.group = VERIFICATION_GROUP
+          test.description = "Runs generated Mugshot screenshot tests for variant '${variant.name}'"
+          test.testClassesDirs =
+            project.files(project.provider { testTaskProvider.single().testClassesDirs })
+          test.classpath = project.files(project.provider { testTaskProvider.single().classpath })
+          test.filter.includeTestsMatching("*${GeneratePreviewTestTask.TEST_CLASS_NAME}")
+          // A module can apply KSP and annotate nothing yet. An empty run is the honest result
+          // there; Gradle's default would fail the build for finding no tests to run.
+          test.filter.isFailOnNoMatchingTests = false
+        }
+      } else {
+        null
+      }
+
+      // Left to the isolated task rather than run twice, and kept out of a plain `test` run so a
+      // module's own tests are not sharing a JVM with layoutlib. Harmless where no preview test
+      // is generated: excluding a class that was never written matches nothing.
+      if (isolateTests) {
+        testTaskProvider.configureEach { test ->
+          test.filter.excludeTestsMatching("*${GeneratePreviewTestTask.TEST_CLASS_NAME}")
+          // A module whose only tests are generated previews is left with nothing to run here,
+          // and Gradle fails a filtered task that matches no tests. That module is the one this
+          // plugin is for, so `test` has to stay green for it. The cost is that a mistyped
+          // `--tests` pattern no longer fails the build in a module using Mugshot.
+          test.filter.isFailOnNoMatchingTests = false
+        }
+      }
+
+      val configureMugshotTest: (Test) -> Unit = { test ->
         val localResourceDirs = sources.localResourceDirs ?: providerFactory.provider { emptyList() }
         val localAssetDirs = sources.localAssetDirs ?: providerFactory.provider { emptyList() }
 
@@ -326,8 +367,22 @@ public class MugshotPlugin @Inject constructor(
         }
       }
 
-      recordTaskProvider.configure { it.dependsOn(testTaskProvider) }
-      verifyTaskProvider.configure { it.dependsOn(testTaskProvider) }
+      testTaskProvider.configureEach(configureMugshotTest)
+      isolatedTestProvider?.configure(configureMugshotTest)
+
+      // Only a module that generates a preview test has anything to isolate, and the generated
+      // test is written solely where KSP runs. Everywhere else -- a module whose snapshots come
+      // from hand-written tests -- this stays on the unit test task, which is the only place those
+      // tests run. Resolved through a provider because KSP may be applied after this plugin.
+      val screenshotTests = project.provider {
+        if (isolatedTestProvider != null && project.pluginManager.hasPlugin(KSP_PLUGIN)) {
+          isolatedTestProvider
+        } else {
+          testTaskProvider
+        }
+      }
+      recordTaskProvider.configure { it.dependsOn(screenshotTests) }
+      verifyTaskProvider.configure { it.dependsOn(screenshotTests) }
     }
   }
 
@@ -512,7 +567,11 @@ public class MugshotPlugin @Inject constructor(
   private fun Configuration.isMainKspConfiguration(): Boolean {
     if (!name.startsWith("ksp")) return false
     val variantSuffix = name.removePrefix("ksp")
-    return variantSuffix.isNotEmpty() && !variantSuffix.endsWith("Test")
+    if (variantSuffix.isEmpty()) return false
+    // `TestFixtures` does not end in `Test`, so it read as a main compilation and the processor
+    // was added to it. The processor recognises the source set itself as well, which is the check
+    // that has to hold -- KSP's test configurations inherit the main one either way.
+    return !variantSuffix.endsWith("Test") && !variantSuffix.endsWith("TestFixtures")
   }
 
   private fun Project.mugshotDependency(artifact: String): Dependency =

@@ -88,7 +88,7 @@ public class PreviewProcessor(
     val segments = generated.absolutePath.split(File.separatorChar)
     val sourceSet = segments.getOrNull(segments.lastIndexOf("ksp") + 1).orEmpty()
     generated.writeText(sourceSet)
-    return sourceSet.endsWith("UnitTest") || sourceSet.endsWith("AndroidTest")
+    return NON_MAIN_SOURCE_SET_SUFFIXES.any { sourceSet.endsWith(it) }
   }
 
   /**
@@ -131,5 +131,25 @@ public class PreviewProcessor(
 
     private const val SOURCE_SET_FILE = "mugshotSourceSet"
     private const val SOURCE_SET_EXTENSION = "txt"
+
+    /**
+     * The Android source sets the catalogue must not be written into.
+     *
+     * Listed rather than matched on a substring: a product flavour may legitimately be called
+     * something like `smokeTest`, and skipping generation for its main source set would be a
+     * quieter bug than the one this avoids.
+     *
+     * `TestFixtures` is here because it is not obviously a test source set by name, yet the
+     * annotations are only ever put on the main compile classpath -- a catalogue generated into
+     * fixtures cannot compile, and it names the fixtures compilation rather than Mugshot when it
+     * fails. `ScreenshotTest` is AGP's own preview screenshot source set, which would land the
+     * same way.
+     */
+    private val NON_MAIN_SOURCE_SET_SUFFIXES = listOf(
+      "UnitTest",
+      "AndroidTest",
+      "TestFixtures",
+      "ScreenshotTest"
+    )
   }
 }
