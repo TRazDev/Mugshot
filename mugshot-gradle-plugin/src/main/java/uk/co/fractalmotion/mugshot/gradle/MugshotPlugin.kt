@@ -261,6 +261,11 @@ public class MugshotPlugin @Inject constructor(
       if (isolateTests) {
         testTaskProvider.configureEach { test ->
           test.filter.excludeTestsMatching("*${GeneratePreviewTestTask.TEST_CLASS_NAME}")
+          // A module whose only tests are generated previews is left with nothing to run here,
+          // and Gradle fails a filtered task that matches no tests. That module is the one this
+          // plugin is for, so `test` has to stay green for it. The cost is that a mistyped
+          // `--tests` pattern no longer fails the build in a module using Mugshot.
+          test.filter.isFailOnNoMatchingTests = false
         }
       }
 
