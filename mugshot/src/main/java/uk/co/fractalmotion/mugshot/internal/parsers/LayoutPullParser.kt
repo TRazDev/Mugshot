@@ -24,8 +24,6 @@ import com.android.SdkConstants.SPINNER
 import com.android.SdkConstants.TOOLS_URI
 import com.android.ide.common.rendering.api.ILayoutPullParser
 import com.android.ide.common.rendering.api.ResourceNamespace
-import okio.buffer
-import okio.source
 import org.xmlpull.v1.XmlPullParserException
 import java.io.ByteArrayInputStream
 import java.io.File
@@ -42,16 +40,20 @@ import java.nio.charset.Charset
 internal class LayoutPullParser : InMemoryParser, AaptAttrParser, ILayoutPullParser {
   private constructor(inputStream: InputStream) : super() {
     try {
-      val buffer = inputStream.source().buffer()
+      // Read once and close. The document is walked twice, and the stream used to be kept open
+      // and peeked for the second pass, which left a descriptor open for every layout inflated:
+      // layoutlib asks for a parser per layout, nested includes included, and nothing closed
+      // them until the JVM exited.
+      val document = inputStream.use { it.readBytes() }
 
       setFeature(FEATURE_PROCESS_NAMESPACES, true)
-      setInput(buffer.peek().inputStream(), null)
+      setInput(ByteArrayInputStream(document), null)
 
       // IntelliJ uses XmlFile/PsiFile to parse tag snapshots,
       // leaving XmlPullParser for Android to parse resources as usual
       // Here, we use the same XmlPullParser approach for both, which means
       // we need reinitialize the document stream between the two passes.
-      val resourceParser = ResourceParser(buffer.inputStream())
+      val resourceParser = ResourceParser(ByteArrayInputStream(document))
       root = resourceParser.createTagSnapshot()
 
       // Obtain a list of all the aapt declared attributes
