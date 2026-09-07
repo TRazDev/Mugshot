@@ -238,6 +238,22 @@ the rule yourself and call `setup(TestName(...))` and `teardown()` around each t
 The [sample][sample] project's `screen/` and `component/` test packages have worked examples
 of each.
 
+What Mugshot needs from a module
+--------
+
+**A module cannot hold both Mugshot and Robolectric tests.** Mugshot loads layoutlib's native
+library, patches `Build.VERSION`, and permanently redefines `android.view.View.isInEditMode` in
+the test JVM through a Byte Buddy agent. Robolectric's own native setup then fails with
+`UnsatisfiedLinkError`. This applies to any Robolectric test in the module, including ones that
+take no screenshots at all, so moving to Mugshot is all or nothing per module. A Robolectric
+test that has to stay belongs in a module of its own.
+
+**Tests must not run concurrently inside one JVM.** Layoutlib is initialised once and reused,
+which is most of why a suite is quick, and the renderer that holds it is shared by every test in
+the JVM. Gradle's default of a worker per fork is fine, and so is `maxParallelForks`, which forks
+more JVMs. Running tests concurrently *within* one JVM, with JUnit 5's parallel execution for
+instance, is not: they will render over each other.
+
 Git LFS
 --------
 It is recommended you use [Git LFS][lfs] to store your snapshots.  Here's a quick setup:
