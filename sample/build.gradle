@@ -23,8 +23,8 @@ android {
 
   lint {
     // The Arabic translation is deliberately partial: the Profile screen and the shared actions
-    // only, because Profile is the screen LocalizationSnapshotTest renders. Translating half of
-    // all seven screens would produce goldens that look broken rather than instructive.
+    // only, because Profile carries the @MugshotLocales preview. Translating half of all seven
+    // screens would produce goldens that look broken rather than instructive.
     disable += "MissingTranslation"
   }
 }
