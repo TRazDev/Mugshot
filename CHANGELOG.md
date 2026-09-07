@@ -6,6 +6,12 @@ down, under "Upstream Paparazzi history".
 
 ## [Unreleased]
 
+### Changed
+* A golden's name is capped at 200 characters, keeping its readable beginning and ending in a
+  hash of the whole of it. The name is the package, the class, the method and any label run
+  together, none of which is bounded, and a filesystem rejects a name over 255. Real names are
+  nowhere near the cap, so recorded goldens keep the names they have.
+
 ### Fixed
 * The preview processor no longer overwrites another annotation processor's generated file. It
   wrote the source set name into `codeGenerator.generatedFile.firstOrNull()`, taking that to be

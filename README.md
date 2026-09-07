@@ -254,6 +254,31 @@ the JVM. Gradle's default of a worker per fork is fine, and so is `maxParallelFo
 more JVMs. Running tests concurrently *within* one JVM, with JUnit 5's parallel execution for
 instance, is not: they will render over each other.
 
+Golden image names
+--------
+
+A golden is named after the test that took it: the package, the class, the method, and the label
+if `snapshot` was given one. Nothing about those is bounded, and a name has to survive a
+filesystem, so a name longer than 200 characters keeps its readable beginning and ends in a hash
+of the whole of it:
+
+```
+com.example.feature_VeryLongTest_aVeryLongMethodName...~3f9c1a7b2e04.webp
+```
+
+The hash comes from the full name, so it is the same on every machine and every run, and two
+long names that begin alike stay apart. Real names are nowhere near the limit, the longest in
+this repository's own sample is 136 characters, so this only affects names that would otherwise
+be rejected.
+
+Windows caps a whole path at 260 characters unless long paths are turned on. A deep module tree
+can reach that even with a name under the limit, so on Windows it is worth enabling long path
+support in both the OS and Git:
+
+```bash
+git config --global core.longpaths true
+```
+
 Git LFS
 --------
 It is recommended you use [Git LFS][lfs] to store your snapshots.  Here's a quick setup:
