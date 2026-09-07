@@ -1,8 +1,8 @@
 package uk.co.fractalmotion.mugshot.gradle
 
 import com.google.common.truth.Truth.assertThat
-import java.io.File
 import org.junit.Test
+import java.io.File
 
 /**
  * Applying the plugin to the module types and test frameworks it supports.
