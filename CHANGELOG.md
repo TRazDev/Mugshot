@@ -6,6 +6,8 @@ down, under "Upstream Paparazzi history".
 
 ## [Unreleased]
 
+## [3.2.1] - 2026-09-07
+
 ### Changed
 * A golden's name is capped at 200 characters, keeping its readable beginning and ending in a
   hash of the whole of it. The name is the package, the class, the method and any label run
@@ -13,6 +15,23 @@ down, under "Upstream Paparazzi history".
   nowhere near the cap, so recorded goldens keep the names they have.
 
 ### Fixed
+* Snapshots no longer keep a file open for every layout they inflate. The parser was handed a
+  stream and never closed it, and layoutlib asks for a parser per layout, nested includes
+  included, so a suite of View based tests leaked a descriptor per XML file for the life of the
+  test JVM.
+* Loading the Android framework resources now fails the build rather than logging and carrying
+  on. Without them every attribute and style Android defines is missing, so the render was wrong
+  and `recordMugshot*` wrote that down as the expected image.
+* Where a golden belongs is chosen rather than taken from whichever source directory the Android
+  plugin registered first. A module with flavours draws on several, and nothing guarantees that
+  order; if it changed, recording would write to a new place while verifying looked in the old
+  one.
+* A file in the failure directory that is not a golden is skipped rather than crashing the report.
+  A `.DS_Store`, which macOS writes into any folder opened in Finder, was enough.
+* A dependency whose package name file is empty is named in the error. It used to fail with a
+  `NoSuchElementException` that identified nothing.
+* `DeviceConfig` closes the two files it reads when the renderer starts.
+* The unsupported JRE message names the version Mugshot actually needs, 21, rather than 11.
 * The preview processor no longer overwrites another annotation processor's generated file. It
   wrote the source set name into `codeGenerator.generatedFile.firstOrNull()`, taking that to be
   the marker file it had just created, when the list holds everything generated in the round by
@@ -673,7 +692,8 @@ As of this release, consumers must build on Java 11 environments.
 
 
 
-[Unreleased]: https://github.com/TRazDev/Mugshot/compare/3.2.0...HEAD
+[Unreleased]: https://github.com/TRazDev/Mugshot/compare/3.2.1...HEAD
+[3.2.1]: https://github.com/TRazDev/Mugshot/releases/tag/3.2.1
 [3.2.0]: https://github.com/TRazDev/Mugshot/releases/tag/3.2.0
 [3.1.1]: https://github.com/TRazDev/Mugshot/releases/tag/3.1.1
 [3.1.0]: https://github.com/TRazDev/Mugshot/releases/tag/3.1.0
