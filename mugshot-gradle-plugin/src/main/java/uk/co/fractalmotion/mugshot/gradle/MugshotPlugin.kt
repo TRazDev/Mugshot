@@ -237,7 +237,7 @@ public class MugshotPlugin @Inject constructor(
       val isolateTests = project.providers
         .gradleProperty("uk.co.fractalmotion.mugshot.isolateTests")
         .map { it.toBoolean() }
-        .getOrElse(false)
+        .getOrElse(true)
 
       val isolatedTestProvider = if (isolateTests) {
         project.tasks.register("mugshotTest$variantSlug", Test::class.java) { test ->
@@ -247,13 +247,17 @@ public class MugshotPlugin @Inject constructor(
             project.files(project.provider { testTaskProvider.single().testClassesDirs })
           test.classpath = project.files(project.provider { testTaskProvider.single().classpath })
           test.filter.includeTestsMatching("*${GeneratePreviewTestTask.TEST_CLASS_NAME}")
+          // A module can apply KSP and annotate nothing yet. An empty run is the honest result
+          // there; Gradle's default would fail the build for finding no tests to run.
+          test.filter.isFailOnNoMatchingTests = false
         }
       } else {
         null
       }
 
       // Left to the isolated task rather than run twice, and kept out of a plain `test` run so a
-      // module's own tests are not sharing a JVM with layoutlib.
+      // module's own tests are not sharing a JVM with layoutlib. Harmless where no preview test
+      // is generated: excluding a class that was never written matches nothing.
       if (isolateTests) {
         testTaskProvider.configureEach { test ->
           test.filter.excludeTestsMatching("*${GeneratePreviewTestTask.TEST_CLASS_NAME}")
@@ -361,9 +365,17 @@ public class MugshotPlugin @Inject constructor(
       testTaskProvider.configureEach(configureMugshotTest)
       isolatedTestProvider?.configure(configureMugshotTest)
 
-      // The isolated task runs the generated test; the unit test task still runs hand-written
-      // ones, so both remain wired when isolation is off and only the former when it is on.
-      val screenshotTests = isolatedTestProvider ?: testTaskProvider
+      // Only a module that generates a preview test has anything to isolate, and the generated
+      // test is written solely where KSP runs. Everywhere else -- a module whose snapshots come
+      // from hand-written tests -- this stays on the unit test task, which is the only place those
+      // tests run. Resolved through a provider because KSP may be applied after this plugin.
+      val screenshotTests = project.provider {
+        if (isolatedTestProvider != null && project.pluginManager.hasPlugin(KSP_PLUGIN)) {
+          isolatedTestProvider
+        } else {
+          testTaskProvider
+        }
+      }
       recordTaskProvider.configure { it.dependsOn(screenshotTests) }
       verifyTaskProvider.configure { it.dependsOn(screenshotTests) }
     }
