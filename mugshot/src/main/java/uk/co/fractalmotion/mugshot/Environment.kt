@@ -95,6 +95,9 @@ internal data class Config(
   val aarAssetDirs: List<String>
 )
 
+/** Mugshot's own artifacts are compiled for this, so an older JRE cannot load them anyway. */
+private const val MINIMUM_JDK = 21
+
 private fun checkInstalledJvm() {
   val feature = try {
     // Runtime#version() only available as of Java 9.
@@ -105,9 +108,9 @@ private fun checkInstalledJvm() {
     -1
   }
 
-  if (feature < 11) {
+  if (feature < MINIMUM_JDK) {
     throw IllegalStateException(
-      "Unsupported JRE detected! Please install and run Mugshot test suites on JDK 11+."
+      "Unsupported JRE detected! Please install and run Mugshot test suites on JDK $MINIMUM_JDK+."
     )
   }
 }
