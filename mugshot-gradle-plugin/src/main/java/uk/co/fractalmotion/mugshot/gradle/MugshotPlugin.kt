@@ -337,8 +337,13 @@ public class MugshotPlugin @Inject constructor(
    * Golden names are `<package>_<Class>_<method>[<label>].<ext>`, written by the verifier and
    * recorded nowhere else, so the report has to read them back rather than look them up.
    */
-  private fun testKeyOf(fileName: String): Pair<String, String> {
+  private fun testKeyOf(fileName: String): Pair<String, String>? {
+    // Anything else in the directory is skipped rather than indexed into. The failure directory
+    // is cleared at the start of a verify run, so this is normally only what the verifier wrote,
+    // but a stray file, `.DS_Store` for one, would otherwise fail the build while the report is
+    // being written.
     val segments = fileName.split("_", limit = 3)
+    if (segments.size < 3) return null
     return "${segments[0]}.${segments[1]}" to segments[2].substringBeforeLast('.')
   }
 
@@ -364,14 +369,16 @@ public class MugshotPlugin @Inject constructor(
         // prefixes, so the render is every file that carries no prefix.
         failureDir.listFiles().orEmpty()
           .filter { file -> PANEL_PREFIXES.none { file.name.startsWith(it) } }
-          .associate { actual ->
+          .mapNotNull { actual ->
             val name = actual.name
-            testKeyOf(name) to DiffImage(
+            val key = testKeyOf(name) ?: return@mapNotNull null
+            key to DiffImage(
               reference = reportImage(File(failureDir, "reference-$name"), "Reference"),
               actual = reportImage(actual, "New"),
               diff = reportImage(File(failureDir, "diff-$name"), "Diff")
             )
           }
+          .toMap()
           .filterValues { !it.isEmpty }
       } else {
         emptyMap()
