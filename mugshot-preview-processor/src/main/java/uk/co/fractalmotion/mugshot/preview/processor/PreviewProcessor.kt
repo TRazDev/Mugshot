@@ -72,8 +72,19 @@ public class PreviewProcessor(
    * test" instead of matching something arbitrary.
    */
   private fun isTestSourceSet(namespace: String, dependencies: Dependencies): Boolean {
-    environment.codeGenerator.createNewFile(dependencies, namespace, "mugshotSourceSet", "txt")
-    val generated = environment.codeGenerator.generatedFile.firstOrNull() ?: return false
+    environment.codeGenerator
+      .createNewFile(dependencies, namespace, SOURCE_SET_FILE, SOURCE_SET_EXTENSION)
+      .close()
+
+    // Found by name. `generatedFile` lists everything generated in this round by every processor,
+    // not only this one, so taking the first of them picks up whichever processor happened to run
+    // first, and writing to it destroys that processor's output. Hilt's generated modules were
+    // being replaced by the source set name, and the compiler then reported the error against
+    // Hilt rather than against Mugshot.
+    val generated = environment.codeGenerator.generatedFile
+      .lastOrNull { it.name == "$SOURCE_SET_FILE.$SOURCE_SET_EXTENSION" }
+      ?: return false
+
     val segments = generated.absolutePath.split(File.separatorChar)
     val sourceSet = segments.getOrNull(segments.lastIndexOf("ksp") + 1).orEmpty()
     generated.writeText(sourceSet)
@@ -117,5 +128,8 @@ public class PreviewProcessor(
 
   private companion object {
     private const val NAMESPACE_OPTION = "uk.co.fractalmotion.mugshot.preview.namespace"
+
+    private const val SOURCE_SET_FILE = "mugshotSourceSet"
+    private const val SOURCE_SET_EXTENSION = "txt"
   }
 }

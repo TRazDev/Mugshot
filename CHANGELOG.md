@@ -6,6 +6,14 @@ down, under "Upstream Paparazzi history".
 
 ## [Unreleased]
 
+### Fixed
+* The preview processor no longer overwrites another annotation processor's generated file. It
+  wrote the source set name into `codeGenerator.generatedFile.firstOrNull()`, taking that to be
+  the marker file it had just created, when the list holds everything generated in the round by
+  every processor. In a module with Hilt this replaced one of Hilt's generated classes with a
+  single word, and the compiler reported the error against Hilt. Modules with no other processor
+  were unaffected, which is why it went unnoticed.
+
 ## [3.2.0] - 2026-09-06
 
 ### Changed
