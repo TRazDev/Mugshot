@@ -616,13 +616,33 @@ public class MugshotPlugin @Inject constructor(
     // registered input/output properties fails before that task has run. Reaching for it only
     // when `static` is empty keeps the common path free of that dependency.
     return sources.static.flatMap { static ->
-      if (static.isEmpty()) sources.all else providerFactory.provider { static }
-    }.map { dirs ->
-      val sourceSetRoot = dirs.firstOrNull()?.asFile?.parentFile
-        ?: error("No source dirs registered for ${testVariant.name}")
+      if (static.isEmpty()) {
+        // Kotlin Multiplatform: `all` is generated directories, whose parents are inside the
+        // build directory and are not source sets. Nothing to choose between, so it is left as
+        // it was.
+        sources.all.map { dirs -> dirs.firstOrNull()?.asFile?.parentFile }
+      } else {
+        providerFactory.provider { leastSpecificSourceSet(static) }
+      }
+    }.map { root ->
+      val sourceSetRoot = root ?: error("No source dirs registered for ${testVariant.name}")
       projectDirectory.dir(sourceSetRoot.path).dir("snapshots")
     }
   }
+
+  /**
+   * The source set a variant's goldens belong beside.
+   *
+   * A variant of a module with flavours draws on several: `src/test`, `src/testDemo`,
+   * `src/testDebug`, `src/testDemoDebug`. They share `src/test`, which is the shortest path
+   * among them, and that is where goldens go. Chosen rather than taken in order, because the
+   * order the Android plugin registers them in is not guaranteed, and if it changed, recording
+   * would write to a new place while verifying looked in the old one, with neither saying so.
+   */
+  private fun leastSpecificSourceSet(dirs: Collection<Directory>): File? =
+    dirs.mapNotNull { it.asFile.parentFile }
+      .distinct()
+      .minWithOrNull(compareBy({ it.path.length }, { it.path }))
 
   private fun Project.isInternal(): Boolean =
     providers.gradleProperty("uk.co.fractalmotion.mugshot.internal").orNull == "true"
