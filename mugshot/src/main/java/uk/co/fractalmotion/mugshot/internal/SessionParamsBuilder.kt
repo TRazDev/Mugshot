@@ -26,6 +26,7 @@ import com.android.ide.common.rendering.api.SessionParams.RenderingMode
 import com.android.ide.common.resources.ResourceRepository
 import com.android.ide.common.resources.ResourceResolver
 import com.android.ide.common.resources.ResourceValueMap
+import com.android.ide.common.resources.configuration.FolderConfiguration
 import com.android.ide.common.resources.getConfiguredResources
 import com.android.layoutlib.bridge.Bridge
 import com.android.resources.LayoutDirection
@@ -68,16 +69,36 @@ internal data class SessionParamsBuilder(
 
   fun plusFlag(flag: SessionParams.Key<*>, value: Any) = copy(flags = flags + (flag to value))
 
+  /**
+   * The framework's resources for one folder configuration, resolved once per configuration.
+   *
+   * Resolving them is the single most expensive thing a session does -- measured at 2.4ms of a
+   * 22ms screenshot -- and the answer depends only on the configuration. A matrix of previews
+   * asks for the same handful of configurations over and over: 24 of them across hundreds of
+   * cases, so all but the first two dozen resolutions were repeats.
+   *
+   * Safe to share because the platform's resources do not change within a JVM: the repository is
+   * built once, and what comes back is read, never written. Keyed by the repository as well as
+   * the configuration so a second repository cannot read the first one's answers.
+   */
+  private fun configuredFrameworkResources(
+    folderConfiguration: FolderConfiguration
+  ): Map<ResourceType, ResourceValueMap> {
+    val key = FrameworkResourceKey(frameworkResources, folderConfiguration.qualifierString)
+    return frameworkResourceCache.getOrPut(key) {
+      frameworkResources.getConfiguredResources(folderConfiguration)
+        .pseudolocalizeIfNeeded(folderConfiguration.localeQualifier)
+        .row(ResourceNamespace.ANDROID)
+    }
+  }
+
   fun build(): SessionParams {
     require(themeName != null)
 
     val folderConfiguration = deviceConfig.folderConfiguration
     val resourceResolver = ResourceResolver.create(
       mapOf<ResourceNamespace, Map<ResourceType, ResourceValueMap>>(
-        ResourceNamespace.ANDROID to
-          frameworkResources.getConfiguredResources(folderConfiguration)
-            .pseudolocalizeIfNeeded(folderConfiguration.localeQualifier)
-            .row(ResourceNamespace.ANDROID),
+        ResourceNamespace.ANDROID to configuredFrameworkResources(folderConfiguration),
         *projectResources.getConfiguredResources(folderConfiguration)
           .pseudolocalizeIfNeeded(folderConfiguration.localeQualifier)
           .rowMap()
@@ -123,3 +144,12 @@ internal data class SessionParamsBuilder(
     return result
   }
 }
+
+/** Identity of the repository plus the configuration whose resources were resolved from it. */
+private data class FrameworkResourceKey(
+  private val repository: ResourceRepository,
+  private val qualifiers: String
+)
+
+private val frameworkResourceCache =
+  java.util.concurrent.ConcurrentHashMap<FrameworkResourceKey, Map<ResourceType, ResourceValueMap>>()
