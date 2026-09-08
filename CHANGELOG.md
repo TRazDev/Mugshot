@@ -6,6 +6,43 @@ down, under "Upstream Paparazzi history".
 
 ## [Unreleased]
 
+## [3.3.0] - 2026-09-08
+
+### Changed
+* Snapshots render a third of the device's resolution rather than rendering it full size and
+  shrinking the bitmap afterwards. Screen dimensions, dpi and density scale together, so every dp
+  is unchanged and the layout is identical -- there are simply fewer pixels in it. Measured over
+  7176 images, verification runs 27% faster and the goldens take 45% less disk, and text comes out
+  sharper because nothing is resampled after rendering.
+  `uk.co.fractalmotion.mugshot.downscale` changes it; `1` is the device's own resolution and the
+  most detail available, and values below that are rejected. Reach for `1` in a module shipping
+  density-qualified drawables, since the qualifier resolves from the scaled density and can select
+  a different asset than the real device would. **Every golden changes, so re-record.**
+* Pixel 10 replaces Nexus 5 as the default device, for generated preview tests as well as a
+  hand-written rule.
+* A module that generates preview tests gets `mugshotTest<Variant>`, which runs the generated test
+  and nothing else. `verifyMugshot` used to depend on the module's whole unit test suite, so it ran
+  every test the module had, and layoutlib shared a JVM with all of them. Set
+  `uk.co.fractalmotion.mugshot.isolateTests=false` for the old wiring.
+
+### Removed
+* `useDeviceResolution`. It only ever meant "render at full resolution", which is `downscale = 1`;
+  the two produce byte-identical images.
+
+### Fixed
+* A module using Kotlin test fixtures builds again. `debugTestFixtures` is not named like a test
+  source set, so the preview catalogue was generated into the fixtures compilation, whose classpath
+  never carries the annotations -- and the failure named that compilation rather than Mugshot.
+* Adding Mugshot to a module no longer breaks that module's Robolectric tests. Layoutlib and
+  Robolectric both instrument the `android.*` classes and cannot share a JVM; the generated
+  screenshot test now runs in its own.
+
+### Performance
+* The Android framework's resources are resolved once per configuration rather than once per
+  snapshot. It is the most expensive thing building a session does, and the answer depends only on
+  the configuration -- a matrix of previews asks for the same two dozen over and over. Worth about
+  10% wherever verification is CPU-bound, and nothing where cores are spare.
+
 ## [3.2.1] - 2026-09-07
 
 ### Changed
@@ -692,7 +729,8 @@ As of this release, consumers must build on Java 11 environments.
 
 
 
-[Unreleased]: https://github.com/TRazDev/Mugshot/compare/3.2.1...HEAD
+[Unreleased]: https://github.com/TRazDev/Mugshot/compare/3.3.0...HEAD
+[3.3.0]: https://github.com/TRazDev/Mugshot/releases/tag/3.3.0
 [3.2.1]: https://github.com/TRazDev/Mugshot/releases/tag/3.2.1
 [3.2.0]: https://github.com/TRazDev/Mugshot/releases/tag/3.2.0
 [3.1.1]: https://github.com/TRazDev/Mugshot/releases/tag/3.1.1
