@@ -26,6 +26,10 @@ class VerifyTest {
 
   @Test
   fun verify() {
-    mugshot.snapshot(LinearLayout(mugshot.context))
+    mugshot.snapshot(
+      LinearLayout(mugshot.context).apply {
+        setBackgroundColor(android.graphics.Color.WHITE)
+      }
+    )
   }
 }

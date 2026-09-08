@@ -37,12 +37,12 @@ private fun MugshotPreviewConfig.deviceConfig(): DeviceConfig =
 
 private fun MugshotPreviewDevice.toDeviceConfig(): DeviceConfig =
   when (this) {
-    MugshotPreviewDevice.DEFAULT -> DeviceConfig.PIXEL_6
-    MugshotPreviewDevice.PHONE -> DeviceConfig.PIXEL_6
+    MugshotPreviewDevice.DEFAULT -> DeviceConfig.PIXEL_10
+    MugshotPreviewDevice.PHONE -> DeviceConfig.PIXEL_10
     MugshotPreviewDevice.FOLDABLE -> DeviceConfig.PIXEL_FOLD
     MugshotPreviewDevice.TABLET -> DeviceConfig.PIXEL_TABLET
     MugshotPreviewDevice.LANDSCAPE ->
-      DeviceConfig.PIXEL_6.copy(orientation = ScreenOrientation.LANDSCAPE)
+      DeviceConfig.PIXEL_10.copy(orientation = ScreenOrientation.LANDSCAPE)
     MugshotPreviewDevice.WEAR_ROUND -> DeviceConfig.WEAR_OS_SMALL_ROUND
     MugshotPreviewDevice.WEAR_SQUARE -> DeviceConfig.WEAR_OS_SQUARE
   }

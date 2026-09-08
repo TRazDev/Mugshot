@@ -29,7 +29,7 @@ import java.util.Date
 
 public class Mugshot @JvmOverloads constructor(
   private val environment: Environment = detectEnvironment(),
-  private val deviceConfig: DeviceConfig = DeviceConfig.NEXUS_5,
+  private val deviceConfig: DeviceConfig = DeviceConfig.PIXEL_10,
   private val theme: String = "android:Theme.Material.NoActionBar.Fullscreen",
   private val renderingMode: RenderingMode = RenderingMode.NORMAL,
   private val appCompatEnabled: Boolean = true,
@@ -38,7 +38,7 @@ public class Mugshot @JvmOverloads constructor(
   private val renderExtensions: Set<RenderExtension> = setOf(),
   private val supportsRtl: Boolean = false,
   private val showSystemUi: Boolean = false,
-  private val useDeviceResolution: Boolean = false
+  private val downscale: Float = Downscale.configured
 ) : TestRule {
   private lateinit var sdk: MugshotSdk
   private lateinit var frameHandler: SnapshotHandler.FrameHandler
@@ -79,10 +79,10 @@ public class Mugshot @JvmOverloads constructor(
       renderingMode = renderingMode,
       appCompatEnabled = appCompatEnabled,
       renderExtensions = renderExtensions,
+      downscale = downscale,
       supportsRtl = supportsRtl,
       showSystemUi = showSystemUi,
-      onNewFrame = { frameHandler.handle(it) },
-      useDeviceResolution = useDeviceResolution
+      onNewFrame = { frameHandler.handle(it) }
     )
     sdk.setup()
     this.testName = testName
