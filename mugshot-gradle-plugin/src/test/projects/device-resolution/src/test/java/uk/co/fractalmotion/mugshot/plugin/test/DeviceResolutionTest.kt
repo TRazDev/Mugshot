@@ -8,15 +8,16 @@ import org.junit.runner.RunWith
 import uk.co.fractalmotion.mugshot.DeviceConfig
 import uk.co.fractalmotion.mugshot.Mugshot
 
+/** The device's own resolution is a downscale of 1; the default renders a third of it. */
 @RunWith(TestParameterInjector::class)
 class DeviceResolutionTest(
-  @TestParameter useDeviceResolution: Boolean
+  @TestParameter("1", "3") private val downscale: Int
 ) {
 
   @get:Rule
   val mugshot = Mugshot(
     deviceConfig = DeviceConfig.NEXUS_5,
-    useDeviceResolution = useDeviceResolution
+    downscale = downscale.toFloat()
   )
 
   @Test

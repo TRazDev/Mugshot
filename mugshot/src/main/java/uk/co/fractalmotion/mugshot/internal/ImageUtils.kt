@@ -20,15 +20,7 @@ import uk.co.fractalmotion.mugshot.Differ
 import uk.co.fractalmotion.mugshot.Differ.DiffResult.Different
 import uk.co.fractalmotion.mugshot.Differ.DiffResult.Identical
 import uk.co.fractalmotion.mugshot.Differ.DiffResult.Similar
-import java.awt.AlphaComposite
 import java.awt.Color
-import java.awt.Graphics2D
-import java.awt.RenderingHints.KEY_ANTIALIASING
-import java.awt.RenderingHints.KEY_INTERPOLATION
-import java.awt.RenderingHints.KEY_RENDERING
-import java.awt.RenderingHints.VALUE_ANTIALIAS_ON
-import java.awt.RenderingHints.VALUE_INTERPOLATION_BILINEAR
-import java.awt.RenderingHints.VALUE_RENDER_QUALITY
 import java.awt.image.BufferedImage
 import java.awt.image.BufferedImage.TYPE_INT_ARGB
 import java.io.File
@@ -42,8 +34,6 @@ import kotlin.math.max
  * Utilities related to image processing.
  */
 internal object ImageUtils {
-  private const val THUMBNAIL_SIZE = 1000
-
   @Throws(IOException::class)
   fun assertImageSimilar(
     relativePath: String,
@@ -160,122 +150,6 @@ internal object ImageUtils {
         is Different -> result.delta to result.percentDifference
       }
     }
-  }
-
-  /**
-   * Resize the given image
-   *
-   * @param source the image to be scaled
-   * @param xScale x scale
-   * @param yScale y scale
-   * @return the scaled image
-   */
-  fun scale(source: BufferedImage, xScale: Double, yScale: Double): BufferedImage {
-    var source = source
-
-    var sourceWidth = source.width
-    var sourceHeight = source.height
-    val destWidth = Math.max(1, (xScale * sourceWidth).toInt())
-    val destHeight = Math.max(1, (yScale * sourceHeight).toInt())
-    var imageType = source.type
-    if (imageType == BufferedImage.TYPE_CUSTOM) {
-      imageType = BufferedImage.TYPE_INT_ARGB
-    }
-    if (xScale > 0.5 && yScale > 0.5) {
-      val scaled = BufferedImage(destWidth, destHeight, imageType)
-      val g2 = scaled.createGraphics()
-      g2.composite = AlphaComposite.Src
-      g2.color = Color(0, true)
-      g2.fillRect(0, 0, destWidth, destHeight)
-      if (xScale == 1.0 && yScale == 1.0) {
-        g2.drawImage(source, 0, 0, null)
-      } else {
-        setRenderingHints(g2)
-        g2.drawImage(source, 0, 0, destWidth, destHeight, 0, 0, sourceWidth, sourceHeight, null)
-      }
-      g2.dispose()
-      return scaled
-    } else {
-      // When creating a thumbnail, using the above code doesn't work very well;
-      // you get some visible artifacts, especially for text. Instead use the
-      // technique of repeatedly scaling the image into half; this will cause
-      // proper averaging of neighboring pixels, and will typically (for the kinds
-      // of screen sizes used by this utility method in the layout editor) take
-      // about 3-4 iterations to get the result since we are logarithmically reducing
-      // the size. Besides, each successive pass in operating on much fewer pixels
-      // (a reduction of 4 in each pass).
-      //
-      // However, we may not be resizing to a size that can be reached exactly by
-      // successively diving in half. Therefore, once we're within a factor of 2 of
-      // the final size, we can do a resize to the exact target size.
-      // However, we can get even better results if we perform this final resize
-      // up front. Let's say we're going from width 1000 to a destination width of 85.
-      // The first approach would cause a resize from 1000 to 500 to 250 to 125, and
-      // then a resize from 125 to 85. That last resize can distort/blur a lot.
-      // Instead, we can start with the destination width, 85, and double it
-      // successfully until we're close to the initial size: 85, then 170,
-      // then 340, and finally 680. (The next one, 1360, is larger than 1000).
-      // So, now we *start* the thumbnail operation by resizing from width 1000 to
-      // width 680, which will preserve a lot of visual details such as text.
-      // Then we can successively resize the image in half, 680 to 340 to 170 to 85.
-      // We end up with the expected final size, but we've been doing an exact
-      // divide-in-half resizing operation at the end so there is less distortion.
-
-      var iterations = 0 // Number of halving operations to perform after the initial resize
-      var nearestWidth = destWidth // Width closest to source width that = 2^x, x is integer
-      var nearestHeight = destHeight
-      while (nearestWidth < sourceWidth / 2) {
-        nearestWidth *= 2
-        nearestHeight *= 2
-        iterations++
-      }
-
-      var scaled = BufferedImage(nearestWidth, nearestHeight, imageType)
-
-      var g2 = scaled.createGraphics()
-      setRenderingHints(g2)
-      g2.drawImage(source, 0, 0, nearestWidth, nearestHeight, 0, 0, sourceWidth, sourceHeight, null)
-      g2.dispose()
-
-      sourceWidth = nearestWidth
-      sourceHeight = nearestHeight
-      source = scaled
-
-      for (iteration in iterations - 1 downTo 0) {
-        val halfWidth = sourceWidth / 2
-        val halfHeight = sourceHeight / 2
-        scaled = BufferedImage(halfWidth, halfHeight, imageType)
-        g2 = scaled.createGraphics()
-        setRenderingHints(g2)
-        g2.drawImage(source, 0, 0, halfWidth, halfHeight, 0, 0, sourceWidth, sourceHeight, null)
-        g2.dispose()
-
-        sourceWidth = halfWidth
-        sourceHeight = halfHeight
-        source = scaled
-        iterations--
-      }
-      return scaled
-    }
-  }
-
-  fun BufferedImage.resize(targetWidth: Int, targetHeight: Int): BufferedImage {
-    return BufferedImage(targetWidth, targetHeight, type).apply {
-      val g = createGraphics()
-      g.drawImage(this@resize, 0, 0, null)
-      g.dispose()
-    }
-  }
-
-  fun getThumbnailScale(image: BufferedImage): Double {
-    val maxDimension = max(image.width, image.height)
-    return THUMBNAIL_SIZE / maxDimension.toDouble()
-  }
-
-  private fun setRenderingHints(g2: Graphics2D) {
-    g2.setRenderingHint(KEY_INTERPOLATION, VALUE_INTERPOLATION_BILINEAR)
-    g2.setRenderingHint(KEY_RENDERING, VALUE_RENDER_QUALITY)
-    g2.setRenderingHint(KEY_ANTIALIASING, VALUE_ANTIALIAS_ON)
   }
 
   private fun getName(relativePath: String): String {

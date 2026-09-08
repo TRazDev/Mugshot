@@ -8,7 +8,6 @@ import android.widget.TextView
 import com.android.ide.common.rendering.api.SessionParams.RenderingMode
 import org.junit.Rule
 import org.junit.Test
-import uk.co.fractalmotion.mugshot.DeviceConfig
 import uk.co.fractalmotion.mugshot.Mugshot
 
 class RenderingModesTest {
@@ -17,6 +16,11 @@ class RenderingModesTest {
 
   @Test
   fun renderingModes() {
+    // One child per screenful, measured from the device actually being rendered. Hard-coding a
+    // device's pixel dimensions here would leave the children a different size from the viewport,
+    // and the centred text would fall outside it.
+    val metrics = mugshot.context.resources.displayMetrics
+
     val linearLayout = LinearLayout(mugshot.context).apply {
       layoutParams = LayoutParams(WRAP_CONTENT, WRAP_CONTENT)
     }
@@ -27,7 +31,7 @@ class RenderingModesTest {
           text = "$it"
           textSize = 128f
           gravity = Gravity.CENTER
-          layoutParams = LayoutParams(DeviceConfig.NEXUS_5.screenWidth, DeviceConfig.NEXUS_5.screenHeight)
+          layoutParams = LayoutParams(metrics.widthPixels, metrics.heightPixels)
         }
       )
     }

@@ -76,14 +76,14 @@ import kotlinx.coroutines.android.asCoroutineDispatcher
 @OptIn(ExperimentalComposeUiApi::class, InternalComposeUiApi::class)
 public class MugshotSdk @JvmOverloads constructor(
   private val environment: Environment = detectEnvironment(),
-  private val deviceConfig: DeviceConfig = DeviceConfig.NEXUS_5,
+  private val deviceConfig: DeviceConfig = DeviceConfig.PIXEL_10,
   private val theme: String = "android:Theme.Material.NoActionBar.Fullscreen",
   private val renderingMode: RenderingMode = RenderingMode.NORMAL,
   private val appCompatEnabled: Boolean = true,
   private val renderExtensions: Set<RenderExtension> = setOf(),
   private val supportsRtl: Boolean = false,
   private val showSystemUi: Boolean = false,
-  private val useDeviceResolution: Boolean = false,
+  private val downscale: Float = Downscale.configured,
   private val onNewFrame: (BufferedImage) -> Unit
 ) {
   private val logger = MugshotLogger()
@@ -122,7 +122,7 @@ public class MugshotSdk @JvmOverloads constructor(
     sessionParamsBuilder = sessionParamsBuilder
       .copy(
         layoutPullParser = LayoutPullParser.createFromString(contentRoot(renderingMode)),
-        deviceConfig = deviceConfig,
+        deviceConfig = deviceConfig.downscaledBy(downscale),
         renderingMode = renderingMode,
         supportsRtl = supportsRtl,
         decor = showSystemUi,
@@ -193,8 +193,10 @@ public class MugshotSdk @JvmOverloads constructor(
       )
 
     if (deviceConfig != null) {
+      // Scaled the same way as the device the session started with; a caller switching devices
+      // mid-test should not silently get a different resolution from every other snapshot.
       sessionParamsBuilder = sessionParamsBuilder.copy(
-        deviceConfig = deviceConfig
+        deviceConfig = deviceConfig.downscaledBy(downscale)
       )
     }
 
@@ -305,7 +307,7 @@ public class MugshotSdk @JvmOverloads constructor(
       }
 
       val image = bridgeRenderSession.image
-      onNewFrame(scaleImage(frameImage(image)))
+      onNewFrame(frameImage(image))
     } finally {
       if (hasLifecycleOwnerRuntime) {
         lifecycleOwner.registry.currentState = Lifecycle.State.DESTROYED
@@ -395,12 +397,6 @@ public class MugshotSdk @JvmOverloads constructor(
     }
 
     return image
-  }
-
-  private fun scaleImage(image: BufferedImage): BufferedImage {
-    val scale = ImageUtils.getThumbnailScale(image)
-    // Only scale images down, so we don't waste storage space enlarging smaller layouts.
-    return if (scale < 1f && !useDeviceResolution) ImageUtils.scale(image, scale, scale) else image
   }
 
   private fun forcePlatformSdkVersion(compileSdkVersion: Int) {

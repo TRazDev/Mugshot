@@ -28,9 +28,12 @@ import uk.co.fractalmotion.mugshot.SnapshotHandler
 import java.awt.image.BufferedImage
 import kotlin.math.min
 
-private const val EXPECTED_CURRENT_V_SCROLL_WIDTH = 514
-private const val EXPECTED_CURRENT_V_SCROLL_HEIGHT = 1000
+// Nexus 5 is 1080x1920 at density 480; rendered at a third, that is 360x640 at density 160,
+// where a dp is exactly a pixel. V_SCROLL then grows the image to the content, so the height is
+// CONTENT_HEIGHT_DP itself rather than the 1000px cap the old thumbnailing imposed.
+private const val EXPECTED_CURRENT_V_SCROLL_WIDTH = 360
 private const val CONTENT_HEIGHT_DP = 700
+private const val EXPECTED_CURRENT_V_SCROLL_HEIGHT = CONTENT_HEIGHT_DP
 
 class ComposeRenderingModeSizingTest {
   private val snapshotHandler = DimensionAssertingSnapshotHandler()
