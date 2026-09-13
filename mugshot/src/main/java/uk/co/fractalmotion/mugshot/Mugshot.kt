@@ -22,6 +22,8 @@ import android.view.View
 import androidx.annotation.LayoutRes
 import androidx.compose.runtime.Composable
 import com.android.ide.common.rendering.api.SessionParams.RenderingMode
+import org.jetbrains.compose.resources.ExperimentalResourceApi
+import org.jetbrains.compose.resources.setResourceReaderAndroidContext
 import org.junit.rules.TestRule
 import org.junit.runner.Description
 import org.junit.runners.model.Statement
@@ -110,7 +112,21 @@ public class Mugshot @JvmOverloads constructor(
    * `com.example.feature.profile.ProfileScreen(ProfileScreen.kt:31)`, so an IDE links it. A
    * hand-written test leaves it null and the message falls back to the snapshot's own name.
    */
+  @OptIn(ExperimentalResourceApi::class)
   public fun snapshot(name: String? = null, source: String? = null, composable: @Composable () -> Unit) {
+    // Compose Multiplatform's own resource system (stringResource(...) and friends) reads through
+    // a global holder that needs an Android Context before the first lookup, distinct from -- and
+    // unknown to -- androidx's own resource system. Every composable this function renders may be
+    // a commonMain preview built against that system, so this is attempted unconditionally rather
+    // than only for KMP consumers. The dependency is compileOnly, matching Mugshot's other Compose
+    // AARs -- a consumer who never depends on Compose Multiplatform resources themselves does not
+    // have the class on their runtime classpath either, hence the catch: a composable that never
+    // calls into that system just never reads the holder this would have set.
+    try {
+      setResourceReaderAndroidContext(sdk.context)
+    } catch (_: NoClassDefFoundError) {
+      // Not on this consumer's classpath -- nothing to initialise.
+    }
     createFrameHandler(name, source).use { handler ->
       frameHandler = handler
       sdk.snapshot(composable)

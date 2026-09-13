@@ -29,7 +29,16 @@ class ResourcesAssetsTest : MugshotPluginTestCase() {
       "uk.co.fractalmotion.mugshot.plugin.test",
       "com.example.mylibrary",
       "uk.co.fractalmotion.mugshot.plugin.test.module1",
-      "uk.co.fractalmotion.mugshot.plugin.test.module2"
+      "uk.co.fractalmotion.mugshot.plugin.test.module2",
+      // mugshot-annotations and mugshot-preview-runtime are Kotlin Multiplatform modules with an
+      // Android target now, so their (resource-less) namespace registers as a resource package
+      // like any other Android library dependency, same as the Compose runtime artifacts they pull
+      // in transitively.
+      "uk.co.fractalmotion.mugshot.annotations",
+      "uk.co.fractalmotion.mugshot.preview.runtime",
+      "androidx.compose.runtime.annotation",
+      "androidx.compose.runtime",
+      "androidx.annotation.experimental"
     )
     assertThat(config.projectResourceDirs).containsExactly(
       "src/main/res",
@@ -42,7 +51,13 @@ class ResourcesAssetsTest : MugshotPluginTestCase() {
     )
     assertThat(config.aarExplodedDirs)
       .comparingElementsUsing(MATCHES_PATTERN)
-      .containsExactly("$GRADLE_CACHE_TRANSFORMS_PATH_REGEX/external/res\$")
+      .containsExactly(
+        "$GRADLE_CACHE_TRANSFORMS_PATH_REGEX/external/res\$",
+        // Pulled in transitively via the Compose runtime that now backs mugshot-annotations /
+        // mugshot-preview-runtime; unlike the fixture's local AAR, a real published artifact's
+        // exploded dir is named after the artifact itself rather than "external".
+        "$GRADLE_CACHE_TRANSFORMS_PATH_REGEX/annotation-experimental-[0-9.]+/res\$"
+      )
   }
 
   @Test
@@ -62,7 +77,12 @@ class ResourcesAssetsTest : MugshotPluginTestCase() {
       "uk.co.fractalmotion.mugshot.plugin.test",
       "com.example.mylibrary",
       "uk.co.fractalmotion.mugshot.plugin.test.module1",
-      "uk.co.fractalmotion.mugshot.plugin.test.module2"
+      "uk.co.fractalmotion.mugshot.plugin.test.module2",
+      "uk.co.fractalmotion.mugshot.annotations",
+      "uk.co.fractalmotion.mugshot.preview.runtime",
+      "androidx.compose.runtime.annotation",
+      "androidx.compose.runtime",
+      "androidx.annotation.experimental"
     )
     assertThat(config.projectResourceDirs).containsExactly(
       "src/main/res",
@@ -75,7 +95,10 @@ class ResourcesAssetsTest : MugshotPluginTestCase() {
     )
     assertThat(config.aarExplodedDirs)
       .comparingElementsUsing(MATCHES_PATTERN)
-      .containsExactly("$GRADLE_CACHE_TRANSFORMS_PATH_REGEX/external/res\$")
+      .containsExactly(
+        "$GRADLE_CACHE_TRANSFORMS_PATH_REGEX/external/res\$",
+        "$GRADLE_CACHE_TRANSFORMS_PATH_REGEX/annotation-experimental-[0-9.]+/res\$"
+      )
   }
 
   @Test

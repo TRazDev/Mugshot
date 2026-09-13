@@ -30,6 +30,14 @@ dependencies {
 dependencies {
   testImplementationAarAsJar libs.androidx.compose.ui.android
   compileOnlyAarAsJar libs.androidx.compose.ui.android
+  // Compose Multiplatform's own resource system, not androidx's - a `@Mugshot` preview declared
+  // in commonMain and using `stringResource(...)` needs its Android resource reader initialised
+  // before render, which snapshot(composable) below now does automatically. compileOnly, matching
+  // the Compose dependency above: anyone using Compose Multiplatform resources already depends on
+  // this artifact themselves, so it is never shipped as a real transitive runtime dependency of
+  // Mugshot for consumers who do not use it.
+  testImplementationAarAsJar libs.composeMultiplatform.resourcesAndroid
+  compileOnlyAarAsJar libs.composeMultiplatform.resourcesAndroid
   compileOnlyAarAsJar libs.androidx.activity
   compileOnlyAarAsJar libs.androidx.lifecycle.runtime // Needed for setViewTreeLifecycleOwner
   compileOnlyAarAsJar libs.androidx.savedstate // Needed for setViewTreeSavedStateRegistryOwner

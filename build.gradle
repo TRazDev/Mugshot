@@ -76,6 +76,10 @@ subprojects {
     extensions.getByName('kotlin').explicitApi()
   }
 
+  plugins.withId('org.jetbrains.kotlin.multiplatform') {
+    extensions.getByName('kotlin').explicitApi()
+  }
+
   plugins.withId('com.vanniktech.maven.publish') {
     publishing {
       repositories {
@@ -121,6 +125,11 @@ subprojects {
   }
 }
 
-tasks.register("clean", Delete).configure {
+// Registered via LifecycleBasePlugin rather than tasks.register("clean", Delete): Kotlin/JS's
+// Node/Yarn root setup (pulled in by any subproject declaring a js()/wasmJs() target) also applies
+// LifecycleBasePlugin to the root project, which creates its own "clean" task - whichever plugin
+// gets there first, applying it here is a no-op the second time, so there is never a collision.
+apply plugin: org.gradle.language.base.plugins.LifecycleBasePlugin
+tasks.named("clean").configure {
   delete(rootProject.layout.buildDirectory)
 }

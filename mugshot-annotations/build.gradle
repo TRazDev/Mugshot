@@ -1,2 +1,29 @@
-apply plugin: 'org.jetbrains.kotlin.jvm'
+apply plugin: 'org.jetbrains.kotlin.multiplatform'
+apply plugin: 'com.android.kotlin.multiplatform.library'
 apply plugin: 'com.vanniktech.maven.publish'
+
+// Pure kotlin.annotation declarations, no platform APIs at all, so every target Kotlin/Native
+// supports is free to enable: a KMP app can annotate an @Mugshot preview from commonMain no
+// matter which platforms it itself targets alongside Android.
+kotlin {
+  jvm()
+  androidLibrary {
+    namespace = 'uk.co.fractalmotion.mugshot.annotations'
+    compileSdk = libs.versions.compileSdk.get() as int
+    minSdk = libs.versions.minSdk.get() as int
+  }
+  iosArm64()
+  iosSimulatorArm64()
+  macosX64()
+  macosArm64()
+  linuxX64()
+  mingwX64()
+  js(IR) {
+    browser()
+    nodejs()
+  }
+  wasmJs {
+    browser()
+    nodejs()
+  }
+}

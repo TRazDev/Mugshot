@@ -1,7 +1,38 @@
-apply plugin: 'org.jetbrains.kotlin.jvm'
+apply plugin: 'org.jetbrains.kotlin.multiplatform'
+apply plugin: 'com.android.kotlin.multiplatform.library'
 apply plugin: 'com.vanniktech.maven.publish'
 apply plugin: 'org.jetbrains.kotlin.plugin.compose'
 
-dependencies {
-  compileOnly libs.compose.runtime
+// Plain @Composable lambdas and data/enum classes, no platform APIs beyond Compose Runtime, which
+// is itself multiplatform - so this can sit on commonMain's classpath next to mugshot-annotations
+// for whichever targets a consuming KMP app declares.
+kotlin {
+  jvm()
+  androidLibrary {
+    namespace = 'uk.co.fractalmotion.mugshot.preview.runtime'
+    compileSdk = libs.versions.compileSdk.get() as int
+    minSdk = libs.versions.minSdk.get() as int
+  }
+  iosArm64()
+  iosSimulatorArm64()
+  // No macosX64/macosArm64/linuxX64/mingwX64 here (unlike mugshot-annotations): Compose
+  // Multiplatform's runtime has no Kotlin/Native desktop targets at all - "desktop" in Compose
+  // Multiplatform means the jvm() target (Swing/AWT), not native macOS/Linux/Windows compilation.
+  js(IR) {
+    browser()
+    nodejs()
+  }
+  wasmJs {
+    browser()
+    nodejs()
+  }
+
+  sourceSets {
+    commonMain.dependencies {
+      // api, not compileOnly: Kotlin/Native, JS and Wasm don't support compileOnly dependencies
+      // (they must be present at consumer compile time on those targets), and every consumer of
+      // this artifact is a Compose project already, so exposing it transitively costs nothing.
+      api libs.composeMultiplatform.runtime
+    }
+  }
 }
