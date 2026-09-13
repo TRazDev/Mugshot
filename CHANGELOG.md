@@ -6,6 +6,13 @@ down, under "Upstream Paparazzi history".
 
 ## [Unreleased]
 
+## [3.4.1] - 2026-09-13
+
+### Fixed
+* `mugshot-annotations` and `mugshot-preview-runtime` are published. 3.4.0 reached Maven Central
+  without them, so a build applying the 3.4.0 plugin fails with `Could not find
+  uk.co.fractalmotion.mugshot:mugshot-annotations:3.4.0`. Use 3.4.1 instead; nothing else changed.
+
 ## [3.4.0] - 2026-09-13
 
 ### Added
@@ -754,7 +761,8 @@ As of this release, consumers must build on Java 11 environments.
 
 
 
-[Unreleased]: https://github.com/TRazDev/Mugshot/compare/3.4.0...HEAD
+[Unreleased]: https://github.com/TRazDev/Mugshot/compare/3.4.1...HEAD
+[3.4.1]: https://github.com/TRazDev/Mugshot/releases/tag/3.4.1
 [3.4.0]: https://github.com/TRazDev/Mugshot/releases/tag/3.4.0
 [3.3.0]: https://github.com/TRazDev/Mugshot/releases/tag/3.3.0
 [3.2.1]: https://github.com/TRazDev/Mugshot/releases/tag/3.2.1

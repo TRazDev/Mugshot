@@ -41,7 +41,7 @@ jobs:
         uses: gradle/actions/setup-gradle@v5
 
       - name: Publish Artifacts
-        run: ./gradlew publishMavenPublicationToMavenCentralRepository mugshot-gradle-plugin:publishAllPublicationsToMavenCentralRepository -PRELEASE_SIGNING_ENABLED=true
+        run: ./gradlew publishAllPublicationsToMavenCentralRepository -PRELEASE_SIGNING_ENABLED=true
         env:
           ORG_GRADLE_PROJECT_mavenCentralUsername: ${{ secrets.SONATYPE_CENTRAL_USERNAME }}
           ORG_GRADLE_PROJECT_mavenCentralPassword: ${{ secrets.SONATYPE_CENTRAL_PASSWORD }}
