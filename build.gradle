@@ -133,3 +133,14 @@ apply plugin: org.gradle.language.base.plugins.LifecycleBasePlugin
 tasks.named("clean").configure {
   delete(rootProject.layout.buildDirectory)
 }
+
+// Kotlin runs Yarn with a network mutex, so any two of these tasks running at once block each
+// other. On Windows the Wasm install left waiting can finish without writing its yarn.lock,
+// failing kotlinWasmStoreYarnLock. Run them in turn instead.
+def yarnTasks = ["kotlinNpmInstall", "kotlinWasmNpmInstall", "kotlinWasmToolingSetup"]
+yarnTasks.eachWithIndex { name, index ->
+  def earlier = yarnTasks.take(index)
+  tasks.named { it == name }.configureEach {
+    mustRunAfter(tasks.named { it in earlier })
+  }
+}
