@@ -93,8 +93,12 @@ tasks.withType(Test).configureEach {
   // The plugin injects these into every consumer, so fixture builds must be able to resolve them
   // from build/localMaven.
   dependsOn(':mugshot:publishMavenPublicationToProjectLocalMavenRepository')
-  dependsOn(':mugshot-annotations:publishMavenPublicationToProjectLocalMavenRepository')
-  dependsOn(':mugshot-preview-runtime:publishMavenPublicationToProjectLocalMavenRepository')
+  // mugshot-annotations and mugshot-preview-runtime are Kotlin Multiplatform modules, so the
+  // vanniktech plugin splits them into one publication per target (jvm, android, iosArm64, ...)
+  // rather than a single "maven" publication -- publish them all so fixture builds can resolve
+  // whichever target they compile against.
+  dependsOn(':mugshot-annotations:publishAllPublicationsToProjectLocalMavenRepository')
+  dependsOn(':mugshot-preview-runtime:publishAllPublicationsToProjectLocalMavenRepository')
   dependsOn(':mugshot-preview-junit:publishMavenPublicationToProjectLocalMavenRepository')
   dependsOn(':mugshot-preview-processor:publishMavenPublicationToProjectLocalMavenRepository')
 }

@@ -26,7 +26,6 @@ import com.android.build.api.variant.HasUnitTest
 import com.android.build.api.variant.KotlinMultiplatformAndroidComponentsExtension
 import com.android.build.api.variant.LibraryAndroidComponentsExtension
 import com.android.build.api.variant.UnitTest
-import com.google.devtools.ksp.gradle.KspExtension
 import org.gradle.api.DefaultTask
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -501,6 +500,38 @@ public class MugshotPlugin @Inject constructor(
   }
 
   /**
+   * Sets KSP's `PREVIEW_NAMESPACE_OPTION` processor argument without a compile-time reference to
+   * KSP's own `KspExtension` type.
+   *
+   * `mugshot-gradle-plugin` only declares KSP `compileOnly`, so KSP's classes are never on this
+   * plugin's own runtime classpath -- only on the consuming project's. A direct
+   * `extensions.getByType(KspExtension::class.java)` call compiles fine but throws
+   * `NoClassDefFoundError` at runtime: resolving `KspExtension::class.java` is a static type
+   * reference that the JVM must link through *this* plugin's classloader, which was never given
+   * KSP's jar. Reflection sidesteps that -- `extensions.findByName("ksp")` returns the
+   * already-loaded instance (loaded by the consumer's own classloader), and invoking a method on
+   * it by name needs no static reference to its declaring class at all.
+   *
+   * Two overloads because `KspExtension.arg` itself is overloaded on the value type (`String` or
+   * `Provider<String>`), and `variant.namespace` is a `Provider<String>` while
+   * `CommonExtension.namespace` is a plain `String` -- `Provider` is a core Gradle API type, not
+   * KSP's, so referencing it directly here is safe.
+   */
+  private fun Project.setKspPreviewNamespaceArg(namespace: String) {
+    invokeKspArg(String::class.java, namespace)
+  }
+
+  private fun Project.setKspPreviewNamespaceArg(namespace: Provider<String>) {
+    invokeKspArg(Provider::class.java, namespace)
+  }
+
+  private fun Project.invokeKspArg(valueType: Class<*>, value: Any) {
+    val kspExtension = extensions.findByName("ksp") ?: return
+    kspExtension.javaClass.getMethod("arg", String::class.java, valueType)
+      .invoke(kspExtension, PREVIEW_NAMESPACE_OPTION, value)
+  }
+
+  /**
    * Wires the preview processor into KSP so consumers write no `ksp` block of their own.
    *
    * Reacts to KSP rather than applying it: the plugin only declares KSP `compileOnly`, so it never
@@ -515,30 +546,61 @@ public class MugshotPlugin @Inject constructor(
     extension: AndroidComponentsExtension<*, *, *>,
     isMultiplatformProject: Boolean
   ) {
-    // Kotlin Multiplatform names its source sets differently, and addTestDependency() only wires
-    // the preview modules for the Android source sets, so generating a test there would not compile.
-    if (isMultiplatformProject) return
-
     pluginManager.withPlugin(KSP_PLUGIN) {
       // Added as the configurations are created rather than from an `onVariants` callback. KSP
       // decides whether to skip its task while it walks the variants, and a callback registered
       // after KSP's own runs too late -- the task is skipped as having no processors.
+      //
+      // For a KMP module this configuration is `kspAndroidMain` (the android target's main
+      // compilation, which already includes commonMain's resolved sources), so a `@Mugshot`
+      // preview declared in commonMain is discovered exactly like one declared in androidMain --
+      // isMainKspConfiguration() already accepts that name unchanged.
       val processor = mugshotDependency("mugshot-preview-processor")
       configurations.matching { it.isMainKspConfiguration() }.all { it.dependencies.add(processor) }
 
-      // KSP processor options are global rather than per variant, and a module has exactly one
-      // namespace, so this is read from the DSL once the build script has been evaluated.
-      afterEvaluate {
-        val namespace = extensions.findByType(CommonExtension::class.java)?.namespace
-        if (namespace == null) {
-          logger.warn(
-            "Mugshot could not resolve this module's namespace, so @Mugshot previews will not be " +
-              "generated. Set android.namespace, or add the KSP argument " +
-              "'$PREVIEW_NAMESPACE_OPTION' by hand."
-          )
-          return@afterEvaluate
+      if (isMultiplatformProject) {
+        // A KMP host test's `ksp<Variant>Test` configuration inherits the main one (see
+        // isMainKspConfiguration's note above), so the processor reaches that compilation too --
+        // and unlike a classic Android unit test, a KMP host test compilation is not associated
+        // with main for KSP's own source-visibility purposes, so that second run sees none of
+        // main's `@Mugshot` previews and writes an *empty* `mugshotPreviewCases`. That empty
+        // declaration lives in the same package as the real one and is local to the test
+        // compilation, so Kotlin resolves it ahead of the real, populated one main only exposes
+        // via the classpath -- the generated test then reads zero cases.
+        //
+        // The task actually runs the processor from `ksp<Variant>ProcessorClasspath` /
+        // `ksp<Variant>KotlinProcessorClasspath`, not from the plain `ksp<Variant>` bucket the
+        // dependency above was added to -- isMainKspConfiguration()'s suffix check does not
+        // recognise those "ProcessorClasspath"-suffixed names as test configurations (they don't
+        // end in "Test"), so this matches on the substring instead to reach every one of them.
+        configurations.matching { it.name.startsWith("ksp") && it.name.contains("Test") }.all {
+          it.exclude(mapOf("group" to "uk.co.fractalmotion.mugshot", "module" to "mugshot-preview-processor"))
         }
-        extensions.getByType(KspExtension::class.java).arg(PREVIEW_NAMESPACE_OPTION, namespace)
+      }
+
+      // KSP processor options are global rather than per variant, and a module has exactly one
+      // namespace, so this only needs setting once each module has been evaluated.
+      if (isMultiplatformProject) {
+        // The new com.android.kotlin.multiplatform.library plugin does not reliably register a
+        // CommonExtension the way a classic Android module does, so the project-level DSL lookup
+        // below can't be trusted here. variant.namespace is already used this way elsewhere in
+        // this file (KMP's android target has exactly one variant, so this still runs once).
+        extension.onVariants { variant ->
+          setKspPreviewNamespaceArg(variant.namespace)
+        }
+      } else {
+        afterEvaluate {
+          val namespace = extensions.findByType(CommonExtension::class.java)?.namespace
+          if (namespace == null) {
+            logger.warn(
+              "Mugshot could not resolve this module's namespace, so @Mugshot previews will not be " +
+                "generated. Set android.namespace, or add the KSP argument " +
+                "'$PREVIEW_NAMESPACE_OPTION' by hand."
+            )
+            return@afterEvaluate
+          }
+          setKspPreviewNamespaceArg(namespace)
+        }
       }
 
       // The test is only generated where the processor runs. It reads `mugshotPreviewCases`, which
@@ -599,8 +661,25 @@ public class MugshotPlugin @Inject constructor(
               val configurationName = compilation.defaultSourceSet.implementationConfigurationName
               allowedConfigs += configurationName
               configurations.getByName(configurationName).dependencies.add(dependency)
+              // The bridge that turns the generated catalogue into JUnit rules; test-only, same
+              // as the non-multiplatform branch below.
+              configurations.getByName(configurationName).dependencies
+                .add(mugshotDependency("mugshot-preview-junit"))
             }
           }
+        }
+        // mugshot-annotations and mugshot-preview-runtime are themselves multiplatform, so unlike
+        // the rest of this dependency, they belong on commonMain: that is where a KMP app's
+        // @Mugshot previews are declared, alongside the @Preview functions they annotate.
+        kmp.sourceSets.getByName("commonMain").let { sourceSet ->
+          val configurationName = sourceSet.implementationConfigurationName
+          allowedConfigs += configurationName
+          configurations.getByName(configurationName).dependencies.addAll(
+            listOf(
+              mugshotDependency("mugshot-annotations"),
+              mugshotDependency("mugshot-preview-runtime")
+            )
+          )
         }
       }
       plugins.hasPlugin(KOTLIN_MULTIPLATFORM_PLUGIN) -> {
@@ -610,6 +689,18 @@ public class MugshotPlugin @Inject constructor(
             val configurationName = it.implementationConfigurationName
             allowedConfigs += configurationName
             configurations.getByName(configurationName).dependencies.add(dependency)
+            configurations.getByName(configurationName).dependencies
+              .add(mugshotDependency("mugshot-preview-junit"))
+          }
+          sourceSets.getByName("commonMain").let { sourceSet ->
+            val configurationName = sourceSet.implementationConfigurationName
+            allowedConfigs += configurationName
+            configurations.getByName(configurationName).dependencies.addAll(
+              listOf(
+                mugshotDependency("mugshot-annotations"),
+                mugshotDependency("mugshot-preview-runtime")
+              )
+            )
           }
         }
       }
@@ -621,8 +712,8 @@ public class MugshotPlugin @Inject constructor(
 
         // The preview pipeline, so @Mugshot needs no dependency declarations either. The
         // annotations and the generated catalogue compile into main; the bridge that turns that
-        // catalogue into rules is test-only. Not wired for Kotlin Multiplatform, where source set
-        // names differ -- those projects declare these by hand.
+        // catalogue into rules is test-only. The two Kotlin Multiplatform branches above wire the
+        // same three dependencies onto their own differently-named source sets.
         val mainImplementation =
           android.sourceSets.getByName(MAIN_SOURCE_SET_NAME).implementationConfigurationName
         configurations.getByName(mainImplementation).dependencies.addAll(
@@ -668,18 +759,26 @@ public class MugshotPlugin @Inject constructor(
       ?: testVariant.sources.java
       ?: error("No Kotlin or Java sources on ${testVariant.name}")
     val projectDirectory = layout.projectDirectory
-    // Kotlin Multiplatform's androidHostTest registers no static dirs, and never receives a
-    // generated one either, so falling back to `all` there is safe.
+    val buildDirectory = layout.buildDirectory
+    // Kotlin Multiplatform's androidHostTest registers no static dirs, so this falls back to
+    // `all` there.
     // `flatMap` rather than `zip`: `all` carries `generateMugshot<Variant>PreviewTests` as a
     // producer task, and querying it while the configuration cache serialises this task's
     // registered input/output properties fails before that task has run. Reaching for it only
     // when `static` is empty keeps the common path free of that dependency.
     return sources.static.flatMap { static ->
       if (static.isEmpty()) {
-        // Kotlin Multiplatform: `all` is generated directories, whose parents are inside the
-        // build directory and are not source sets. Nothing to choose between, so it is left as
-        // it was.
-        sources.all.map { dirs -> dirs.firstOrNull()?.asFile?.parentFile }
+        // `all` mixes the source set's real, conventional directory in with any generated ones
+        // (such as the one above) once a module actually has both -- picking blindly is how a
+        // module with a hand-written test *and* a generated one ended up with goldens split
+        // across two directories. A generated directory's parent always resolves inside the
+        // build directory, which no real source set root ever does, so it is what distinguishes
+        // them here. Only when every candidate is generated (a module with `@Mugshot` previews
+        // but no hand-written test of its own) does this fall back to the first one regardless.
+        sources.all.zip(buildDirectory) { dirs, build ->
+          val parents = dirs.map { it.asFile.parentFile }
+          parents.firstOrNull { !it.startsWith(build.asFile) } ?: parents.firstOrNull()
+        }
       } else {
         providerFactory.provider { leastSpecificSourceSet(static) }
       }

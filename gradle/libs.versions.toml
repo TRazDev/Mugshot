@@ -3,6 +3,7 @@ agp = "9.3.2"
 androidTools = "32.3.2" # == 23.0.0 + agp version
 bytebuddy = "1.18.8"
 compose = "1.11.2"
+composeMultiplatform = "1.11.1"
 coroutines = "1.11.0"
 javaTarget = "21"
 kotlin = "2.3.0"
@@ -29,6 +30,8 @@ bytebuddy-agent = { module = "net.bytebuddy:byte-buddy-agent", version.ref = "by
 bytebuddy-core = { module = "net.bytebuddy:byte-buddy", version.ref = "bytebuddy" }
 
 compose-runtime = { module = "androidx.compose.runtime:runtime", version.ref = "compose" }
+composeMultiplatform-runtime = { module = "org.jetbrains.compose.runtime:runtime", version.ref = "composeMultiplatform" }
+composeMultiplatform-resourcesAndroid = { module = "org.jetbrains.compose.components:components-resources-android", version.ref = "composeMultiplatform" }
 composeUi-material = { module = "androidx.compose.material:material", version.ref = "compose" }
 composeUi-material3-android = { module = "androidx.compose.material3:material3-android", version = "1.4.0" }
 composeUi-material-icons = { module = "androidx.compose.material:material-icons-core", version = "1.7.8" }
