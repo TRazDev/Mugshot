@@ -6,6 +6,31 @@ down, under "Upstream Paparazzi history".
 
 ## [Unreleased]
 
+## [3.4.0] - 2026-09-13
+
+### Added
+* `@Mugshot` previews in Kotlin Multiplatform modules. The plugin used to skip a multiplatform
+  module entirely, and `mugshot-annotations` and `mugshot-preview-runtime` were JVM-only, so a
+  preview in `commonMain` could be neither annotated nor generated. Both modules are now
+  multiplatform and are added to `commonMain`; a preview declared there is found like one in
+  `androidMain`. Apply the plugin alongside `com.android.kotlin.multiplatform.library`.
+* A `commonMain` preview that reads Compose Multiplatform resources with `stringResource` now
+  renders. Mugshot hands that resource system an Android `Context` before each render; projects
+  that do not use it are unaffected.
+
+### Changed
+* `mugshot-preview-runtime` exposes Compose Multiplatform's runtime as an `api` dependency rather
+  than `compileOnly`, which Kotlin/Native, JS and Wasm do not support. On Android it resolves to
+  the androidx Compose runtime a Compose project already has.
+
+### Fixed
+* Applying the plugin no longer risks `NoClassDefFoundError` on `KspExtension`. Mugshot declares
+  KSP `compileOnly`, so a direct reference to that class compiled and then failed to load against
+  the consuming build's classloader.
+* A module with both a hand-written and a generated snapshot test keeps all its goldens in one
+  directory. They could previously be split across the source set's directory and a generated one;
+  if yours were, move them into the source set's directory or re-record that module.
+
 ## [3.3.0] - 2026-09-08
 
 ### Changed
@@ -729,7 +754,8 @@ As of this release, consumers must build on Java 11 environments.
 
 
 
-[Unreleased]: https://github.com/TRazDev/Mugshot/compare/3.3.0...HEAD
+[Unreleased]: https://github.com/TRazDev/Mugshot/compare/3.4.0...HEAD
+[3.4.0]: https://github.com/TRazDev/Mugshot/releases/tag/3.4.0
 [3.3.0]: https://github.com/TRazDev/Mugshot/releases/tag/3.3.0
 [3.2.1]: https://github.com/TRazDev/Mugshot/releases/tag/3.2.1
 [3.2.0]: https://github.com/TRazDev/Mugshot/releases/tag/3.2.0

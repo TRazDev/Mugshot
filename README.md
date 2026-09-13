@@ -126,7 +126,7 @@ stays green and no image appears. The lint checks turn that silence into a messa
 
 ```groovy
 dependencies {
-  lintChecks 'uk.co.fractalmotion.mugshot:mugshot-preview-lints:3.3.0'
+  lintChecks 'uk.co.fractalmotion.mugshot:mugshot-preview-lints:3.4.0'
 }
 ```
 
@@ -350,7 +350,7 @@ buildscript {
     google()
   }
   dependencies {
-    classpath 'uk.co.fractalmotion.mugshot:mugshot-gradle-plugin:3.3.0'
+    classpath 'uk.co.fractalmotion.mugshot:mugshot-gradle-plugin:3.4.0'
   }
 }
 
@@ -360,7 +360,7 @@ apply plugin: 'uk.co.fractalmotion.mugshot'
 Using the plugins DSL:
 ```groovy
 plugins {
-  id 'uk.co.fractalmotion.mugshot' version '3.3.0'
+  id 'uk.co.fractalmotion.mugshot' version '3.4.0'
 }
 ```
 
