@@ -33,5 +33,5 @@ exercised between releases.
 2. Check that the internal variables are configured correctly:
    1. `internalUrl` is set in `~/.gradle/gradle.properties` to the internal repository URL.
    2. Check `internalUsername` and `internalPassword` are set in `~/.gradle/gradle.properties` to the internal repository credentials.
-3. Run `./gradlew publishMavenPublicationToInternalRepository mugshot-gradle-plugin:publishAllPublicationsToInternalRepository --no-parallel` to publish the internal release.
+3. Run `./gradlew publishAllPublicationsToInternalRepository --no-parallel` to publish the internal release.
    * *Note* if gradle publish fails with `403` error, ensure the `VERSION_NAME` in step 1 is unique and isn't already published.
