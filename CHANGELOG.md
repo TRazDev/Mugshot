@@ -6,6 +6,23 @@ down, under "Upstream Paparazzi history".
 
 ## [Unreleased]
 
+## [3.4.2] - 2026-09-14
+
+### Fixed
+* A Kotlin Multiplatform module using Compose Multiplatform resources works with the configuration
+  cache. Storing it failed with `Querying the mapped value of ... before task
+  ':copyAndroidMainComposeResourcesToAndroidAssets' has completed is not supported`, because
+  Mugshot recorded that plugin's generated assets directory as an input before the directory
+  existed.
+* `recordMugshot` works with the configuration cache in a Kotlin Multiplatform module that has
+  `@Mugshot` previews. The snapshot directory is now `src/androidHostTest/snapshots` by name,
+  where goldens already were, rather than resolved from sources that include the generated test.
+
+### Changed
+* `prepareMugshot<Variant>Resources` runs on every build instead of being cached, as a generated
+  asset directory's path cannot be part of a cache key. It only writes a list of paths; when that
+  list is unchanged, the screenshot tests stay up to date or come from the build cache as before.
+
 ## [3.4.1] - 2026-09-13
 
 ### Fixed
@@ -761,7 +778,8 @@ As of this release, consumers must build on Java 11 environments.
 
 
 
-[Unreleased]: https://github.com/TRazDev/Mugshot/compare/3.4.1...HEAD
+[Unreleased]: https://github.com/TRazDev/Mugshot/compare/3.4.2...HEAD
+[3.4.2]: https://github.com/TRazDev/Mugshot/releases/tag/3.4.2
 [3.4.1]: https://github.com/TRazDev/Mugshot/releases/tag/3.4.1
 [3.4.0]: https://github.com/TRazDev/Mugshot/releases/tag/3.4.0
 [3.3.0]: https://github.com/TRazDev/Mugshot/releases/tag/3.3.0
