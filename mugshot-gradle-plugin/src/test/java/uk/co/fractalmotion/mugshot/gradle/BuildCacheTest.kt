@@ -13,7 +13,7 @@ import java.io.File
 @Suppress("ktlint:standard:max-line-length")
 class BuildCacheTest : MugshotPluginTestCase() {
   @Test
-  fun prepareResourcesCaching() {
+  fun prepareResourcesKeepsVariantsApart() {
     val fixtureRoot = fixture("prepare-resources-task-caching")
     val buildDir = fixtureRoot.resolve("build").registerForDeletionOnExit()
     fixtureRoot.resolve("build-cache").registerForDeletionOnExit()
@@ -39,7 +39,7 @@ class BuildCacheTest : MugshotPluginTestCase() {
 
     val secondRun = fixtureRoot.runBuild("testDebug", "--build-cache")
 
-    secondRun.assertTaskOutcome(":prepareMugshotDebugResources", FROM_CACHE)
+    secondRun.assertTaskSucceeded(":prepareMugshotDebugResources")
 
     resourcesFile = File(fixtureRoot, "build/intermediates/mugshot/debug/resources.json")
     assertThat(resourcesFile.exists()).isTrue()
@@ -55,13 +55,15 @@ class BuildCacheTest : MugshotPluginTestCase() {
 
     val firstRun = fixtureRoot.runBuild("testDebug", "--build-cache")
 
-    firstRun.assertTaskOutcomeIsNot(":prepareMugshotDebugResources", FROM_CACHE)
+    firstRun.assertTaskOutcomeIsNot(":testDebugUnitTest", FROM_CACHE)
 
     buildDir.deleteRecursively()
 
     val secondRun = fixtureRoot.runBuild("testDebug", "--build-cache")
 
-    secondRun.assertTaskOutcome(":prepareMugshotDebugResources", FROM_CACHE)
+    // The resources task always runs, but writes the same file, so the tests still come from cache.
+    secondRun.assertTaskSucceeded(":prepareMugshotDebugResources")
+    secondRun.assertTaskOutcome(":testDebugUnitTest", FROM_CACHE)
   }
 
   @Test
@@ -89,7 +91,7 @@ class BuildCacheTest : MugshotPluginTestCase() {
 
     val secondRun = relocatedRoot.runBuild("testDebug", "--build-cache")
 
-    secondRun.assertTaskOutcome(":prepareMugshotDebugResources", FROM_CACHE)
+    secondRun.assertTaskSucceeded(":prepareMugshotDebugResources")
     secondRun.assertTaskOutcome(":testDebugUnitTest", FROM_CACHE)
   }
 

@@ -1,0 +1,38 @@
+plugins {
+  id 'com.android.library'
+  id 'uk.co.fractalmotion.mugshot'
+}
+
+android {
+  namespace = 'uk.co.fractalmotion.mugshot.plugin.test'
+  compileSdk = libs.versions.compileSdk.get() as int
+  defaultConfig {
+    minSdk = libs.versions.minSdk.get() as int
+  }
+  compileOptions {
+    sourceCompatibility = libs.versions.javaTarget.get()
+    targetCompatibility = libs.versions.javaTarget.get()
+  }
+}
+
+// An asset directory a task generates, as Compose Multiplatform's resources do. It is switched on
+// by a Gradle property, so a test can add it to a build that has already run without it.
+abstract class GenerateAssets extends DefaultTask {
+  @OutputDirectory
+  abstract DirectoryProperty getOutputDir()
+
+  @TaskAction
+  void generate() {
+    outputDir.get().file("generated.txt").asFile.text = "generated"
+  }
+}
+
+def generateAssets = tasks.register("generateAssets", GenerateAssets)
+
+androidComponents {
+  onVariants(selector().all()) { variant ->
+    if (providers.gradleProperty("generateAssets").isPresent()) {
+      variant.sources.assets.addGeneratedSourceDirectory(generateAssets) { it.outputDir }
+    }
+  }
+}

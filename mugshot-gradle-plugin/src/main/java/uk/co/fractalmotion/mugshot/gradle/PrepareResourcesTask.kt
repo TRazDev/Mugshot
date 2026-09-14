@@ -23,7 +23,6 @@ import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.provider.ListProperty
 import org.gradle.api.provider.Property
-import org.gradle.api.tasks.CacheableTask
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputFiles
 import org.gradle.api.tasks.Internal
@@ -31,9 +30,19 @@ import org.gradle.api.tasks.OutputFile
 import org.gradle.api.tasks.PathSensitive
 import org.gradle.api.tasks.PathSensitivity
 import org.gradle.api.tasks.TaskAction
+import org.gradle.api.tasks.UntrackedTask
 import uk.co.fractalmotion.mugshot.gradle.utils.relativize
 
-@CacheableTask
+/**
+ * Writes the resource and asset directories a variant's screenshot tests render with.
+ *
+ * Runs on every build rather than being cached. A plugin can generate an asset directory --
+ * Compose Multiplatform copies its resources into one -- and that directory's path cannot be read
+ * until its task has run, so nothing known beforehand can say it has appeared. The task only writes
+ * a handful of paths, and the tests read the file by contents, so an unchanged file still lets
+ * them come from cache.
+ */
+@UntrackedTask(because = "A generated asset directory's path cannot be part of the cache key")
 public abstract class PrepareResourcesTask : DefaultTask() {
   @get:Input
   public abstract val packageName: Property<String>
@@ -53,28 +62,19 @@ public abstract class PrepareResourcesTask : DefaultTask() {
   /**
    * The asset directories written to the resources file: the project's own, then its modules'.
    *
-   * Files rather than paths like the properties around it, because a plugin can generate one --
-   * Compose Multiplatform copies its resources into assets -- and Gradle will not read a generated
-   * directory's path until the task producing it has run, while the configuration cache stores
-   * inputs before anything runs. `@Internal`, because this task writes paths, not contents: an
-   * asset changing must not invalidate it. Relativized when the task runs.
+   * Files rather than paths like the properties around it, because a generated directory's path
+   * cannot be read until its task has run, while the configuration cache stores inputs before
+   * anything runs. An input so that a generating task runs first; this task is untracked, so its
+   * contents are never fingerprinted. Relativized when this task runs.
    */
-  @get:Internal
+  @get:InputFiles
+  @get:PathSensitive(PathSensitivity.RELATIVE)
   public abstract val projectAssetDirs: ConfigurableFileCollection
-
-  /**
-   * The paths of [projectAssetDirs] that no task generates, which key this task in its place.
-   *
-   * A generated directory's path is fixed by the task producing it, so it only changes when that
-   * task is added or removed -- and that alone leaves the previous resources file in use.
-   */
-  @get:Input
-  public abstract val staticProjectAssetDirs: ListProperty<String>
 
   @get:Input
   public abstract val aarAssetDirs: ListProperty<String>
 
-  /** What [projectAssetDirs] are relativized against; not an input, as the paths already are. */
+  /** What [projectAssetDirs] are relativized against. */
   @get:Internal
   public abstract val projectDirectory: DirectoryProperty
 

@@ -186,10 +186,6 @@ public class MugshotPlugin @Inject constructor(
         // The project's own directories first: a file collection keeps the order they are added in.
         sources.localAssetDirs?.let { task.projectAssetDirs.from(it) }
         task.projectAssetDirs.from(sources.moduleAssetDirs)
-        task.staticProjectAssetDirs.set(
-          sources.localStaticAssetDirs.relativize(projectDirectory)
-            .zip(sources.moduleAssetDirs.relativize(projectDirectory), List<String>::plus)
-        )
         task.projectDirectory.set(projectDirectory)
         task.aarAssetDirs.set(sources.aarAssetDirs.relativize(gradleHomeDir))
         task.mugshotResources.set(buildDirectory.file("intermediates/mugshot/${variant.name}/resources.json"))
