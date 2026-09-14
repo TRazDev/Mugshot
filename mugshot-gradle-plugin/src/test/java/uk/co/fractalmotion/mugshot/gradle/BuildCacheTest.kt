@@ -134,4 +134,28 @@ class BuildCacheTest : MugshotPluginTestCase() {
     fixtureRoot.runBuild("verifyMugshotDebug", "--configuration-cache")
     fixtureRoot.runBuild("deleteDebugMugshotSnapshots", "--configuration-cache")
   }
+
+  /**
+   * [configurationCacheWorksWithMugshotTasks] in a multiplatform module, where two more values
+   * cannot be read before the tasks producing them have run.
+   *
+   * A multiplatform host test has no static source directories, so resolving its snapshot
+   * directory from the source set reaches `generateMugshot<Variant>PreviewTests`' output. Separately,
+   * a plugin can generate an asset directory -- the fixture does, as Compose Multiplatform does --
+   * and storing its path as a resources task input fails before that task has run.
+   */
+  @Test
+  fun configurationCacheWorksWithMugshotTasksInMultiplatformModule() {
+    val fixtureRoot = fixture("multiplatform-configuration-cache")
+    val snapshotsDir = File(fixtureRoot, "src/androidHostTest/snapshots").registerForDeletionOnExit()
+
+    fixtureRoot.runBuild("recordMugshotAndroidMain", "--configuration-cache")
+    assertThat(File(snapshotsDir, "images").list()).hasLength(1)
+
+    val config = File(fixtureRoot, "build/intermediates/mugshot/androidMain/resources.json").loadConfig()
+    assertThat(config.projectAssetDirs).contains("build/generated/assets/generateAssets")
+
+    fixtureRoot.runBuild("verifyMugshotAndroidMain", "--configuration-cache")
+    fixtureRoot.runBuild("deleteAndroidMainMugshotSnapshots", "--configuration-cache")
+  }
 }

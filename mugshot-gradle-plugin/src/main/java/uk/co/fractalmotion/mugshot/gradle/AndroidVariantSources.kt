@@ -35,6 +35,11 @@ internal class AndroidVariantSources(
     variant.sources.assets?.all?.map { layers -> layers.flatten() }?.map { it.asReversed() }
   }
 
+  /** [localAssetDirs] without the ones a task generates, so readable before any task has run. */
+  val localStaticAssetDirs: Provider<List<Directory>>? by lazy {
+    variant.sources.assets?.static?.map { layers -> layers.flatten() }?.map { it.asReversed() }
+  }
+
   // https://android.googlesource.com/platform/tools/base/+/96015063acd3455a76cdf1cc71b23b0828c0907f/build-system/gradle-core/src/main/java/com/android/build/gradle/tasks/MergeResources.kt#875
   val moduleAssetDirs: FileCollection by lazy {
     variant.runtimeConfiguration
