@@ -19,16 +19,19 @@ import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import org.gradle.api.DefaultTask
 import org.gradle.api.file.ConfigurableFileCollection
+import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.provider.ListProperty
 import org.gradle.api.provider.Property
 import org.gradle.api.tasks.CacheableTask
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputFiles
+import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.OutputFile
 import org.gradle.api.tasks.PathSensitive
 import org.gradle.api.tasks.PathSensitivity
 import org.gradle.api.tasks.TaskAction
+import uk.co.fractalmotion.mugshot.gradle.utils.relativize
 
 @CacheableTask
 public abstract class PrepareResourcesTask : DefaultTask() {
@@ -47,11 +50,33 @@ public abstract class PrepareResourcesTask : DefaultTask() {
   @get:Input
   public abstract val aarExplodedDirs: ListProperty<String>
 
+  /**
+   * The asset directories written to the resources file: the project's own, then its modules'.
+   *
+   * Files rather than paths like the properties around it, because a plugin can generate one --
+   * Compose Multiplatform copies its resources into assets -- and Gradle will not read a generated
+   * directory's path until the task producing it has run, while the configuration cache stores
+   * inputs before anything runs. `@Internal`, because this task writes paths, not contents: an
+   * asset changing must not invalidate it. Relativized when the task runs.
+   */
+  @get:Internal
+  public abstract val projectAssetDirs: ConfigurableFileCollection
+
+  /**
+   * The paths of [projectAssetDirs] that no task generates, which key this task in its place.
+   *
+   * A generated directory's path is fixed by the task producing it, so it only changes when that
+   * task is added or removed -- and that alone leaves the previous resources file in use.
+   */
   @get:Input
-  public abstract val projectAssetDirs: ListProperty<String>
+  public abstract val staticProjectAssetDirs: ListProperty<String>
 
   @get:Input
   public abstract val aarAssetDirs: ListProperty<String>
+
+  /** What [projectAssetDirs] are relativized against; not an input, as the paths already are. */
+  @get:Internal
+  public abstract val projectDirectory: DirectoryProperty
 
   @get:Input
   public abstract val nonTransitiveRClassEnabled: Property<Boolean>
@@ -94,7 +119,7 @@ public abstract class PrepareResourcesTask : DefaultTask() {
       projectResourceDirs = projectResourceDirs.get(),
       moduleResourceDirs = moduleResourceDirs.get(),
       aarExplodedDirs = aarExplodedDirs.get(),
-      projectAssetDirs = projectAssetDirs.get(),
+      projectAssetDirs = projectAssetDirs.files.map { projectDirectory.get().relativize(it) },
       aarAssetDirs = aarAssetDirs.get()
     )
     val moshi = Moshi.Builder().addLast(KotlinJsonAdapterFactory()).build()!!

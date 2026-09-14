@@ -1,0 +1,57 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+
+plugins {
+  id 'org.jetbrains.kotlin.multiplatform'
+  id 'com.android.kotlin.multiplatform.library'
+  id 'org.jetbrains.kotlin.plugin.compose'
+  id 'com.google.devtools.ksp'
+  id 'uk.co.fractalmotion.mugshot'
+}
+
+kotlin {
+  android {
+    namespace = 'uk.co.fractalmotion.mugshot.plugin.test'
+    compileSdk = libs.versions.compileSdk.get() as int
+    minSdk = libs.versions.minSdk.get() as int
+
+    compilerOptions {
+      jvmTarget.set(JvmTarget.fromTarget(libs.versions.javaTarget.get()))
+    }
+    androidResources {
+      enable = true
+    }
+    withHostTest {
+      includeAndroidResources = true
+    }
+  }
+
+  sourceSets {
+    androidMain {
+      dependencies {
+        implementation libs.composeUi.material
+        implementation libs.composeUi.uiToolingPreview
+      }
+    }
+  }
+}
+
+// Stands in for Compose Multiplatform, which copies its resources into an assets directory that a
+// task generates. Mugshot reads that directory's path, which Gradle only allows once the task has
+// run -- after the configuration cache has been stored.
+abstract class GenerateAssets extends DefaultTask {
+  @OutputDirectory
+  abstract DirectoryProperty getOutputDir()
+
+  @TaskAction
+  void generate() {
+    outputDir.get().file("generated.txt").asFile.text = "generated"
+  }
+}
+
+def generateAssets = tasks.register("generateAssets", GenerateAssets)
+
+androidComponents {
+  onVariants(selector().all()) { variant ->
+    variant.sources.assets.addGeneratedSourceDirectory(generateAssets) { it.outputDir }
+  }
+}

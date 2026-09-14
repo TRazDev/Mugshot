@@ -134,7 +134,7 @@ public class MugshotPlugin @Inject constructor(
     extension.onVariants { variant ->
       val variantSlug = variant.name.capitalize()
       val testVariant = (variant as? HasUnitTest)?.unitTest ?: return@onVariants
-      val snapshotOutputDir = snapshotDir(testVariant)
+      val snapshotOutputDir = snapshotDir(testVariant, isMultiplatformProject)
 
       val deleteVariantSnapshot =
         project.tasks.register("delete${variantSlug}MugshotSnapshots", Delete::class.java) {
@@ -183,10 +183,14 @@ public class MugshotPlugin @Inject constructor(
         task.projectResourceDirs.set(sources.localResourceDirs.relativize(projectDirectory))
         task.moduleResourceDirs.set(sources.moduleResourceDirs.relativize(projectDirectory))
         task.aarExplodedDirs.set(sources.aarExplodedDirs.relativize(gradleHomeDir))
-        task.projectAssetDirs.set(
-          sources.localAssetDirs.relativize(projectDirectory)
+        // The project's own directories first: a file collection keeps the order they are added in.
+        sources.localAssetDirs?.let { task.projectAssetDirs.from(it) }
+        task.projectAssetDirs.from(sources.moduleAssetDirs)
+        task.staticProjectAssetDirs.set(
+          sources.localStaticAssetDirs.relativize(projectDirectory)
             .zip(sources.moduleAssetDirs.relativize(projectDirectory), List<String>::plus)
         )
+        task.projectDirectory.set(projectDirectory)
         task.aarAssetDirs.set(sources.aarAssetDirs.relativize(gradleHomeDir))
         task.mugshotResources.set(buildDirectory.file("intermediates/mugshot/${variant.name}/resources.json"))
       }
@@ -748,42 +752,32 @@ public class MugshotPlugin @Inject constructor(
     condition.filter { it }.flatMap { this }
 
   /**
-   * Resolves `src/test/snapshots` from the unit test source set.
+   * Resolves `src/test/snapshots` from the unit test source set, or `src/androidHostTest/snapshots`
+   * in a multiplatform module.
    *
-   * Prefers `static` over `all` deliberately. `all` includes generated source directories, and
-   * Mugshot now contributes one itself (see `generateMugshot<Variant>PreviewTests`), so `all` could
-   * hand back a directory under `build/` and silently relocate every golden image.
+   * Reads `static` rather than `all` deliberately. `all` includes generated source directories, and
+   * Mugshot contributes one itself (see `generateMugshot<Variant>PreviewTests`), so `all` could hand
+   * back a directory under `build/` and silently relocate every golden image. It would also break
+   * the configuration cache, which stores these directories before that task has run.
    */
-  private fun Project.snapshotDir(testVariant: UnitTest): Provider<Directory> {
+  private fun Project.snapshotDir(testVariant: UnitTest, isMultiplatformProject: Boolean): Provider<Directory> {
+    val projectDirectory = layout.projectDirectory
+
+    if (isMultiplatformProject) {
+      // A multiplatform host test registers no static source directories, which leaves only
+      // `all`, and `all` carries `generateMugshot<Variant>PreviewTests` as a producer. The
+      // configuration cache stores a record run's output directory before anything has run, and
+      // Gradle will not read `all` until that task has. Kotlin fixes a source set's location at
+      // `src/<source set name>`, so the directory is built from the name instead.
+      return providerFactory.provider { projectDirectory.dir("src/${testVariant.name}/snapshots") }
+    }
+
     val sources = testVariant.sources.kotlin
       ?: testVariant.sources.java
       ?: error("No Kotlin or Java sources on ${testVariant.name}")
-    val projectDirectory = layout.projectDirectory
-    val buildDirectory = layout.buildDirectory
-    // Kotlin Multiplatform's androidHostTest registers no static dirs, so this falls back to
-    // `all` there.
-    // `flatMap` rather than `zip`: `all` carries `generateMugshot<Variant>PreviewTests` as a
-    // producer task, and querying it while the configuration cache serialises this task's
-    // registered input/output properties fails before that task has run. Reaching for it only
-    // when `static` is empty keeps the common path free of that dependency.
-    return sources.static.flatMap { static ->
-      if (static.isEmpty()) {
-        // `all` mixes the source set's real, conventional directory in with any generated ones
-        // (such as the one above) once a module actually has both -- picking blindly is how a
-        // module with a hand-written test *and* a generated one ended up with goldens split
-        // across two directories. A generated directory's parent always resolves inside the
-        // build directory, which no real source set root ever does, so it is what distinguishes
-        // them here. Only when every candidate is generated (a module with `@Mugshot` previews
-        // but no hand-written test of its own) does this fall back to the first one regardless.
-        sources.all.zip(buildDirectory) { dirs, build ->
-          val parents = dirs.map { it.asFile.parentFile }
-          parents.firstOrNull { !it.startsWith(build.asFile) } ?: parents.firstOrNull()
-        }
-      } else {
-        providerFactory.provider { leastSpecificSourceSet(static) }
-      }
-    }.map { root ->
-      val sourceSetRoot = root ?: error("No source dirs registered for ${testVariant.name}")
+    return sources.static.map { static ->
+      val sourceSetRoot = leastSpecificSourceSet(static)
+        ?: error("No source dirs registered for ${testVariant.name}")
       projectDirectory.dir(sourceSetRoot.path).dir("snapshots")
     }
   }
