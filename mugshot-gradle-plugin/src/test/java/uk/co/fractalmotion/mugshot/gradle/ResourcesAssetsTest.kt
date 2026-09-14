@@ -1,7 +1,6 @@
 package uk.co.fractalmotion.mugshot.gradle
 
 import com.google.common.truth.Truth.assertThat
-import org.gradle.testkit.runner.TaskOutcome.FROM_CACHE
 import org.junit.Test
 import java.io.File
 
@@ -135,7 +134,7 @@ class ResourcesAssetsTest : MugshotPluginTestCase() {
 
     val secondRun = fixtureRoot.runBuild(":testDebug", "--build-cache") { forwardOutput() }
 
-    secondRun.assertTaskOutcome(":prepareMugshotDebugResources", FROM_CACHE) // paths didn't change
+    secondRun.assertTaskSucceeded(":prepareMugshotDebugResources")
     secondRun.assertTaskSucceeded(":testDebugUnitTest") // but contents did
 
     config = resourcesFile.loadConfig()
@@ -180,7 +179,7 @@ class ResourcesAssetsTest : MugshotPluginTestCase() {
 
     val secondRun = fixtureRoot.runBuild(":consumer:testDebug", "--build-cache") { forwardOutput() }
 
-    secondRun.assertTaskOutcome(":consumer:prepareMugshotDebugResources", FROM_CACHE) // paths didn't change
+    secondRun.assertTaskSucceeded(":consumer:prepareMugshotDebugResources")
     secondRun.assertTaskSucceeded(":consumer:testDebugUnitTest") // but contents did
 
     config = resourcesFile.loadConfig()
@@ -273,7 +272,7 @@ class ResourcesAssetsTest : MugshotPluginTestCase() {
 
     val secondRun = fixtureRoot.runBuild(":testDebug", "--build-cache") { forwardOutput() }
 
-    secondRun.assertTaskOutcome(":prepareMugshotDebugResources", FROM_CACHE) // paths didn't change
+    secondRun.assertTaskSucceeded(":prepareMugshotDebugResources")
 
     secondRun.assertTaskSucceeded(":testDebugUnitTest") // but contents did
 
@@ -320,7 +319,7 @@ class ResourcesAssetsTest : MugshotPluginTestCase() {
 
     val secondRun = fixtureRoot.runBuild(":consumer:testDebug", "--build-cache") { forwardOutput() }
 
-    secondRun.assertTaskOutcome(":consumer:prepareMugshotDebugResources", FROM_CACHE) // paths didn't change
+    secondRun.assertTaskSucceeded(":consumer:prepareMugshotDebugResources")
 
     secondRun.assertTaskSucceeded(":consumer:testDebugUnitTest") // but contents did
 
@@ -377,4 +376,26 @@ class ResourcesAssetsTest : MugshotPluginTestCase() {
 
   @Test
   fun transitiveResources() = fixture("transitive-resources").buildSucceeds("module:verifyMugshotDebug")
+
+  /**
+   * A generated asset directory appearing in a build that already wrote the resources file.
+   *
+   * Its path cannot be read until the task generating it has run, so it can never be part of what
+   * decides whether the resources file is current. While that file was cached, adding one -- such
+   * as by adding Compose Multiplatform resources to a module -- left the file without it.
+   */
+  @Test
+  fun resourcesFileListsAssetDirectoryGeneratedLater() {
+    val fixtureRoot = fixture("generated-source-directories")
+    fixtureRoot.resolve("build").registerForDeletionOnExit()
+    val resourcesFile = File(fixtureRoot, "build/intermediates/mugshot/debug/resources.json")
+
+    fixtureRoot.runBuild("prepareMugshotDebugResources")
+    assertThat(resourcesFile.loadConfig().projectAssetDirs)
+      .containsExactly("src/main/assets", "src/debug/assets")
+
+    fixtureRoot.runBuild("prepareMugshotDebugResources", "-PgenerateAssets")
+    assertThat(resourcesFile.loadConfig().projectAssetDirs)
+      .containsExactly("build/generated/assets/generateAssets", "src/main/assets", "src/debug/assets")
+  }
 }
