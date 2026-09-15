@@ -214,8 +214,8 @@ Set these in `gradle.properties`; the plugin forwards them to the test JVM.
 Snapshots render a third of the device's resolution by default. Dimensions, dpi and density
 scale together, so every dp stays a dp and the layout is identical to the full-size device --
 there are simply fewer pixels in it. On a 30-module project of 7176 images that made
-verification 23% faster and the goldens 31% smaller, and text comes out slightly sharper,
-since nothing is resampled after rendering.
+verification 27% faster and the goldens 45% smaller. Nothing is resampled after rendering, so
+glyph edges come out crisper, though at that size letter spacing can be slightly uneven.
 
 `uk.co.fractalmotion.mugshot.downscale=1` renders at the device's own resolution. That is
 the most detail available, so lower values are rejected. Two reasons to reach for it:
@@ -261,12 +261,19 @@ of each.
 What Mugshot needs from a module
 --------
 
-**A module cannot hold both Mugshot and Robolectric tests.** Mugshot loads layoutlib's native
-library, patches `Build.VERSION`, and permanently redefines `android.view.View.isInEditMode` in
-the test JVM through a Byte Buddy agent. Robolectric's own native setup then fails with
-`UnsatisfiedLinkError`. This applies to any Robolectric test in the module, including ones that
-take no screenshots at all, so moving to Mugshot is all or nothing per module. A Robolectric
-test that has to stay belongs in a module of its own.
+**Mugshot and Robolectric cannot share a JVM.** Mugshot loads layoutlib's native library,
+patches `Build.VERSION`, and permanently redefines `android.view.View.isInEditMode` in the test
+JVM through a Byte Buddy agent. Robolectric's own native setup then fails with
+`UnsatisfiedLinkError`, including in Robolectric tests that take no screenshots at all.
+
+Generated preview tests keep out of the way. The plugin runs them in a task of their own,
+`mugshotTest<Variant>`, with its own JVM, and leaves them out of the module's unit test task, so
+Robolectric tests in the same module keep working. `uk.co.fractalmotion.mugshot.isolateTests=false`
+puts them back in the unit test task.
+
+Hand-written Mugshot tests can't be separated that way, because nothing about them is visible to
+the plugin. They run with the rest of the module's unit tests, so a module whose Robolectric tests
+have to stay needs its hand-written Mugshot tests in a module of their own.
 
 **Tests must not run concurrently inside one JVM.** Layoutlib is initialised once and reused,
 which is most of why a suite is quick, and the renderer that holds it is shared by every test in
