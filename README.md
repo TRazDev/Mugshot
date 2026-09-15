@@ -1,70 +1,140 @@
-Mugshot
-========
-
-[![Maven Central](https://img.shields.io/maven-central/v/uk.co.fractalmotion.mugshot/mugshot?label=Maven%20Central)](https://central.sonatype.com/artifact/uk.co.fractalmotion.mugshot/mugshot)
+<div align="center">
 
 ![Mugshot](.github/images/logo.webp)
-An Android library to render your application screens without a physical device or emulator.
 
-### 1. Add the plugin
+# Mugshot
 
-To a module that already renders Compose previews:
+**Screenshot tests for your Compose previews. One annotation, no test code, no emulator.**
 
-```groovy
+[![Maven Central](https://img.shields.io/maven-central/v/uk.co.fractalmotion.mugshot/mugshot?label=Maven%20Central)](https://central.sonatype.com/artifact/uk.co.fractalmotion.mugshot/mugshot)
+![Kotlin Multiplatform](https://img.shields.io/badge/Kotlin%20Multiplatform-supported-7F52FF?logo=kotlin&logoColor=white)
+![Configuration cache](https://img.shields.io/badge/configuration%20cache-supported-02303A?logo=gradle&logoColor=white)
+[![License](https://img.shields.io/badge/license-Apache%202.0-blue)](#license)
+
+</div>
+
+You already wrote a `@Preview` for most of your screens. Mugshot turns each one into a screenshot
+test: put `@Mugshot` on it, record once, and the build fails whenever that screen changes. The
+screens render on the JVM with layoutlib, the renderer behind Android Studio's previews, so the
+tests run as ordinary unit tests on any machine that can build your app.
+
+![Six golden images from Mugshot's sample module, including a right-to-left Arabic layout in dark mode](.github/images/hero.webp)
+
+<sub>Golden images recorded from the previews in this repository's [`sample`](sample) module.
+The last one is the profile screen with `@MugshotLocales` set to Arabic.</sub>
+
+## Why Mugshot
+
+There's no test class to write and no list of screens to keep in sync. A KSP processor finds every
+annotated preview and generates the test, so adding a preview adds its screenshot and deleting one
+removes it.
+
+It works in Kotlin Multiplatform modules. Previews in `commonMain` are picked up like any others,
+and Compose Multiplatform resources, including `stringResource`, render in the golden images.
+
+It's quick. On a 30-module app with 7,176 screenshots, Mugshot verified everything in 58 seconds.
+Paparazzi took 89, and Google's Compose Preview Screenshot Testing ran out of memory at default
+settings. The [benchmark](#performance) has the details and a public repository to rerun it.
+
+It stays out of your way in Gradle. Screenshot tests run in a task and a JVM of their own, so they
+don't collide with Robolectric, and the plugin supports the configuration cache.
+
+## Getting started
+
+Apply KSP and the plugin to a module that has Compose previews:
+
+```kotlin
 plugins {
-  id 'com.google.devtools.ksp'
-  id 'uk.co.fractalmotion.mugshot'
+  id("com.google.devtools.ksp")
+  id("uk.co.fractalmotion.mugshot") version "3.4.2"
 }
 ```
 
-### 2. Annotate a preview
+Annotate a preview:
 
 ```kotlin
 @Mugshot
 @Preview
 @Composable
-internal fun ProfileScreenPreview()
+internal fun ProfileScreenPreview() {
+  AppTheme { ProfileScreen(state = sampleProfile) }
+}
 ```
 
-### 3. Record
+Record the golden images:
 
 ```bash
 ./gradlew recordMugshotDebug
 ```
 
-That's it. The image is in `src/test/snapshots/images/`, and `./gradlew verifyMugshotDebug`
-now fails if that screen ever changes.
+The images are in `src/test/snapshots/images/`. Commit them, and from then on
+`./gradlew verifyMugshotDebug` fails if any screen changes.
 
-No test class, no rule, no `snapshot()` call: the plugin generated the test that renders
-every annotated preview in the module. Want more than one image? Add an axis — `@MugshotLightDark`
-gives you light and dark, `@MugshotDevices` gives you one per device shape, and they
-multiply.
+```mermaid
+flowchart LR
+  A["@Preview + @Mugshot"] --> B["KSP generates<br/>the test"]
+  B --> C["layoutlib renders<br/>on the JVM"]
+  C --> D{"matches the<br/>golden image?"}
+  D -- yes --> E[build passes]
+  D -- no --> F["build fails,<br/>report shows the diff"]
+```
 
-Annotations
--------
+## Kotlin Multiplatform
 
-`@Mugshot` marks a preview for snapshotting and records one image at the library defaults.
-Every other annotation adds an axis:
+Mugshot runs in a module that uses `com.android.kotlin.multiplatform.library`. Apply the same two
+plugins and turn on host tests, which is where the generated test lives:
+
+```kotlin
+kotlin {
+  android {
+    withHostTest {
+      isIncludeAndroidResources = true
+    }
+  }
+}
+```
+
+That's the whole setup. The plugin adds the annotations to `commonMain` and the test machinery to
+`androidHostTest`, so there are no dependencies to declare. Annotate previews in `commonMain`,
+run `./gradlew :shared:recordMugshot`, and the golden images land in
+`src/androidHostTest/snapshots/images/`.
+
+![Five Compose Multiplatform screens in light and dark, rendered by Mugshot](.github/images/kmp-sample.webp)
+
+<sub>[MugshotSampleKMP](https://github.com/TRazDev/MugshotSampleKMP) is a Compose Multiplatform app
+for Android, iOS and desktop with Mugshot set up, and 192 golden images across four devices, two
+themes and four locales.</sub>
+
+The images are Android renders of your shared UI. Platform-specific code runs its Android
+`actual`, so something that only differs on iOS won't show up.
+
+## Annotations
+
+`@Mugshot` records one image on the default device, a Pixel 10. Every other annotation adds an
+axis, and axes multiply:
 
 | Annotation | Renders |
 | --- | --- |
-| `@Mugshot` | one image at the defaults — required on every snapshotted preview |
+| `@Mugshot` | one image at the defaults, required on every snapshotted preview |
 | `@MugshotShrink` | wrapped to the content, for components and dialogs |
 | `@MugshotFullScreen` | the whole scrollable height in one image |
-| `@MugshotDevices` | `PHONE`, `FOLDABLE`, `TABLET`, `LANDSCAPE` — or the ones you name |
+| `@MugshotDevices` | `PHONE`, `FOLDABLE`, `TABLET`, `LANDSCAPE`, or the ones you name |
 | `@MugshotWear` | a round and a square watch |
 | `@MugshotLightDark` | light and dark |
-| `@MugshotFontScales` | `1f`, `1.5f`, `2f` — or the ones you name |
-| `@MugshotLocales("ar")` | the default locale plus each you name, mirroring RTL ones |
-| `@MugshotMatrix` | devices × light/dark × font scales — 24 images |
+| `@MugshotFontScales` | `1f`, `1.5f`, `2f`, or the ones you name |
+| `@MugshotLocales("ar")` | the default locale plus each you name, mirroring right-to-left ones |
+| `@MugshotMatrix` | devices × light/dark × font scales, 24 images |
 
-`MugshotDevice` is one of `PHONE`, `FOLDABLE`, `TABLET`, `LANDSCAPE`, `WEAR_ROUND`,
+`MugshotDevice` is one of `PHONE`, `FOLDABLE`, `TABLET`, `LANDSCAPE`, `WEAR_ROUND` and
 `WEAR_SQUARE`.
 
-### Axes multiply
+`@MugshotMatrix` on a single preview gives you this:
 
-Each annotation is an independent axis, and the images are their cross-product. Narrow a
-matrix by passing arguments rather than by dropping an annotation:
+![The 24 images @MugshotMatrix records for one preview: four devices, light and dark, three font scales](.github/images/matrix.webp)
+
+### Narrowing an axis
+
+Pass arguments to narrow an axis rather than dropping the annotation:
 
 ```kotlin
 @Mugshot
@@ -76,14 +146,14 @@ internal fun ProfileScreenPreview() { ... }
 // 2 devices × 2 appearances = 4 images
 ```
 
-`@MugshotLocales` is the one axis that keeps a baseline of its own: the others already
-include theirs (`PHONE`, light, `1f`), so naming a single locale gives you two images — the
-default and that locale.
+`@MugshotLocales` is the one axis that keeps a baseline of its own. The others already include
+theirs (`PHONE`, light, `1f`), so naming a single locale gives you two images: the default and that
+locale.
 
 ### Bundling
 
-The annotations target annotation classes as well as functions, so a team can put its house
-style behind one name:
+The annotations work on annotation classes as well as functions, so a team can put its house style
+behind one name:
 
 ```kotlin
 @Mugshot
@@ -99,8 +169,8 @@ internal fun ProfileScreenPreview() { ... }
 
 ### Preview parameters
 
-A `@PreviewParameter` provider is expanded when the test runs, one image per value, so a
-single preview covers a screen's loading, empty and populated states:
+A `@PreviewParameter` provider is expanded when the test runs, one image per value, so a single
+preview covers a screen's loading, empty and populated states:
 
 ```kotlin
 @Mugshot
@@ -114,14 +184,14 @@ internal fun StorefrontScreenPreview(
 ```
 
 Images are indexed (`_0`, `_1`, …) rather than named after the value, because a value's
-`toString()` is not safe in a filename.
+`toString()` isn't safe in a filename.
 
 ### Rules
 
-An annotated function must be `@Composable`, must carry a `@Preview`, must not be `private`,
-and must take no parameters other than a single `@PreviewParameter`.
+An annotated function must be `@Composable`, must carry a `@Preview`, must not be `private`, and
+must take no parameters other than a single `@PreviewParameter`.
 
-A preview that breaks one of those rules is skipped. There is no test file to fail, so the build
+A preview that breaks one of those rules is skipped. There's no test file to fail, so the build
 stays green and no image appears. The lint checks turn that silence into a message:
 
 ```groovy
@@ -137,20 +207,85 @@ dependencies {
 | `PrivatePreviewDetected` | error | `@Mugshot` on a private composable, which the generated test cannot call |
 | `MugshotPreviewArgumentsIgnored` | warning | `@Preview` setting configuration Mugshot does not read |
 
-The warning is the one worth having even when everything works. Setting `device`, `uiMode`,
-`locale` or `fontScale` on `@Preview` changes what the IDE renders while the golden stays the
-same, so your preview and your test drift apart with nothing to say so.
+The warning is worth having even when everything works. **`@Preview`'s own arguments are
+ignored**: Mugshot takes its configuration from its annotations, so setting `device`, `uiMode`,
+`locale` or `fontScale` on `@Preview` changes what the IDE renders while the golden image stays the
+same.
 
-One thing that surprises people: **`@Preview`'s own arguments are ignored.** Mugshot takes its
-configuration from the annotations above, so setting `device`, `uiMode`, `locale` or `fontScale`
-on `@Preview` changes what the IDE renders without changing the golden.
+[LIMITATIONS.md](LIMITATIONS.md) covers what Mugshot doesn't do and where its rendering differs from
+a device.
 
-[LIMITATIONS.md](LIMITATIONS.md) covers what Mugshot does not do and where its rendering differs
-from a device.
+## When a screen changes
+
+A failed verification shows up in the HTML test report with the golden image, a difference image
+and the new render side by side. In the difference image, red marks every pixel that changed and
+everything else is white, so you can see at a glance which part of the screen moved.
+
+![A failed screenshot in the HTML report: the golden image, the difference in red, and the new render](.github/images/failure-report.webp)
+
+The report is in `build/reports/tests/<testTask>`. The same images, plus a single combined image
+the console error links to, go to `build/mugshot/failures` for CI to upload.
+
+To make CI fail on visual changes:
+
+```kotlin
+tasks.named("check") {
+  dependsOn("verifyMugshot")
+}
+```
+
+If the change was intentional, record again and commit the new golden images with the code.
+
+## Performance
+
+Mugshot, Paparazzi and Google's Compose Preview Screenshot Testing screenshotted the same
+generated app: 30 modules and 299 previews, each rendered on four devices, in light and dark, at
+three font scales. That's 7,176 screenshots per tool.
+
+![Verify times and disk usage for Mugshot, Paparazzi and Compose Preview Screenshot Testing](.github/images/benchmark.webp)
+
+| | Record | Verify | Verify, `--max-workers=3` | Golden images |
+| --- | --- | --- | --- | --- |
+| **Mugshot 3.4.2** | **62 s** | **58 s** | **88 s** | **75 MB** |
+| Paparazzi 2.0.0-alpha05 | 107 s | 89 s | 149 s | 279 MB |
+| Compose Preview Screenshot Testing 0.0.1-alpha16 | 226 s | out of memory | 728 s | 619 MB |
+
+Verify times are the median of three runs on a MacBook Pro with an M5 Pro and 24 GB. Compose
+Preview Screenshot Testing needed `android.compose.screenshot.maxHeapSize=2g` to record without
+running out of memory, and even then couldn't verify at default parallelism on that machine.
+
+Part of the lead comes from resolution. Mugshot renders the device at a third of its resolution,
+Paparazzi renders at full size and shrinks the image to 1,000 pixels, and Compose Preview
+Screenshot Testing keeps full size. At full resolution Mugshot verifies in 149 seconds, slower
+than Paparazzi. The layout is identical either way, because Mugshot scales density along with the
+screen, so every dp stays a dp.
+
+Everything is reproducible from
+[TRazDev/screenshot-testing-benchmark](https://github.com/TRazDev/screenshot-testing-benchmark):
+the app, one branch per tool, the benchmark script and every raw result. It doesn't include
+Roborazzi yet.
+
+## Tasks
+
+Each task has an anchor form that covers every variant and a per-variant form
+(`recordMugshotDebug`, `verifyMugshotRelease`, and so on).
+
+| Task | Does |
+| --- | --- |
+| `recordMugshot` | writes golden images to `src/test/snapshots` |
+| `verifyMugshot` | renders and compares against the golden images |
+| `cleanRecordMugshot` | deletes the golden images, then records |
+| `deleteMugshotSnapshots` | deletes the golden images |
+
+```bash
+./gradlew recordMugshotDebug
+./gradlew verifyMugshotDebug
+./gradlew verifyMugshotDebug --tests '*ProfileScreen*'
+```
 
 ### Where the images go
 
-The generated test is `MugshotGeneratedPreviewTest`, in your module's namespace, so goldens
+The generated test is `MugshotGeneratedPreviewTest`, in your module's namespace, so golden images
 are named:
 
 ```
@@ -160,44 +295,7 @@ are named:
 for example
 `com.example.myapp_MugshotGeneratedPreviewTest_snapshot[ui_ProfileScreen_ProfileScreenPreview_Dark].webp`.
 
-Tasks
--------
-
-Each task has an anchor form that covers every variant and a per-variant form
-(`recordMugshotDebug`, `verifyMugshotRelease`, and so on).
-
-| Task | Does |
-| --- | --- |
-| `recordMugshot` | writes golden images to `src/test/snapshots` |
-| `verifyMugshot` | renders and compares against the goldens |
-| `cleanRecordMugshot` | deletes the goldens, then records |
-| `deleteMugshotSnapshots` | deletes the goldens |
-
-```bash
-./gradlew recordMugshotDebug
-./gradlew verifyMugshotDebug
-./gradlew verifyMugshotDebug --tests '*ProfileScreen*'
-```
-
-Every run writes an HTML report to `build/reports/tests/<testTask>`. A failed snapshot appears
-there with three images side by side: the golden, the difference between them, and what this run
-rendered. The same images are written to `build/mugshot/failures` for CI to collect, along
-with a single combined image the console error links to.
-
-In the difference image, **ruby red** marks a pixel the two renders disagree on and everything
-else is white, so the edges of the render stay visible. A pixel that matches and a pixel that
-differs by little enough to pass look the same, because neither is something to act on.
-
-To gate CI on your goldens:
-
-```groovy
-tasks.named("check").configure {
-  dependsOn("verifyMugshot")
-}
-```
-
-Configuration
--------
+## Configuration
 
 Set these in `gradle.properties`; the plugin forwards them to the test JVM.
 
@@ -207,31 +305,31 @@ Set these in `gradle.properties`; the plugin forwards them to the test JVM.
 | `uk.co.fractalmotion.mugshot.differ` | `offbytwo` | image comparison: `offbytwo`, `pixelperfect` |
 | `uk.co.fractalmotion.mugshot.maxPercentDifferenceDefault` | `0.01` | how much difference a verification tolerates |
 | `uk.co.fractalmotion.mugshot.defaultLocale` | unset | locale for every snapshot, e.g. `fr-rFR` |
-| `uk.co.fractalmotion.mugshot.overwriteOnMaxPercentDifference` | `false` | rewrite goldens that differ within the threshold |
+| `uk.co.fractalmotion.mugshot.overwriteOnMaxPercentDifference` | `false` | rewrite golden images that differ within the threshold |
+| `uk.co.fractalmotion.mugshot.isolateTests` | `true` | run generated tests in their own task and JVM |
 
 ### Resolution
 
-Snapshots render a third of the device's resolution by default. Dimensions, dpi and density
-scale together, so every dp stays a dp and the layout is identical to the full-size device --
-there are simply fewer pixels in it. On a 30-module project of 7176 images that made
-verification 27% faster and the goldens 45% smaller. Nothing is resampled after rendering, so
-glyph edges come out crisper, though at that size letter spacing can be slightly uneven.
+Snapshots render a third of the device's resolution by default. Dimensions, dpi and density scale
+together, so every dp stays a dp and the layout is identical to the full-size device, with fewer
+pixels in it. On a 30-module project of 7,176 images that made verification 27% faster and the
+golden images 45% smaller. Nothing is resampled after rendering, so glyph edges come out crisper,
+though at that size letter spacing can be slightly uneven.
 
-`uk.co.fractalmotion.mugshot.downscale=1` renders at the device's own resolution. That is
-the most detail available, so lower values are rejected. Two reasons to reach for it:
+`uk.co.fractalmotion.mugshot.downscale=1` renders at the device's own resolution. That's the most
+detail available, so lower values are rejected. Two reasons to reach for it:
 
-- **Density-qualified resources.** The qualifier resolves from the scaled density, so a module
-  shipping `drawable-xxhdpi` PNGs can select a different asset than the real device would.
-  Vector and Compose UIs are unaffected.
-- **Small text you need to read** in a failure report, where a third of the pixels is a third
-  of the glyph.
+- A module shipping density-qualified bitmaps. The qualifier resolves from the scaled density, so
+  a `drawable-xxhdpi` PNG can be passed over for one the real device wouldn't pick. Vector and
+  Compose UIs are unaffected.
+- Small text you need to read in a failure report, where a third of the pixels is a third of the
+  glyph.
 
 Changing it changes every image, so re-record when you do.
 
-Beyond annotations
--------
+## Beyond annotations
 
-Some things the annotations do not reach. For those, drive the rule yourself:
+Some things the annotations don't reach. For those, drive the rule yourself:
 
 ```kotlin
 class ProfileScreenTest {
@@ -249,22 +347,21 @@ class ProfileScreenTest {
 }
 ```
 
-Reachable only this way: `unsafeUpdateConfig` to change device, theme or rendering mode
-part-way through a test; a custom `RenderExtension` to decorate every snapshot;
-`showSystemUi`, `downscale` and `maxPercentDifference`; and Android Views, via
-`mugshot.inflate<MyView>(R.layout.my_view)` and `mugshot.snapshot(view)`. For JUnit 5, build
-the rule yourself and call `setup(TestName(...))` and `teardown()` around each test.
+Reachable only this way: `unsafeUpdateConfig` to change device, theme or rendering mode part-way
+through a test; a custom `RenderExtension` to decorate every snapshot; `showSystemUi`, `downscale`
+and `maxPercentDifference`; and Android Views, via `mugshot.inflate<MyView>(R.layout.my_view)` and
+`mugshot.snapshot(view)`. For JUnit 5, build the rule yourself and call `setup(TestName(...))` and
+`teardown()` around each test.
 
-The [sample][sample] project's `screen/` and `component/` test packages have worked examples
-of each.
+The [sample][sample] project's `screen/` and `component/` test packages have worked examples of
+each.
 
-What Mugshot needs from a module
---------
+## What Mugshot needs from a module
 
-**Mugshot and Robolectric cannot share a JVM.** Mugshot loads layoutlib's native library,
-patches `Build.VERSION`, and permanently redefines `android.view.View.isInEditMode` in the test
-JVM through a Byte Buddy agent. Robolectric's own native setup then fails with
-`UnsatisfiedLinkError`, including in Robolectric tests that take no screenshots at all.
+**Mugshot and Robolectric can't share a JVM.** Mugshot loads layoutlib's native library, patches
+`Build.VERSION`, and permanently redefines `android.view.View.isInEditMode` in the test JVM through
+a Byte Buddy agent. Robolectric's own native setup then fails with `UnsatisfiedLinkError`,
+including in Robolectric tests that take no screenshots at all.
 
 Generated preview tests keep out of the way. The plugin runs them in a task of their own,
 `mugshotTest<Variant>`, with its own JVM, and leaves them out of the module's unit test task, so
@@ -275,40 +372,39 @@ Hand-written Mugshot tests can't be separated that way, because nothing about th
 the plugin. They run with the rest of the module's unit tests, so a module whose Robolectric tests
 have to stay needs its hand-written Mugshot tests in a module of their own.
 
-**Tests must not run concurrently inside one JVM.** Layoutlib is initialised once and reused,
-which is most of why a suite is quick, and the renderer that holds it is shared by every test in
-the JVM. Gradle's default of a worker per fork is fine, and so is `maxParallelForks`, which forks
-more JVMs. Running tests concurrently *within* one JVM, with JUnit 5's parallel execution for
-instance, is not: they will render over each other.
+**Tests must not run concurrently inside one JVM.** Layoutlib is initialised once and reused, which
+is most of why a suite is quick, and the renderer that holds it is shared by every test in the
+JVM. Gradle's default of a worker per fork is fine, and so is `maxParallelForks`, which forks more
+JVMs. Running tests concurrently within one JVM, with JUnit 5's parallel execution for instance,
+isn't: they will render over each other.
 
-Golden image names
---------
+## Golden image names
 
-A golden is named after the test that took it: the package, the class, the method, and the label
-if `snapshot` was given one. Nothing about those is bounded, and a name has to survive a
-filesystem, so a name longer than 200 characters keeps its readable beginning and ends in a hash
-of the whole of it:
+A golden image is named after the test that took it: the package, the class, the method, and the
+label if `snapshot` was given one. Nothing about those is bounded, and a name has to survive a
+filesystem, so a name longer than 200 characters keeps its readable beginning and ends in a hash of
+the whole of it:
 
 ```
 com.example.feature_VeryLongTest_aVeryLongMethodName...~3f9c1a7b2e04.webp
 ```
 
-The hash comes from the full name, so it is the same on every machine and every run, and two
-long names that begin alike stay apart. Real names are nowhere near the limit, the longest in
-this repository's own sample is 136 characters, so this only affects names that would otherwise
-be rejected.
+The hash comes from the full name, so it's the same on every machine and every run, and two long
+names that begin alike stay apart. Real names are nowhere near the limit (the longest in this
+repository's own sample is 136 characters), so this only affects names that would otherwise be
+rejected.
 
-Windows caps a whole path at 260 characters unless long paths are turned on. A deep module tree
-can reach that even with a name under the limit, so on Windows it is worth enabling long path
-support in both the OS and Git:
+Windows caps a whole path at 260 characters unless long paths are turned on. A deep module tree can
+reach that even with a name under the limit, so on Windows it's worth enabling long path support in
+both the OS and Git:
 
 ```bash
 git config --global core.longpaths true
 ```
 
-Git LFS
---------
-It is recommended you use [Git LFS][lfs] to store your snapshots.  Here's a quick setup:
+## Git LFS
+
+We recommend storing golden images with [Git LFS][lfs]:
 
 ```bash
 brew install git-lfs
@@ -344,10 +440,29 @@ if [[ is running snapshot tests ]]; then
 fi
 ```
 
-Releases
---------
+## More
 
-Our [change log][changelog] has release history.
+- [MugshotSampleKMP](https://github.com/TRazDev/MugshotSampleKMP): a Compose Multiplatform app
+  for Android, iOS and desktop with Mugshot set up
+- [screenshot-testing-benchmark](https://github.com/TRazDev/screenshot-testing-benchmark): the same
+  app tested with Mugshot, Paparazzi and Compose Preview Screenshot Testing, with the benchmark and
+  results
+- Articles:
+  - Screenshot tests for your Compose previews, with one annotation
+  - My screenshot tests spent more time shrinking images than rendering them
+  - Screenshot testing a Compose Multiplatform app without an emulator
+  - Mugshot, Paparazzi and Compose Preview Screenshot Testing on the same 7,176 screenshots
+
+## Releases
+
+The [change log][changelog] has release history.
+
+Using the plugins DSL:
+```groovy
+plugins {
+  id 'uk.co.fractalmotion.mugshot' version '3.4.2'
+}
+```
 
 Using plugin application:
 ```groovy
@@ -364,14 +479,7 @@ buildscript {
 apply plugin: 'uk.co.fractalmotion.mugshot'
 ```
 
-Using the plugins DSL:
-```groovy
-plugins {
-  id 'uk.co.fractalmotion.mugshot' version '3.4.2'
-}
-```
-
-Snapshots of the development version are available in [the Central Portal Snapshots repository][snap].
+Snapshots of the development version are available in [the Central Portal Snapshots repository][snap]:
 
 ```groovy
 repositories {
@@ -382,19 +490,17 @@ repositories {
 }
 ```
 
-Credits
--------
+## Credits
 
-Mugshot is a fork of [Paparazzi][upstream], created and maintained by Square, Inc.
-Essentially all of the hard engineering here — the layoutlib integration, the
-resource loading, the rendering pipeline — is their work. This fork exists to take
-the project in a direction that would have been too breaking to land upstream, and
-is not affiliated with, endorsed by, or sponsored by Square, Inc. or Cash App.
+Mugshot is a fork of [Paparazzi][upstream], created and maintained by Square, Inc. Essentially all
+of the hard engineering here, the layoutlib integration, the resource loading and the rendering
+pipeline, is their work. This fork exists to take the project in a direction that would have been
+too breaking to land upstream, and is not affiliated with, endorsed by, or sponsored by Square,
+Inc. or Cash App.
 
 See [NOTICE](NOTICE) for the full attribution and a summary of what has changed.
 
-License
--------
+## License
 
 ```
 Copyright 2019 Square, Inc.
