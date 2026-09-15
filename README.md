@@ -70,14 +70,7 @@ Record the golden images:
 The images are in `src/test/snapshots/images/`. Commit them, and from then on
 `./gradlew verifyMugshotDebug` fails if any screen changes.
 
-```mermaid
-flowchart LR
-  A["@Preview + @Mugshot"] --> B["KSP generates<br/>the test"]
-  B --> C["layoutlib renders<br/>on the JVM"]
-  C --> D{"matches the<br/>golden image?"}
-  D -- yes --> E[build passes]
-  D -- no --> F["build fails,<br/>report shows the diff"]
-```
+![How Mugshot works: @Mugshot on a preview, KSP generates the test, layoutlib renders it on the JVM, and the render is compared with the golden image. The build passes if it matches and fails with a diff in the report if it differs](.github/images/how-it-works.webp)
 
 ## Kotlin Multiplatform
 
