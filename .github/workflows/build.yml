@@ -9,6 +9,13 @@ on:
     branches:
       - main
 
+# A new push to a pull request cancels the build still running for its previous commit. Builds
+# on main each get a group of their own, so none is cancelled and every merge publishes its
+# snapshot.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event_name == 'pull_request' && github.event.pull_request.number || github.run_id }}
+  cancel-in-progress: true
+
 env:
   GRADLE_OPTS: "-Dorg.gradle.jvmargs=-Xmx4g -Dorg.gradle.daemon=false -Dkotlin.incremental=false"
 
