@@ -13,10 +13,10 @@
 
 </div>
 
-You already wrote a `@Preview` for most of your screens. Mugshot turns each one into a screenshot
-test: put `@Mugshot` on it, record once, and the build fails whenever that screen changes. The
-screens render on the JVM with layoutlib, the renderer behind Android Studio's previews, so the
-tests run as ordinary unit tests on any machine that can build your app.
+You already wrote a `@Preview` for most of your screens. Mugshot is a screenshot testing library
+that turns each one into a test: put `@Mugshot` on it, record once, and the build fails whenever
+that screen changes. The screens render on the JVM with layoutlib, the renderer behind Android
+Studio's previews, so the tests run as ordinary unit tests on any machine that can build your app.
 
 ![Six golden images from Mugshot's sample module, including a right-to-left Arabic layout in dark mode](.github/images/hero.webp)
 
@@ -37,7 +37,7 @@ Paparazzi took 89, and Google's Compose Preview Screenshot Testing ran out of me
 settings. The [benchmark](#performance) has the details and a public repository to rerun it.
 
 It stays out of your way in Gradle. Screenshot tests run in a task and a JVM of their own, so they
-don't collide with Robolectric, and the plugin supports the configuration cache.
+don't collide with Robolectric, and the Gradle plugin supports the configuration cache.
 
 ## Getting started
 
