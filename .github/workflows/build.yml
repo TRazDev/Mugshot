@@ -3,17 +3,26 @@ name: build
 on:
   pull_request: {}
 
-  # Only main. PR branches are covered by pull_request, and a second trigger here
-  # would run every job twice for one push.
+  # Only main, and only to publish a snapshot. The main ruleset requires a pull request to be up
+  # to date with main before it merges, so the commit that lands was already built by its pull
+  # request, and building it again here would only repeat that.
   push:
     branches:
       - main
+
+# A new push to a pull request cancels the build still running for its previous commit. Runs on
+# main each get a group of their own, so none is cancelled and every merge publishes its
+# snapshot.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event_name == 'pull_request' && github.event.pull_request.number || github.run_id }}
+  cancel-in-progress: true
 
 env:
   GRADLE_OPTS: "-Dorg.gradle.jvmargs=-Xmx4g -Dorg.gradle.daemon=false -Dkotlin.incremental=false"
 
 jobs:
   build:
+    if: github.event_name == 'pull_request'
     strategy:
       fail-fast: false
       matrix:
@@ -56,9 +65,7 @@ jobs:
 
   publish:
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main'
-    needs:
-      - build
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
 
     steps:
       - name: Checkout
